@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="ko" class="theme-dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🇲🇽 멕시코시티 여행 계획 3/17~3/21</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
+  <!-- Firebase compat SDK (no bundler needed) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    :root { interpolate-size: allow-keywords; }
+    html.theme-dark {
+      --bg:#0A0A0A; --surface:#141414; --surface-hover:#1C1C1C;
+      --border:rgba(255,255,255,0.06); --border-strong:rgba(255,255,255,0.12);
+      --text:#EDEDED; --text-secondary:#888;
+      --accent:#f97316; --accent-secondary:#8b5cf6;
+      --positive:#10b981; --negative:#f43f5e; --warning:#f59e0b;
+    }
+    html.theme-light {
+      --bg:#FAFAF9; --surface:#FFFFFF; --surface-hover:#F0EDE8;
+      --border:rgba(0,0,0,0.08); --border-strong:rgba(0,0,0,0.15);
+      --text:#0f172a; --text-secondary:#64748b;
+      --accent:#ea580c; --accent-secondary:#7c3aed;
+      --positive:#059669; --negative:#e11d48; --warning:#d97706;
+    }
+    body { font-family:'Noto Sans KR','Inter',-apple-system,BlinkMacSystemFont,sans-serif; background:var(--bg); color:var(--text); line-height:1.6; -webkit-font-smoothing:antialiased; transition:background 0.3s,color 0.3s; min-height:100vh; }
+    h1 { font-weight:700; font-size:2.5rem; letter-spacing:-0.03em; }
+    @keyframes fadeInUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+    .animate { animation:fadeInUp 0.5s ease-out both; }
+    .reveal { opacity:0; transform:translateY(20px); transition:opacity 0.5s ease,transform 0.5s ease; }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+    @media (prefers-reduced-motion:reduce) { *,*::before,*::after{animation:none!important;transition:none!important} .reveal{opacity:1;transform:none} }
+    /* HEADER */
+    .app-header { position:sticky; top:0; z-index:200; background:var(--bg); border-bottom:1px solid var(--border); padding:10px 20px; display:flex; align-items:center; gap:14px; backdrop-filter:blur(16px); }
+    .app-logo { display:flex; align-items:center; gap:8px; white-space:nowrap; }
+    .app-logo-flag { font-size:1.6rem; line-height:1; }
+    .app-logo-text h1 { font-size:1.05rem; font-weight:700; letter-spacing:-0.02em; }
+    .app-logo-text .dates { font-size:0.72rem; color:var(--text-secondary); font-weight:400; }
+    .app-header .view-tabs { position:absolute; left:50%; transform:translateX(-50%); }
+    .view-tabs { display:flex; gap:3px; background:var(--surface); padding:3px; border-radius:10px; border:1px solid var(--border); }
+    .view-tab { padding:5px 13px; border-radius:7px; border:none; background:transparent; color:var(--text-secondary); font-family:inherit; font-size:0.82rem; font-weight:500; cursor:pointer; transition:all 0.2s; white-space:nowrap; }
+    .view-tab.active { background:var(--accent); color:white; }
+    .view-tab:hover:not(.active) { background:var(--surface-hover); color:var(--text); }
+    .save-indicator { font-size:0.7rem; color:var(--text-secondary); opacity:0; transition:opacity 0.3s; white-space:nowrap; margin-left:auto; }
+    .save-indicator.saving { opacity:1; color:var(--warning); }
+    .save-indicator.saved { opacity:1; color:var(--positive); }
+    .save-indicator.error { opacity:1; color:var(--negative); }
+    /* Loading overlay */
+    .loading-screen { position:fixed; inset:0; background:var(--bg); z-index:9000; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:12px; }
+    .loading-screen .spinner { width:32px; height:32px; border:3px solid var(--border-strong); border-top-color:var(--accent); border-radius:50%; animation:spin 0.8s linear infinite; }
+    @keyframes spin { to{transform:rotate(360deg)} }
+    .loading-screen p { font-size:0.85rem; color:var(--text-secondary); }
+    /* VIEWS */
+    .view { display:none; }
+    .view.active { display:block; }
+    #view-map.active { display:flex; }
+    /* CALENDAR */
+    .cal-scroll-outer { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+    .cal-wrap { min-width:1100px; }
+    .cal-header-row { display:grid; grid-template-columns:58px repeat(5,1fr); border-bottom:1px solid var(--border); position:sticky; top:57px; z-index:100; background:var(--bg); }
+    .cal-header-time { padding:10px 0; }
+    .cal-day-header { padding:10px 12px; border-left:1px solid var(--border); }
+    .cal-day-date { font-size:0.95rem; font-weight:700; display:flex; align-items:center; gap:6px; }
+    .cal-day-dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+    .cal-day-theme { font-size:0.7rem; color:var(--text-secondary); margin-top:2px; }
+    .cal-day-add { display:inline-flex; align-items:center; gap:3px; font-size:0.68rem; color:var(--text-secondary); background:var(--surface); border:1px solid var(--border); border-radius:4px; padding:2px 6px; cursor:pointer; margin-top:5px; font-family:inherit; transition:all 0.2s; }
+    .cal-day-add:hover { border-color:var(--accent); color:var(--accent); }
+    .cal-body-row { display:grid; grid-template-columns:58px repeat(5,1fr); padding:8px 0; }
+    .cal-time-col { padding-right:6px; }
+    .cal-time-slot { height:64px; display:flex; align-items:flex-start; padding-top:3px; font-size:0.68rem; color:var(--text-secondary); text-align:right; justify-content:flex-end; padding-right:8px; white-space:nowrap; }
+    .cal-day-col { position:relative; border-left:1px solid var(--border); height:calc(16 * 64px); cursor:crosshair; }
+    .cal-day-col:hover::after { content:'+ 위시리스트에서 추가'; position:absolute; bottom:6px; left:0; right:0; text-align:center; font-size:0.6rem; color:var(--border-strong); pointer-events:none; }
+    .hour-line { position:absolute; left:0; right:0; border-top:1px dashed var(--border); pointer-events:none; }
+    .cal-event { position:absolute; border-radius:6px; padding:5px 7px; cursor:pointer; overflow:hidden; transition:filter 0.2s,transform 0.15s; border-left:3px solid; box-shadow:0 1px 4px rgba(0,0,0,0.15); }
+    .cal-event:hover { filter:brightness(1.1); transform:scaleX(1.02); z-index:10!important; }
+    .cal-event.optional { opacity:0.6; border-style:dashed; }
+    .cal-event-time { font-size:0.62rem; font-weight:600; opacity:0.85; }
+    .cal-event-title { font-size:0.77rem; font-weight:700; line-height:1.25; margin-top:1px; }
+    .cal-event-sub { font-size:0.67rem; opacity:0.8; margin-top:1px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .cal-badge { display:inline-block; font-size:0.58rem; padding:1px 4px; border-radius:3px; margin-top:3px; font-weight:500; background:rgba(255,255,255,0.18); }
+    /* WISHLIST */
+    .wishlist-view { max-width:860px; margin:0 auto; padding:28px 20px 120px; }
+    .wl-toolbar { display:flex; flex-direction:column; gap:10px; margin-bottom:22px; }
+    .wl-toolbar-top { display:flex; align-items:center; }
+    .wl-filter-rows { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+    .wl-filter-group { display:flex; gap:5px; flex-wrap:wrap; align-items:center; }
+    .wl-title { font-size:1.3rem; font-weight:700; }
+    .wl-count { font-size:0.8rem; color:var(--text-secondary); margin-left:8px; }
+    .wl-filter { padding:4px 11px; border-radius:14px; font-size:0.76rem; font-weight:500; border:1px solid var(--border); background:transparent; cursor:pointer; font-family:inherit; color:var(--text-secondary); transition:all 0.2s; }
+    .wl-filter.active { background:var(--accent); color:white; border-color:transparent; }
+    .wl-filter:hover:not(.active) { border-color:var(--accent); color:var(--accent); }
+    .wl-filter.status-btn.active { background:#6366f1; border-color:transparent; }
+    .wl-filter.status-btn:hover:not(.active) { border-color:#6366f1; color:#6366f1; }
+    .wl-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:14px; }
+    .wl-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px 18px; cursor:pointer; transition:box-shadow 0.2s,border-color 0.2s; display:flex; flex-direction:column; gap:6px; }
+    .wl-card:hover { box-shadow:0 4px 20px rgba(0,0,0,0.12); border-color:var(--border-strong); }
+    .wl-card.visited { opacity:0.65; }
+    .wl-card-top { display:flex; align-items:flex-start; gap:10px; }
+    .wl-card-icon { width:36px; height:36px; border-radius:9px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:16px; }
+    .wl-card-info { flex:1; min-width:0; }
+    .wl-card-name { font-size:0.95rem; font-weight:700; line-height:1.3; }
+    .wl-card-sub { font-size:0.78rem; color:var(--text-secondary); margin-top:2px; }
+    .wl-card-badges { display:flex; gap:5px; flex-wrap:wrap; align-items:center; }
+    .wl-badge { display:inline-flex; align-items:center; gap:3px; font-size:0.67rem; padding:2px 7px; border-radius:10px; font-weight:500; }
+    .wl-card-bottom { display:flex; align-items:center; justify-content:space-between; margin-top:4px; }
+    .wl-maps-link { display:inline-flex; align-items:center; gap:4px; font-size:0.73rem; color:var(--accent); text-decoration:none; padding:3px 8px; border-radius:6px; border:1px solid var(--accent); transition:all 0.2s; white-space:nowrap; }
+    .wl-maps-link:hover { background:var(--accent); color:white; }
+    .wl-visited-toggle { display:inline-flex; align-items:center; gap:4px; font-size:0.72rem; background:none; border:1px solid var(--border); border-radius:6px; padding:3px 8px; cursor:pointer; color:var(--text-secondary); font-family:inherit; transition:all 0.2s; }
+    .wl-visited-toggle:hover { border-color:var(--accent); color:var(--accent); }
+    .wl-card.visited .wl-visited-toggle.adjust { border-color:var(--positive); color:var(--positive); background:rgba(16,185,129,0.1); }
+    .wl-time-remove { color:var(--warning)!important; border-color:rgba(245,158,11,0.4)!important; }
+    .wl-time-remove:hover { background:rgba(245,158,11,0.1)!important; border-color:var(--warning)!important; }
+    .wl-del-btn { color:#ef4444!important; border-color:#ef444460!important; }
+    .wl-del-btn:hover { background:#ef444415!important; border-color:#ef4444!important; }
+    .wl-empty { text-align:center; padding:60px 20px; color:var(--text-secondary); grid-column:1/-1; }
+    .wl-empty-icon { font-size:3rem; margin-bottom:12px; }
+    /* MODAL */
+    .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:1000; display:flex; align-items:center; justify-content:center; padding:20px; opacity:0; visibility:hidden; transition:all 0.25s; }
+    .modal-overlay.open { opacity:1; visibility:visible; }
+    .modal { background:var(--surface); border:1px solid var(--border-strong); border-radius:16px; padding:26px; width:100%; max-width:460px; transform:translateY(18px); transition:transform 0.3s; max-height:90vh; overflow-y:auto; }
+    .modal-overlay.open .modal { transform:translateY(0); }
+    .modal-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; }
+    .modal-head h2 { font-size:1.1rem; font-weight:700; }
+    .modal-close { width:30px; height:30px; border-radius:7px; background:var(--surface-hover); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--text); font-size:16px; transition:background 0.2s; }
+    .modal-close:hover { background:var(--border-strong); }
+    .form-group { margin-bottom:14px; }
+    .form-label { display:block; font-size:0.78rem; font-weight:600; color:var(--text-secondary); margin-bottom:5px; }
+    .form-input { width:100%; padding:9px 11px; border-radius:7px; border:1px solid var(--border-strong); background:var(--bg); color:var(--text); font-family:inherit; font-size:0.88rem; transition:border-color 0.2s; }
+    .form-input:focus { outline:none; border-color:var(--accent); }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .form-checkbox-row { display:flex; align-items:center; gap:8px; }
+    .form-checkbox-row input { width:15px; height:15px; cursor:pointer; accent-color:var(--accent); }
+    .form-checkbox-row label { font-size:0.86rem; cursor:pointer; }
+    .modal-actions { display:flex; gap:7px; justify-content:flex-end; margin-top:22px; }
+    .btn { padding:8px 16px; border-radius:7px; font-family:inherit; font-size:0.85rem; font-weight:500; cursor:pointer; border:none; transition:opacity 0.2s; }
+    .btn:hover { opacity:0.82; }
+    .btn-primary { background:var(--accent); color:white; }
+    .btn-secondary { background:var(--surface-hover); color:var(--text); }
+    .btn-danger { background:var(--negative); color:white; margin-right:auto; }
+    /* SCHEDULE MODAL */
+    .sched-modal-box { background:var(--surface); border-radius:16px; width:520px; max-width:96vw; max-height:88vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 24px 80px rgba(0,0,0,0.45); }
+    .sched-header { display:flex; align-items:flex-start; justify-content:space-between; padding:18px 20px 12px; border-bottom:1px solid var(--border); gap:12px; }
+    .sched-title { font-size:1rem; font-weight:700; }
+    .sched-item-name { font-size:0.82rem; color:var(--text-secondary); margin-top:2px; }
+    .sched-days { display:flex; gap:6px; padding:12px 20px; flex-wrap:wrap; border-bottom:1px solid var(--border); }
+    .sched-day-btn { padding:5px 10px; border-radius:10px; font-size:0.72rem; font-weight:600; border:1px solid var(--border); background:transparent; cursor:pointer; font-family:inherit; color:var(--text-secondary); transition:all 0.2s; text-align:center; line-height:1.4; }
+    .sched-day-btn:hover:not(.active) { border-color:var(--accent); color:var(--accent); }
+    .sched-time-row { display:flex; gap:16px; padding:12px 20px; align-items:center; border-bottom:1px solid var(--border); }
+    .sched-time-group { display:flex; align-items:center; gap:7px; }
+    .sched-time-group label { font-size:0.75rem; color:var(--text-secondary); font-weight:600; white-space:nowrap; }
+    .sched-time-inputs { display:flex; align-items:center; gap:4px; }
+    .sched-time-inputs input[type=number],.sched-time-inputs select,.sched-time-group select { background:var(--bg); border:1px solid var(--border); border-radius:7px; color:var(--text); font-family:inherit; font-size:0.82rem; padding:4px 7px; }
+    .sched-time-inputs input[type=number] { width:52px; }
+    .sched-cal { overflow-y:auto; flex:1; }
+    .sched-cal-inner { position:relative; margin:0 20px; }
+    .sched-cal-hr { position:absolute; left:0; right:0; height:44px; border-top:1px solid var(--border); display:flex; align-items:flex-start; }
+    .sched-cal-hr-label { font-size:0.62rem; color:var(--text-secondary); padding:2px 0 0 0; min-width:36px; }
+    .sched-ev-block { position:absolute; left:40px; right:4px; border-radius:5px; padding:3px 6px; overflow:hidden; pointer-events:none; }
+    .sched-new-block { position:absolute; left:40px; right:4px; border-radius:7px; background:var(--accent); color:white; padding:5px 8px; cursor:grab; user-select:none; box-shadow:0 3px 14px rgba(0,0,0,0.25); border:2px solid rgba(255,255,255,0.3); overflow:hidden; }
+    .sched-new-block:active { cursor:grabbing; }
+    .sched-resize-handle { position:absolute; bottom:0; right:0; padding:1px 5px; font-size:0.7rem; cursor:ns-resize; opacity:0.6; line-height:1; }
+    .sched-footer { display:flex; align-items:center; justify-content:space-between; padding:12px 20px; border-top:1px solid var(--border); gap:10px; }
+    .sched-footer-right { display:flex; gap:8px; }
+    .sched-del-btn { background:none; border:1px solid var(--border); border-radius:8px; padding:7px 13px; font-size:0.8rem; cursor:pointer; font-family:inherit; color:#ef4444; transition:all 0.2s; }
+    .sched-del-btn:hover { background:#ef444415; border-color:#ef4444; }
+    .sched-cancel-btn { background:none; border:1px solid var(--border); border-radius:8px; padding:7px 14px; font-size:0.8rem; cursor:pointer; font-family:inherit; color:var(--text); transition:all 0.2s; }
+    .sched-cancel-btn:hover { border-color:var(--accent); }
+    .sched-save-btn { background:var(--accent); color:white; border:none; border-radius:8px; padding:7px 18px; font-size:0.8rem; font-weight:700; cursor:pointer; font-family:inherit; transition:all 0.2s; }
+    .sched-save-btn:hover { filter:brightness(1.1); }
+    /* CAL PICK */
+    .cal-pick-list { display:flex; flex-direction:column; gap:5px; max-height:360px; overflow-y:auto; margin-top:10px; }
+    .cal-pick-item { display:flex; align-items:center; gap:10px; padding:10px 12px; border:1px solid var(--border); border-radius:9px; background:transparent; cursor:pointer; font-family:inherit; text-align:left; transition:all 0.15s; width:100%; color:var(--text); }
+    .cal-pick-item:hover { background:var(--surface-hover); border-color:var(--accent); }
+    .cal-pick-icon { width:34px; height:34px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+    .cal-pick-info { flex:1; min-width:0; }
+    .cal-pick-name { font-size:0.9rem; font-weight:600; }
+    .cal-pick-sub { font-size:0.75rem; color:var(--text-secondary); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-top:1px; }
+    .cal-pick-cat { font-size:0.68rem; padding:2px 7px; border-radius:8px; flex-shrink:0; }
+    /* VIZ MENU */
+    .viz-menu { position:fixed; top:12px; right:14px; z-index:9999; }
+    .viz-menu-toggle { width:40px; height:40px; border-radius:10px; background:var(--surface); border:1px solid var(--border); color:var(--text); cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(12px); transition:all 0.2s; }
+    .viz-menu-toggle:hover { background:var(--surface-hover); }
+    .viz-menu-dropdown { position:absolute; top:48px; right:0; min-width:190px; background:var(--surface); border:1px solid var(--border); border-radius:11px; padding:6px; opacity:0; visibility:hidden; transform:translateY(-6px); transition:all 0.2s; }
+    .viz-menu-dropdown.open { opacity:1; visibility:visible; transform:translateY(0); }
+    .viz-menu-dropdown button { width:100%; padding:9px 12px; border:none; border-radius:7px; background:transparent; color:var(--text); font-size:13px; font-family:inherit; cursor:pointer; text-align:left; display:flex; align-items:center; gap:9px; transition:background 0.15s; }
+    .viz-menu-dropdown button:hover { background:var(--surface-hover); }
+    /* MAP */
+    .map-view { height:calc(100vh - 57px); overflow:hidden; }
+    .map-sidebar { width:300px; min-width:260px; overflow-y:auto; border-right:1px solid var(--border); padding:14px; background:var(--bg); flex-shrink:0; }
+    .map-main { flex:1; position:relative; min-height:0; min-width:0; }
+    #leaflet-map { position:absolute; top:0; left:0; right:0; bottom:0; width:100%; height:100%; }
+    .leaflet-popup-content-wrapper { border-radius:10px!important; }
+    .leaflet-popup-content { font-family:'Noto Sans KR',sans-serif!important; margin:10px 14px!important; }
+    html.theme-dark .leaflet-popup-content-wrapper { background:#1e1e1e!important; color:#ededed!important; border:1px solid rgba(255,255,255,0.1)!important; }
+    html.theme-dark .leaflet-popup-tip { background:#1e1e1e!important; }
+    .map-filter-row { display:flex; flex-wrap:wrap; gap:4px; margin-bottom:14px; }
+    .map-filter-btn { padding:3px 9px; border-radius:14px; font-size:0.73rem; font-weight:500; border:1px solid var(--border); background:transparent; cursor:pointer; font-family:inherit; color:var(--text-secondary); transition:all 0.2s; }
+    .map-filter-btn.active { color:white; border-color:transparent; }
+    .map-group-title { font-size:0.78rem; font-weight:700; padding:5px 8px; border-radius:5px; margin-bottom:6px; display:flex; align-items:center; gap:5px; }
+    .map-event-row { display:flex; align-items:center; gap:8px; padding:7px 9px; border-radius:6px; cursor:pointer; transition:background 0.15s; margin-bottom:2px; }
+    .map-event-row:hover { background:var(--surface-hover); }
+    .map-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+    .map-event-time { font-size:0.68rem; color:var(--text-secondary); white-space:nowrap; }
+    .map-event-name { font-size:0.8rem; font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .map-group { margin-bottom:18px; }
+    /* FAB */
+    .fab { position:fixed; bottom:28px; right:28px; z-index:500; width:56px; height:56px; border-radius:50%; background:var(--accent); color:white; border:none; font-size:26px; cursor:pointer; box-shadow:0 4px 16px rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:center; transition:transform 0.2s,box-shadow 0.2s; }
+    .fab:hover { transform:scale(1.08); box-shadow:0 6px 24px rgba(0,0,0,0.35); }
+    .fab:active { transform:scale(0.95); }
+    .fab-label { position:fixed; bottom:38px; right:90px; z-index:500; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:5px 10px; font-size:0.78rem; color:var(--text); white-space:nowrap; pointer-events:none; opacity:0; transition:opacity 0.2s; box-shadow:0 2px 8px rgba(0,0,0,0.15); }
+    .fab:hover + .fab-label { opacity:1; }
+    @media print { body{background:white!important;color:black!important} .viz-menu,.app-header,.modal-overlay,.loading-screen{display:none!important} .view{display:block!important} #view-map{display:none!important} .cal-scroll-outer{overflow:visible} }
+    @media (max-width:375px) { .map-view{flex-direction:column;height:auto} .map-sidebar{width:100%;min-width:100%;height:240px;border-right:none;border-bottom:1px solid var(--border)} .map-main{height:400px} }
+
+    /* ===== MOBILE MAP OVERLAY ===== */
+    .map-mob-tabs,.map-mob-sheet { display:none; }
+    @media (max-width:768px) {
+      .map-sidebar { display:none; }
+      /* Day tab pills */
+      .map-mob-tabs {
+        display:flex; gap:8px; position:absolute; top:12px; left:12px; right:54px; z-index:500;
+        overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none;
+      }
+      .map-mob-tabs::-webkit-scrollbar { display:none; }
+      .map-mob-tab {
+        flex-shrink:0; padding:7px 16px; border-radius:20px; border:none;
+        font-family:inherit; font-size:0.82rem; font-weight:700; cursor:pointer;
+        white-space:nowrap; transition:all 0.18s;
+        background:rgba(18,18,18,0.78); color:rgba(255,255,255,0.7);
+        backdrop-filter:blur(10px); box-shadow:0 2px 10px rgba(0,0,0,0.3);
+      }
+      html.theme-light .map-mob-tab { background:rgba(255,255,255,0.85); color:rgba(0,0,0,0.6); }
+      .map-mob-tab.active { background:#fff; color:#111; box-shadow:0 2px 14px rgba(0,0,0,0.35); }
+      html.theme-light .map-mob-tab.active { background:#111; color:#fff; }
+      /* Bottom sheet */
+      .map-mob-sheet {
+        display:block; position:absolute; bottom:0; left:0; right:0; z-index:500;
+        background:var(--surface); border-radius:20px 20px 0 0;
+        box-shadow:0 -4px 28px rgba(0,0,0,0.28);
+        padding:10px 16px 24px;
+      }
+      .map-mob-handle { width:36px; height:4px; border-radius:2px; background:var(--border-strong); margin:0 auto 14px; }
+      .map-mob-label { font-size:0.62rem; font-weight:700; letter-spacing:0.12em; color:var(--text-secondary); text-transform:uppercase; margin-bottom:3px; }
+      .map-mob-title-row { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-bottom:12px; }
+      .map-mob-title { font-size:1.1rem; font-weight:800; letter-spacing:-0.02em; flex:1; min-width:0; line-height:1.3; }
+      .map-mob-btns { display:flex; gap:6px; flex-shrink:0; }
+      .map-mob-btn {
+        width:38px; height:38px; border-radius:10px; border:1px solid var(--border);
+        background:var(--surface-hover); color:var(--text); cursor:pointer;
+        display:flex; align-items:center; justify-content:center; transition:all 0.2s;
+      }
+      .map-mob-btn:hover { border-color:var(--accent); color:var(--accent); }
+      /* Event cards row */
+      .map-mob-cards {
+        display:flex; gap:10px;
+        overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none;
+        padding-bottom:2px;
+      }
+      .map-mob-cards::-webkit-scrollbar { display:none; }
+      .map-mob-card {
+        flex-shrink:0; width:160px; border-radius:14px;
+        background:var(--bg); border:1px solid var(--border);
+        display:flex; align-items:center; gap:10px;
+        padding:10px 12px; cursor:pointer; transition:all 0.18s;
+      }
+      .map-mob-card:hover { border-color:var(--border-strong); transform:translateY(-1px); }
+      .map-mob-card-thumb {
+        width:44px; height:44px; border-radius:10px; flex-shrink:0;
+        display:flex; align-items:center; justify-content:center; font-size:1.4rem;
+      }
+      .map-mob-card-info { flex:1; min-width:0; }
+      .map-mob-card-time { font-size:0.65rem; color:var(--text-secondary); font-weight:600; margin-bottom:2px; }
+      .map-mob-card-name { font-size:0.8rem; font-weight:700; line-height:1.25; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    }
+    @media (max-width:768px) { .app-header{padding:9px 12px;gap:10px} .view-tab{padding:4px 9px;font-size:0.78rem} .map-sidebar{width:240px} }
+  </style>
+</head>
+<body>
+  <!-- Loading screen shown while Firebase data loads -->
+  <div class="loading-screen" id="loadingScreen">
+    <div class="spinner"></div>
+    <p>데이터 불러오는 중…</p>
+  </div>
+
+  <a href="#main-content" style="position:absolute;left:-9999px;top:auto;z-index:10000;padding:8px 14px;background:var(--accent);color:white;text-decoration:none;border-radius:5px;" onfocus="this.style.left='14px';this.style.top='14px';" onblur="this.style.left='-9999px';">Skip to content</a>
+  <div class="viz-menu" role="navigation" aria-label="Settings">
+    <button class="viz-menu-toggle" onclick="toggleMenu()" aria-label="메뉴">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <line x1="3" y1="5" x2="17" y2="5"/><line x1="3" y1="10" x2="17" y2="10"/><line x1="3" y1="15" x2="17" y2="15"/>
+      </svg>
+    </button>
+    <div class="viz-menu-dropdown" id="vizMenuDropdown">
+      <button onclick="cycleTheme()"><span id="themeIcon">🌙</span><span id="themeLabel">다크모드</span></button>
+      <button onclick="downloadImage()"><span>📥</span><span>PNG 저장</span></button>
+      <button onclick="window.print()"><span>🖨️</span><span>인쇄 / PDF</span></button>
+    </div>
+  </div>
+  <header class="app-header animate">
+    <div class="app-logo">
+      <span class="app-logo-flag">🇲🇽</span>
+      <div class="app-logo-text">
+        <h1>멕시코시티</h1>
+        <div class="dates">3월 17일(화) ~ 21일(토) · 5일</div>
+      </div>
+    </div>
+    <div class="view-tabs" role="tablist">
+      <button class="view-tab active" onclick="switchView('calendar')" role="tab" aria-selected="true">📅 캘린더</button>
+      <button class="view-tab" onclick="switchView('map')" role="tab" aria-selected="false">🗺️ 지도</button>
+      <button class="view-tab" onclick="switchView('wishlist')" role="tab" aria-selected="false">⭐ 위시리스트</button>
+    </div>
+    <span class="save-indicator" id="saveIndicator"></span>
+  </header>
+  <main id="main-content">
+    <section id="view-calendar" class="view active" role="tabpanel">
+      <div class="cal-scroll-outer"><div class="cal-wrap">
+        <div class="cal-header-row" id="calHeaderRow"></div>
+        <div class="cal-body-row" id="calBodyRow"></div>
+      </div></div>
+    </section>
+    <section id="view-wishlist" class="view" role="tabpanel">
+      <div class="wishlist-view" id="wishlistContent"></div>
+    </section>
+    <section id="view-map" class="view map-view" role="tabpanel">
+      <div class="map-sidebar" id="mapSidebar">
+        <div class="map-filter-row" id="mapFilterRow"></div>
+        <div id="mapEventList"></div>
+      </div>
+      <div class="map-main">
+        <div id="leaflet-map"></div>
+        <div class="map-mob-tabs" id="mapMobTabs"></div>
+        <div class="map-mob-sheet" id="mapMobSheet"></div>
+      </div>
+    </section>
+  </main>
+  <button class="fab" onclick="openWishAdd()" aria-label="위시리스트에 추가">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+  </button>
+  <span class="fab-label">위시리스트 추가</span>
+
+  <!-- WISHLIST MODAL -->
+  <div class="modal-overlay" id="wishModal" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-head"><h2 id="wishModalTitle">위시리스트 추가</h2><button class="modal-close" onclick="closeWishModal()">✕</button></div>
+      <form id="wishForm" onsubmit="saveWishItem(event)">
+        <div class="form-group"><label class="form-label" for="wishMapsUrl">구글맵 링크 <span style="color:var(--text-secondary);font-weight:400">(붙여넣으면 자동 파싱)</span></label><input type="url" class="form-input" id="wishMapsUrl" placeholder="https://maps.app.goo.gl/..." oninput="parseGmapsUrl(this.value)"></div>
+        <div class="form-group"><label class="form-label" for="wishName">장소 이름 <span style="color:var(--negative)">*</span></label><input type="text" class="form-input" id="wishName" required placeholder="예: Contramar"></div>
+        <div class="form-group"><label class="form-label" for="wishNotes">메모</label><input type="text" class="form-input" id="wishNotes" placeholder="가고 싶은 이유, 영업시간 등"></div>
+        <div class="form-group"><label class="form-label" for="wishCategory">카테고리</label><select class="form-input" id="wishCategory"><option value="food">🍽️ 음식</option><option value="bar">🍹 바/음료</option><option value="culture">🏛️ 문화/관광</option><option value="hotel">🏨 호텔</option><option value="conference">💼 비즈니스</option><option value="transport">✈️ 교통</option><option value="other">📍 기타</option></select></div>
+        <div class="modal-actions"><button type="button" class="btn btn-danger" id="wishDeleteBtn" onclick="deleteWishItem()" style="display:none">삭제</button><button type="button" class="btn btn-secondary" onclick="closeWishModal()">취소</button><button type="submit" class="btn btn-primary" id="wishSaveBtn">추가</button></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- SCHEDULE MODAL -->
+  <div class="modal-overlay" id="schedModal" onclick="closeSchedModal()">
+    <div class="sched-modal-box" onclick="event.stopPropagation()"><div id="schedModalInner"></div></div>
+  </div>
+
+  <!-- EDIT MODAL -->
+  <div class="modal-overlay" id="editModal" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-head"><h2>일정 수정</h2><button class="modal-close" onclick="closeEditModal()">✕</button></div>
+      <form id="editForm" onsubmit="saveEditEvent(event)">
+        <div class="form-row"><div class="form-group"><label class="form-label">시작 시간</label><input type="time" class="form-input" id="editTime" required></div><div class="form-group"><label class="form-label">종료 시간</label><input type="time" class="form-input" id="editEndTime"></div></div>
+        <div class="form-group"><label class="form-label">이벤트 이름</label><input type="text" class="form-input" id="editTitle" required placeholder="장소 또는 이벤트명"></div>
+        <div class="form-group"><label class="form-label">설명</label><input type="text" class="form-input" id="editSubtitle" placeholder="장소 설명"></div>
+        <div class="form-group"><label class="form-label">메모</label><input type="text" class="form-input" id="editNotes" placeholder="예약 여부, 주의사항 등"></div>
+        <div class="form-group"><label class="form-label">카테고리</label><select class="form-input" id="editCategory"><option value="food">🍽️ 음식</option><option value="bar">🍹 바/음료</option><option value="culture">🏛️ 문화/관광</option><option value="hotel">🏨 호텔</option><option value="conference">💼 비즈니스</option><option value="transport">✈️ 교통</option><option value="other">📍 기타</option></select></div>
+        <div class="form-group"><div class="form-checkbox-row"><input type="checkbox" id="editOptional"><label for="editOptional">선택 일정 (optional)</label></div></div>
+        <div class="modal-actions"><button type="button" class="btn btn-danger" onclick="deleteCurrentEvent()">삭제</button><button type="button" class="btn btn-secondary" onclick="closeEditModal()">취소</button><button type="submit" class="btn btn-primary">저장</button></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- CAL PICK MODAL -->
+  <div class="modal-overlay" id="calPickModal" onclick="closeCalPickModal()">
+    <div class="modal" onclick="event.stopPropagation()" style="max-width:420px">
+      <div class="modal-head"><h2 id="calPickTitle" style="font-size:0.95rem">일정 추가</h2><button class="modal-close" onclick="closeCalPickModal()">✕</button></div>
+      <div id="calPickContent"></div>
+    </div>
+  </div>
+
+  <script>
+    // ==================== FIREBASE ====================
+    const firebaseConfig = {
+      apiKey: "AIzaSyBorY6UphXhcsSVQbbjJC8AT-lyWlQ1OHY",
+      authDomain: "mexico-trip-c5644.firebaseapp.com",
+      projectId: "mexico-trip-c5644",
+      storageBucket: "mexico-trip-c5644.firebasestorage.app",
+      messagingSenderId: "580916268978",
+      appId: "1:580916268978:web:906f524d9c21e730685eab",
+      measurementId: "G-NT03YRVT2H"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const DOC_REF = db.collection('travel').doc('mexico');
+
+    // ==================== SEED DATA (used if Firestore doc is empty) ====================
+    const SEED_DAYS = [
+      { id:'d1', date:'3/17 (화)', dateShort:'17', dayName:'화', theme:'도착 & Roma Norte', color:'#f97316',
+        events:[
+          {id:'e1a',time:'14:00',endTime:'15:30',title:'호텔 체크인',subtitle:'Andaz Condesa',notes:'',category:'hotel',optional:false,lat:19.4133,lng:-99.1711},
+          {id:'e1b',time:'15:30',endTime:'17:00',title:'Mercado Roma',subtitle:'로컬 푸드홀, 다양한 멕시칸 스트리트 푸드',notes:'',category:'food',optional:false,lat:19.4175,lng:-99.1645},
+          {id:'e1c',time:'17:00',endTime:'17:40',title:'Taquería Álvaro Obregón',subtitle:'30년 로컬 타코집, 알 파스토르 필수',notes:'',category:'food',optional:false,lat:19.4170,lng:-99.1635},
+          {id:'e1d',time:'17:40',endTime:'19:00',title:'Tlecan',subtitle:'세계 20위 바, 희귀 멕시칸 스피릿 전문',notes:'',category:'bar',optional:false,lat:19.4171,lng:-99.1638},
+          {id:'e1e',time:'19:00',endTime:'21:00',title:'Balmori Rooftop',subtitle:'Roma Norte 루프탑 파티',notes:'',category:'bar',optional:true,lat:19.4180,lng:-99.1620}
+        ]
+      },
+      { id:'d2', date:'3/18 (수)', dateShort:'18', dayName:'수', theme:'컨퍼런스', color:'#6366f1',
+        events:[
+          {id:'e2a',time:'10:30',endTime:'20:00',title:'컨퍼런스',subtitle:'General Prim 30',notes:'10:30 ~ 저녁',category:'conference',optional:false,lat:19.4249,lng:-99.1572},
+          {id:'e2b',time:'20:30',endTime:'22:30',title:'Taquería Orinoco',subtitle:'알 파스토르 맛집, 새벽 3시까지',notes:'',category:'food',optional:false,lat:19.4171,lng:-99.1646}
+        ]
+      },
+      { id:'d3', date:'3/19 (목)', dateShort:'19', dayName:'목', theme:'오전 업무 / 오후 Centro', color:'#10b981',
+        events:[
+          {id:'e3a',time:'11:40',endTime:'13:30',title:'Contramar',subtitle:'멕시코시티 최고 해산물, 워크인',notes:'',category:'food',optional:false,lat:19.4177,lng:-99.1650},
+          {id:'e3b',time:'15:00',endTime:'16:45',title:'Palacio de Bellas Artes',subtitle:'아르데코 건축 + 디에고 리베라 벽화',notes:'',category:'culture',optional:false,lat:19.4355,lng:-99.1414},
+          {id:'e3c',time:'16:45',endTime:'18:00',title:'Zócalo',subtitle:'멕시코시티 중심 광장, 대성당 인접',notes:'',category:'culture',optional:false,lat:19.4326,lng:-99.1332},
+          {id:'e3d',time:'18:00',endTime:'19:30',title:'Los Cocuyos',subtitle:'소칼로 옆 24시간 타코, 다양한 부위',notes:'',category:'food',optional:false,lat:19.4320,lng:-99.1340}
+        ]
+      },
+      { id:'d4', date:'3/20 (금)', dateShort:'20', dayName:'금', theme:'풀 휴가', color:'#f59e0b',
+        events:[
+          {id:'e4a',time:'09:00',endTime:'11:00',title:'Biblioteca Vasconcelos',subtitle:'천장에 서가가 매달린 도서관, 무료',notes:'무료 입장',category:'culture',optional:false,lat:19.4488,lng:-99.1451},
+          {id:'e4b',time:'11:00',endTime:'12:30',title:'El Turix',subtitle:'Polanco 코치니타 피빌 전문',notes:'현금만 가능',category:'food',optional:false,lat:19.4327,lng:-99.1899},
+          {id:'e4c',time:'12:30',endTime:'14:30',title:'Museo Soumaya',subtitle:'카를로스 슬림 재단 미술관, 무료',notes:'낮에 외관 사진 필수, 무료',category:'culture',optional:false,lat:19.4399,lng:-99.2038},
+          {id:'e4d',time:'18:30',endTime:'20:30',title:'Azul Condesa',subtitle:'정통 멕시칸 파인다이닝, 호텔 도보 5분',notes:'예약완료 ✓',category:'food',optional:false,lat:19.4108,lng:-99.1728}
+        ]
+      },
+      { id:'d5', date:'3/21 (토)', dateShort:'21', dayName:'토', theme:'출발', color:'#64748b',
+        events:[
+          {id:'e5a',time:'08:00',endTime:'09:30',title:'호텔 조식',subtitle:'Andaz Condesa',notes:'',category:'hotel',optional:false,lat:19.4133,lng:-99.1711},
+          {id:'e5b',time:'09:30',endTime:'12:00',title:'Condesa 동네 산책',subtitle:'호텔 주변 자유 산책',notes:'',category:'other',optional:false,lat:19.4133,lng:-99.1711},
+          {id:'e5c',time:'12:30',endTime:'13:30',title:'공항 출발',subtitle:'우버 25~40분 소요',notes:'늦어도 12:30 출발!',category:'transport',optional:false,lat:19.4363,lng:-99.0718}
+        ]
+      }
+    ];
+    const SEED_WISHLIST = (function(){
+      var items=[];
+      SEED_DAYS.forEach(function(day){
+        day.events.forEach(function(ev){
+          if(ev.category==='transport')return;
+          items.push({id:'wl_'+ev.id,name:ev.title,notes:[ev.subtitle,ev.notes].filter(Boolean).join(' · '),category:ev.category,mapsUrl:'',lat:ev.lat||null,lng:ev.lng||null,visited:true,fromItinerary:true,dayLabel:day.date,calDayId:day.id,calEventId:ev.id});
+        });
+      });
+      return items;
+    })();
+
+    // ==================== CONSTANTS ====================
+    var CAT = {
+      food:{label:'음식',color:'#f97316',bg:'rgba(249,115,22,0.16)'},
+      bar:{label:'바/음료',color:'#a855f7',bg:'rgba(168,85,247,0.16)'},
+      culture:{label:'문화',color:'#10b981',bg:'rgba(16,185,129,0.16)'},
+      hotel:{label:'호텔',color:'#3b82f6',bg:'rgba(59,130,246,0.16)'},
+      conference:{label:'비즈니스',color:'#6366f1',bg:'rgba(99,102,241,0.16)'},
+      transport:{label:'교통',color:'#64748b',bg:'rgba(100,116,139,0.16)'},
+      other:{label:'기타',color:'#84cc16',bg:'rgba(132,204,22,0.16)'}
+    };
+    var CAT_ICONS={food:'🍽️',bar:'🍹',culture:'🏛️',hotel:'🏨',conference:'💼',transport:'✈️',other:'📍'};
+    var HOUR_PX=64,START_HR=8,END_HR=24,TOTAL_HRS=16;
+    var DAYS=[],WISHLIST=[];
+    var currentView='calendar',editingDayId=null,editingEvId=null,addingDayId=null;
+    var mapFilter='all',leafletMap=null,mapMarkers=[],tileLayer=null;
+    var mapMobDay=0; // mobile map: index of currently selected day
+    var wishCatFilter='all',wishStatusFilter='all',editingWishId=null;
+    var calPickDayId=null,calPickTime=null;
+
+    // ==================== FIREBASE PERSISTENCE ====================
+    const LS_KEY = 'mexico-travel-data';
+    function lsLoad() {
+      try { var s = localStorage.getItem(LS_KEY); return s ? JSON.parse(s) : null; } catch(e) { return null; }
+    }
+    function lsSave() {
+      try { localStorage.setItem(LS_KEY, JSON.stringify({ days: DAYS, wishlist: WISHLIST })); } catch(e) {}
+    }
+
+    async function loadData() {
+      try {
+        const timeout = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Firestore timeout')), 5000)
+        );
+        const snap = await Promise.race([DOC_REF.get(), timeout]);
+        const d = snap.exists ? snap.data() : null;
+        if (d && d.days && d.days.length > 0) {
+          DAYS = d.days;
+          WISHLIST = d.wishlist || [];
+          lsSave();
+          return;
+        }
+      } catch(e) {
+        console.warn('Firestore unavailable:', e.message);
+      }
+      // Try localStorage next
+      var cached = lsLoad();
+      if (cached && cached.days && cached.days.length > 0) {
+        DAYS = cached.days;
+        WISHLIST = cached.wishlist || [];
+        return;
+      }
+      // Fall back to seed data
+      DAYS = JSON.parse(JSON.stringify(SEED_DAYS));
+      WISHLIST = JSON.parse(JSON.stringify(SEED_WISHLIST));
+      lsSave();
+      try { DOC_REF.set({ days: DAYS, wishlist: WISHLIST }); } catch(e) {}
+    }
+
+    var saveTimer = null;
+    function scheduleSave() {
+      var i = document.getElementById('saveIndicator');
+      if (i) { i.textContent = '저장 중…'; i.className = 'save-indicator saving'; }
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(doSave, 1000);
+    }
+    async function doSave() {
+      var i = document.getElementById('saveIndicator');
+      lsSave();
+      try {
+        await DOC_REF.set({ days: DAYS, wishlist: WISHLIST });
+        if (i) { i.textContent = '저장됨 ✓'; i.className = 'save-indicator saved'; setTimeout(function(){ i.className='save-indicator'; }, 2000); }
+      } catch(e) {
+        console.error('Firestore save failed:', e);
+        if (i) { i.textContent = '저장됨 (로컬) ✓'; i.className = 'save-indicator saved'; setTimeout(function(){ i.className='save-indicator'; }, 2000); }
+      }
+    }
+
+    // ==================== UTILS ====================
+    function toMin(t){if(!t)return 0;var p=t.split(':');return parseInt(p[0])*60+parseInt(p[1]);}
+    function minToStr(m){var h=Math.floor(m/60),mm=m%60;return(h<10?'0':'')+h+':'+(mm<10?'0':'')+mm;}
+    function fmtTime(t){if(!t)return'';var p=t.split(':'),h=parseInt(p[0]),m=p[1];return(h%12||12)+':'+m+(h>=12?'PM':'AM');}
+    function evTop(t){return((toMin(t)-START_HR*60)/60)*HOUR_PX;}
+    function evH(s,e){if(!e)return HOUR_PX;return(Math.max(toMin(e)-toMin(s),30)/60)*HOUR_PX;}
+    function genId(){return'e'+Date.now()+Math.random().toString(36).slice(2,6);}
+    function getDay(id){return DAYS.find(function(d){return d.id===id;});}
+    function getEv(did,eid){var d=getDay(did);return d?d.events.find(function(e){return e.id===eid;}):null;}
+    function sortEvs(evs){return evs.slice().sort(function(a,b){return toMin(a.time)-toMin(b.time);});}
+
+    // ==================== OVERLAP LAYOUT ====================
+    function computeEventLayout(events){
+      var sorted=sortEvs(events),colEnds=[],cols={};
+      sorted.forEach(function(ev){
+        var s=toMin(ev.time),e=ev.endTime?Math.max(toMin(ev.endTime),s+15):s+60,c=0;
+        while(c<colEnds.length&&colEnds[c]>s)c++;
+        if(c===colEnds.length)colEnds.push(0);
+        colEnds[c]=e;cols[ev.id]=c;
+      });
+      var result={};
+      sorted.forEach(function(ev){
+        var s=toMin(ev.time),e=ev.endTime?Math.max(toMin(ev.endTime),s+15):s+60,maxCol=cols[ev.id];
+        sorted.forEach(function(o){var os=toMin(o.time),oe=o.endTime?Math.max(toMin(o.endTime),os+15):os+60;if(os<e&&oe>s)maxCol=Math.max(maxCol,cols[o.id]);});
+        result[ev.id]={col:cols[ev.id],total:maxCol+1};
+      });
+      return result;
+    }
+
+    // ==================== VIEWS ====================
+    function switchView(v){
+      currentView=v;
+      document.querySelectorAll('.view').forEach(function(el){el.classList.remove('active');});
+      document.querySelectorAll('.view-tab').forEach(function(t){t.classList.remove('active');t.setAttribute('aria-selected','false');});
+      document.getElementById('view-'+v).classList.add('active');
+      var tabs=document.querySelectorAll('.view-tab'),idx=['calendar','map','wishlist'].indexOf(v);
+      if(idx>=0){tabs[idx].classList.add('active');tabs[idx].setAttribute('aria-selected','true');}
+      if(v==='calendar')renderCal();
+      if(v==='wishlist')renderWishlist();
+      if(v==='map'){renderMapUI();setTimeout(initMap,200);}
+    }
+    function rerender(){
+      if(currentView==='calendar')renderCal();
+      else if(currentView==='wishlist')renderWishlist();
+      else if(currentView==='map'){renderMapUI();if(leafletMap)rebuildMarkers();}
+      scheduleSave();
+    }
+
+    // ==================== CALENDAR ====================
+    function renderCal(){renderCalHeader();renderCalBody();}
+    function renderCalHeader(){
+      var el=document.getElementById('calHeaderRow'),h='<div class="cal-header-time"></div>';
+      DAYS.forEach(function(day){
+        h+='<div class="cal-day-header" style="border-left-color:'+day.color+'40"><div class="cal-day-date"><span class="cal-day-dot" style="background:'+day.color+'"></span><span>'+day.date+'</span></div><div class="cal-day-theme">'+day.theme+'</div><button class="cal-day-add" onclick="event.stopPropagation();openCalPickModal(\''+day.id+'\',null)">+ 추가</button></div>';
+      });
+      el.innerHTML=h;
+    }
+    function renderCalBody(){
+      var el=document.getElementById('calBodyRow'),h='<div class="cal-time-col">';
+      for(var hr=START_HR;hr<END_HR;hr++){var lbl=hr===12?'12PM':hr>12?(hr-12)+'PM':hr+'AM';h+='<div class="cal-time-slot">'+lbl+'</div>';}
+      h+='</div>';
+      DAYS.forEach(function(day){
+        var sorted=sortEvs(day.events),layout=computeEventLayout(day.events);
+        h+='<div class="cal-day-col" style="border-left-color:'+day.color+'25" onclick="onCalColClick(event,\''+day.id+'\')">';
+        for(var i=0;i<TOTAL_HRS;i++)h+='<div class="hour-line" style="top:'+(i*HOUR_PX)+'px"></div>';
+        sorted.forEach(function(ev){
+          var top=evTop(ev.time),height=Math.max(evH(ev.time,ev.endTime),46);
+          var cat=CAT[ev.category]||CAT.other,cls='cal-event'+(ev.optional?' optional':'');
+          var lyt=layout[ev.id]||{col:0,total:1};
+          var ps=lyt.total===1?'left:6px;right:6px;':'left:calc('+(lyt.col*100/lyt.total)+'% + 2px);width:calc('+(100/lyt.total)+'% - 4px);right:auto;';
+          h+='<div class="'+cls+'" style="top:'+top+'px;height:'+height+'px;background:'+cat.bg+';border-left-color:'+cat.color+';'+ps+'z-index:'+(lyt.col+2)+'" onclick="event.stopPropagation();openEdit(\''+day.id+'\',\''+ev.id+'\')" title="'+ev.title+'">';
+          h+='<div class="cal-event-time">'+fmtTime(ev.time)+(ev.endTime?'–'+fmtTime(ev.endTime):'')+'</div>';
+          h+='<div class="cal-event-title" style="color:'+cat.color+'">'+ev.title+'</div>';
+          if(height>58&&ev.subtitle)h+='<div class="cal-event-sub">'+ev.subtitle+'</div>';
+          if(ev.optional)h+='<span class="cal-badge">optional</span>';
+          if(ev.notes&&height>80)h+='<span class="cal-badge" style="background:rgba(245,158,11,0.25);color:#f59e0b;">'+ev.notes+'</span>';
+          h+='</div>';
+        });
+        h+='</div>';
+      });
+      el.innerHTML=h;
+    }
+    function onCalColClick(e,dayId){
+      if(e.target.closest('.cal-event')||e.target.closest('.cal-day-add'))return;
+      var rect=e.currentTarget.getBoundingClientRect();
+      var tm=Math.max(START_HR*60,Math.min((END_HR-1)*60,Math.round(((e.clientY-rect.top)/HOUR_PX+START_HR)*60/15)*15));
+      openCalPickModal(dayId,minToStr(tm));
+    }
+
+    // ==================== CAL PICK MODAL ====================
+    function openCalPickModal(dayId,time){
+      calPickDayId=dayId;calPickTime=time;
+      var day=getDay(dayId),tl=time?' · '+fmtTime(time):'';
+      document.getElementById('calPickTitle').textContent=(day?day.date:'')+tl+' 일정 추가';
+      var unscheduled=WISHLIST.filter(function(w){return!w.calEventId;}),h='';
+      if(unscheduled.length===0){
+        h='<div style="text-align:center;padding:32px 16px;color:var(--text-secondary)"><div style="font-size:2rem;margin-bottom:8px">⭐</div><div style="font-weight:600;margin-bottom:4px">추가 가능한 항목 없음</div><div style="font-size:0.82rem">하단 + 버튼으로 새 장소를 위시리스트에 추가하세요</div></div>';
+      } else {
+        h='<div style="font-size:0.78rem;color:var(--text-secondary)">추가할 장소 선택:</div><div class="cal-pick-list">';
+        unscheduled.forEach(function(w){
+          var cat=CAT[w.category]||CAT.other,icon=CAT_ICONS[w.category]||'📍';
+          h+='<button class="cal-pick-item" onclick="calPickSelect(\''+w.id+'\')"><div class="cal-pick-icon" style="background:'+cat.bg+'">'+icon+'</div><div class="cal-pick-info"><div class="cal-pick-name">'+w.name+'</div>'+(w.notes?'<div class="cal-pick-sub">'+w.notes+'</div>':'')+'</div><span class="cal-pick-cat" style="background:'+cat.bg+';color:'+cat.color+'">'+cat.label+'</span></button>';
+        });
+        h+='</div>';
+      }
+      document.getElementById('calPickContent').innerHTML=h;
+      document.getElementById('calPickModal').classList.add('open');
+    }
+    function closeCalPickModal(){document.getElementById('calPickModal').classList.remove('open');calPickDayId=null;calPickTime=null;}
+    function calPickSelect(wishId){
+      var pd=calPickDayId||(DAYS[0]&&DAYS[0].id),pm=calPickTime?toMin(calPickTime):10*60;
+      closeCalPickModal();
+      schedWishId=wishId;schedDayId=pd;schedStartMin=pm;schedDurMin=60;
+      renderSchedModal();document.getElementById('schedModal').classList.add('open');
+    }
+
+    // ==================== MAP ====================
+    function renderMapUI(){
+      var fr=document.getElementById('mapFilterRow');
+      var fh='<button class="map-filter-btn" onclick="setMapFilter(\'all\',this)" style="background:var(--accent);color:white;border-color:transparent">전체</button>';
+      DAYS.forEach(function(d){fh+='<button class="map-filter-btn" onclick="setMapFilter(\''+d.id+'\',this)">3/'+d.dateShort+'</button>';});
+      fr.innerHTML=fh;renderMapList();
+      renderMapMobTabs();renderMapMobSheet();
+    }
+
+    function renderMapMobTabs(){
+      var el=document.getElementById('mapMobTabs');if(!el)return;
+      el.innerHTML=DAYS.map(function(d,i){
+        return '<button class="map-mob-tab'+(i===mapMobDay?' active':'')+'" onclick="setMapMobDay('+i+')">Day '+(i+1)+'</button>';
+      }).join('');
+    }
+
+    function renderMapMobSheet(){
+      var el=document.getElementById('mapMobSheet');if(!el)return;
+      var day=DAYS[mapMobDay];if(!day){el.innerHTML='';return;}
+      var cards=sortEvs(day.events).filter(function(ev){return ev.lat;}).map(function(ev){
+        var cat=CAT[ev.category]||CAT.other,icon=CAT_ICONS[ev.category]||'📍';
+        return '<div class="map-mob-card" onclick="focusMarker(\''+day.id+'\',\''+ev.id+'\')">'+
+          '<div class="map-mob-card-thumb" style="background:'+cat.bg+'">'+icon+'</div>'+
+          '<div class="map-mob-card-info">'+
+          '<div class="map-mob-card-time">'+fmtTime(ev.time)+'</div>'+
+          '<div class="map-mob-card-name">'+ev.title+'</div>'+
+          '</div></div>';
+      }).join('');
+      el.innerHTML=
+        '<div class="map-mob-handle"></div>'+
+        '<div class="map-mob-label">Day '+(mapMobDay+1)+'</div>'+
+        '<div class="map-mob-title-row">'+
+          '<div class="map-mob-title">'+day.date+' — '+day.theme+'</div>'+
+          '<div class="map-mob-btns">'+
+            '<button class="map-mob-btn" onclick="fitMapToDay('+mapMobDay+')" title="이 날 전체 보기">'+
+              '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>'+
+            '</button>'+
+          '</div>'+
+        '</div>'+
+        '<div class="map-mob-cards">'+cards+'</div>';
+    }
+
+    function setMapMobDay(idx){
+      mapMobDay=idx;
+      mapFilter=DAYS[idx].id;
+      renderMapMobTabs();renderMapMobSheet();renderMapList();
+      if(leafletMap){rebuildMarkers();fitMapToDay(idx);}
+    }
+
+    function fitMapToDay(idx){
+      if(!leafletMap)return;
+      var coords=DAYS[idx].events.filter(function(ev){return ev.lat&&ev.lng;}).map(function(ev){return[ev.lat,ev.lng];});
+      if(!coords.length)return;
+      if(coords.length===1){leafletMap.setView(coords[0],15,{animate:true});return;}
+      leafletMap.fitBounds(L.latLngBounds(coords),{padding:[40,40],animate:true});
+    }
+    function renderMapList(){
+      var c=document.getElementById('mapEventList'),h='';
+      DAYS.forEach(function(day){
+        if(mapFilter!=='all'&&mapFilter!==day.id)return;
+        h+='<div class="map-group"><div class="map-group-title" style="background:'+day.color+'20;color:'+day.color+'"><span style="width:7px;height:7px;border-radius:50%;background:'+day.color+';display:inline-block;"></span>'+day.date+' · '+day.theme+'</div>';
+        sortEvs(day.events).forEach(function(ev){
+          if(!ev.lat)return;
+          var cat=CAT[ev.category]||CAT.other;
+          var icon=CAT_ICONS[ev.category]||'📍';
+          h+='<div class="map-event-row" onclick="focusMarker(\''+day.id+'\',\''+ev.id+'\')"><span style="font-size:14px;line-height:1;flex-shrink:0">'+icon+'</span><div style="flex:1;min-width:0"><div class="map-event-time">'+fmtTime(ev.time)+'</div><div class="map-event-name">'+ev.title+'</div></div></div>';
+        });
+        h+='</div>';
+      });
+      c.innerHTML=h;
+    }
+    function setMapFilter(id,btn){
+      mapFilter=id;
+      document.querySelectorAll('.map-filter-btn').forEach(function(b){b.classList.remove('active');b.style.background='';b.style.color='';b.style.borderColor='';});
+      btn.classList.add('active');
+      if(id==='all'){btn.style.background='var(--accent)';btn.style.color='white';btn.style.borderColor='transparent';}
+      else{var d=getDay(id);if(d){btn.style.background=d.color;btn.style.color='white';btn.style.borderColor='transparent';}}
+      renderMapList();
+      if(leafletMap)rebuildMarkers();
+    }
+    function initMap(){
+      if(typeof L==='undefined')return;
+      if(leafletMap){setTimeout(function(){leafletMap.invalidateSize(true);},150);return;}
+      var hh=(document.querySelector('.app-header')||{offsetHeight:57}).offsetHeight;
+      document.getElementById('leaflet-map').style.height=(window.innerHeight-hh)+'px';
+      leafletMap=L.map('leaflet-map',{zoomControl:true}).setView([19.434,-99.162],13);
+      setTiles(currentTheme==='dark');
+      if(window.innerWidth<=768){mapFilter=DAYS[mapMobDay].id;}
+      rebuildMarkers();
+      setTimeout(function(){
+        leafletMap.invalidateSize(true);
+        if(window.innerWidth<=768)fitMapToDay(mapMobDay);
+      },300);
+    }
+    function setTiles(dark){
+      if(tileLayer)leafletMap.removeLayer(tileLayer);
+      tileLayer=L.tileLayer(dark?'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png':'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'© OpenStreetMap, © CARTO',subdomains:'abcd',maxZoom:19}).addTo(leafletMap);
+    }
+    function rebuildMarkers(){
+      mapMarkers.forEach(function(m){leafletMap.removeLayer(m);});mapMarkers=[];var n=1;
+      DAYS.forEach(function(day){
+        if(mapFilter!=='all'&&mapFilter!==day.id)return;
+        sortEvs(day.events).forEach(function(ev){
+          if(!ev.lat||!ev.lng)return;
+          var cat=CAT[ev.category]||CAT.other,emoji=CAT_ICONS[ev.category]||'📍';
+          var icon=L.divIcon({
+            html:'<div style="position:relative;width:36px;height:36px">'
+              +'<div style="width:36px;height:36px;border-radius:10px;background:'+day.color+';border:2.5px solid white;display:flex;align-items:center;justify-content:center;font-size:17px;box-shadow:0 3px 10px rgba(0,0,0,0.3)">'
+              +emoji
+              +'</div>'
+              +'<div style="position:absolute;top:-6px;right:-6px;min-width:16px;height:16px;border-radius:8px;background:white;border:1.5px solid '+day.color+';color:'+day.color+';font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 3px;line-height:1;font-family:Inter,sans-serif">'+n+'</div>'
+              +'<div style="position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:6px solid '+day.color+'"></div>'
+              +'</div>',
+            className:'',iconSize:[36,41],iconAnchor:[18,41]
+          });
+          var popup='<div style="font-family:Noto Sans KR,Inter,sans-serif;min-width:160px"><div style="font-weight:700;font-size:13px;margin-bottom:3px">'+ev.title+'</div><div style="font-size:11px;color:#888">'+fmtTime(ev.time)+(ev.endTime?' – '+fmtTime(ev.endTime):'')+'</div>'+(ev.subtitle?'<div style="font-size:11px;margin-top:4px">'+ev.subtitle+'</div>':'')+(ev.notes?'<div style="font-size:11px;color:#f59e0b;margin-top:4px">📌 '+ev.notes+'</div>':'')+'</div>';
+          var m=L.marker([ev.lat,ev.lng],{icon:icon}).addTo(leafletMap).bindPopup(popup);
+          m._evData={dayId:day.id,evId:ev.id};mapMarkers.push(m);n++;
+        });
+      });
+    }
+    function focusMarker(dayId,evId){var ev=getEv(dayId,evId);if(!ev||!ev.lat||!leafletMap)return;leafletMap.setView([ev.lat,ev.lng],16,{animate:true});mapMarkers.forEach(function(m){if(m._evData&&m._evData.evId===evId)m.openPopup();});}
+
+    // ==================== EDIT MODAL ====================
+    function openEdit(dayId,evId){
+      var ev=getEv(dayId,evId);if(!ev)return;
+      editingDayId=dayId;editingEvId=evId;
+      document.getElementById('editTime').value=ev.time||'';document.getElementById('editEndTime').value=ev.endTime||'';
+      document.getElementById('editTitle').value=ev.title||'';document.getElementById('editSubtitle').value=ev.subtitle||'';
+      document.getElementById('editNotes').value=ev.notes||'';document.getElementById('editCategory').value=ev.category||'food';
+      document.getElementById('editOptional').checked=ev.optional||false;
+      document.getElementById('editModal').classList.add('open');
+    }
+    function closeEditModal(){document.getElementById('editModal').classList.remove('open');editingDayId=null;editingEvId=null;}
+    function saveEditEvent(e){
+      e.preventDefault();var ev=getEv(editingDayId,editingEvId);if(!ev)return;
+      ev.time=document.getElementById('editTime').value;ev.endTime=document.getElementById('editEndTime').value;
+      ev.title=document.getElementById('editTitle').value;ev.subtitle=document.getElementById('editSubtitle').value;
+      ev.notes=document.getElementById('editNotes').value;ev.category=document.getElementById('editCategory').value;
+      ev.optional=document.getElementById('editOptional').checked;
+      var w=WISHLIST.find(function(x){return x.calEventId===ev.id;});if(w){w.name=ev.title;w.category=ev.category;}
+      closeEditModal();rerender();
+    }
+    function deleteCurrentEvent(){
+      if(!editingDayId||!editingEvId)return;if(!confirm('이 일정을 삭제할까요?'))return;
+      var day=getDay(editingDayId);if(!day)return;
+      var w=WISHLIST.find(function(x){return x.calEventId===editingEvId;});
+      if(w){w.calDayId=null;w.calEventId=null;w.visited=false;w.dayLabel='';}
+      day.events=day.events.filter(function(e){return e.id!==editingEvId;});
+      closeEditModal();rerender();
+    }
+
+    // ==================== WISHLIST ====================
+    function renderWishlist(){
+      var c=document.getElementById('wishlistContent');
+      var filtered=WISHLIST.filter(function(w){
+        return(wishCatFilter==='all'||w.category===wishCatFilter)&&(wishStatusFilter==='all'||(wishStatusFilter==='scheduled'&&w.visited)||(wishStatusFilter==='unscheduled'&&!w.visited));
+      });
+      var total=WISHLIST.length,done=WISHLIST.filter(function(w){return w.visited;}).length;
+      var h='<div class="wl-toolbar"><div class="wl-toolbar-top"><span class="wl-title">⭐ 위시리스트</span><span class="wl-count">'+done+'/'+total+' 일정추가됨</span></div><div class="wl-filter-rows"><div class="wl-filter-group">';
+      h+=wlCatBtn('all','전체',wishCatFilter)+wlCatBtn('food','🍽️ 음식',wishCatFilter)+wlCatBtn('bar','🍹 바',wishCatFilter)+wlCatBtn('culture','🏛️ 문화',wishCatFilter);
+      h+='</div><div class="wl-filter-group">';
+      h+=wlSBtn('all','전체',wishStatusFilter)+wlSBtn('unscheduled','미추가',wishStatusFilter)+wlSBtn('scheduled','일정추가됨',wishStatusFilter);
+      h+='</div></div></div><div class="wl-grid">';
+      if(filtered.length===0)h+='<div class="wl-empty"><div class="wl-empty-icon">⭐</div><div>아직 항목이 없어요<br><span style="font-size:0.85rem">하단 + 버튼으로 추가해보세요</span></div></div>';
+      filtered.forEach(function(w){
+        var cat=CAT[w.category]||CAT.other,icon=CAT_ICONS[w.category]||'📍';
+        var st='';if(w.calDayId&&w.calEventId){var ev=getEv(w.calDayId,w.calEventId);if(ev)st=fmtTime(ev.time)+(ev.endTime?' – '+fmtTime(ev.endTime):'');}
+        h+='<div class="wl-card'+(w.visited?' visited':'')+'" onclick="editWishItem(\''+w.id+'\')">';
+        h+='<div class="wl-card-top"><div class="wl-card-icon" style="background:'+cat.bg+'">'+icon+'</div><div class="wl-card-info"><div class="wl-card-name">'+w.name+'</div>'+(w.notes?'<div class="wl-card-sub">'+w.notes+'</div>':'')+'</div></div>';
+        h+='<div class="wl-card-badges"><span class="wl-badge" style="background:'+cat.bg+';color:'+cat.color+'">'+icon+' '+cat.label+'</span>';
+        if(w.visited&&w.dayLabel)h+='<span class="wl-badge" style="background:rgba(99,102,241,0.15);color:#6366f1">📅 '+w.dayLabel+'</span>';
+        if(st)h+='<span class="wl-badge" style="background:rgba(16,185,129,0.12);color:var(--positive)">🕐 '+st+'</span>';
+        h+='</div><div class="wl-card-bottom">';
+        if(w.mapsUrl)h+='<a class="wl-maps-link" href="'+w.mapsUrl+'" target="_blank" rel="noopener" onclick="event.stopPropagation()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg> 구글맵</a>';
+        else h+='<span></span>';
+        if(w.visited&&w.calEventId)h+='<div style="display:flex;gap:5px"><button class="wl-visited-toggle adjust" onclick="event.stopPropagation();openSchedModal(\''+w.id+'\')">✏️ 시간 조정</button><button class="wl-visited-toggle wl-time-remove" onclick="event.stopPropagation();removeTimeFromWish(\''+w.id+'\')">⏰ 시간 제거</button></div>';
+        else h+='<button class="wl-visited-toggle" onclick="event.stopPropagation();openSchedModal(\''+w.id+'\')">＋ 일정 추가</button>';
+        h+='</div></div>';
+      });
+      h+='</div>';c.innerHTML=h;
+    }
+    function wlCatBtn(v,l,a){return'<button class="wl-filter'+(a===v?' active':'')+'" onclick="setWlCatFilter(\''+v+'\')">'+l+'</button>';}
+    function wlSBtn(v,l,a){return'<button class="wl-filter status-btn'+(a===v?' active':'')+'" onclick="setWlStatusFilter(\''+v+'\')">'+l+'</button>';}
+    function setWlCatFilter(f){wishCatFilter=f;renderWishlist();}
+    function setWlStatusFilter(f){wishStatusFilter=f;renderWishlist();}
+    function removeTimeFromWish(wishId){
+      var w=WISHLIST.find(function(x){return x.id===wishId;});if(!w||!w.calDayId||!w.calEventId)return;
+      var day=DAYS.find(function(d){return d.id===w.calDayId;});
+      if(day)day.events=day.events.filter(function(e){return e.id!==w.calEventId;});
+      w.calDayId=null;w.calEventId=null;w.visited=false;w.dayLabel='';rerender();
+    }
+    function parseGmapsUrl(url){
+      url=(url||'').trim();if(!url)return;
+      if(/maps\.app\.goo\.gl|goo\.gl\/maps/.test(url)){
+        var nf=document.getElementById('wishName');if(nf)nf.placeholder='불러오는 중…';
+        fetch('/api/expand-url?url='+encodeURIComponent(url))
+          .then(function(r){return r.json();})
+          .then(function(d){var nf2=document.getElementById('wishName');if(nf2)nf2.placeholder='예: Contramar';applyGmapsInfo(d.url||url);})
+          .catch(function(){var nf2=document.getElementById('wishName');if(nf2)nf2.placeholder='예: Contramar';});
+        return;
+      }
+      applyGmapsInfo(url);
+    }
+    function applyGmapsInfo(url){
+      var name='';
+      var nm=url.match(/maps\/place\/([^/@?&]+)/);
+      if(nm)name=decodeURIComponent(nm[1]).replace(/\+/g,' ').replace(/_/g,' ').replace(/[,+]\d.*$/,'').trim();
+      if(!name){var qm=url.match(/[?&]q=([^&@,]+)/);if(qm)name=decodeURIComponent(qm[1]).replace(/\+/g,' ').trim();}
+      var nf=document.getElementById('wishName');
+      if(name&&nf&&!nf.value){nf.value=name;autoDetectCategory(name);}
+    }
+    function autoDetectCategory(name){
+      var n=name.toLowerCase(),cat=null;
+      if(/bar|cantina|pulque|mezcal|cervec|coctel|taberna|licor|tlecan|balmori|pub\b/i.test(n))cat='bar';
+      else if(/museo|palacio|biblioteca|plaza|iglesia|catedral|monumento|arqueol|pirámide|galería|galeria/i.test(n))cat='culture';
+      else if(/hotel|hostal|suites|andaz|marriott|hilton|hyatt|inn\b|lodge/i.test(n))cat='hotel';
+      else if(/aeropuerto|airport|terminal|estaci[oó]n|metro\b/i.test(n))cat='transport';
+      else if(/taquería|taqueria|taco|restauran|bistro|comedor|mariscos|fonda|mercado|cocina|café|cafe|coffee|bakery|panadería|torta|sushi|pizza|burger/i.test(n))cat='food';
+      if(cat){var sel=document.getElementById('wishCategory');if(sel)sel.value=cat;}
+    }
+    function openWishAdd(){
+      editingWishId=null;
+      document.getElementById('wishModalTitle').textContent='위시리스트 추가';
+      document.getElementById('wishMapsUrl').value='';document.getElementById('wishName').value='';
+      document.getElementById('wishNotes').value='';document.getElementById('wishCategory').value='food';
+      document.getElementById('wishDeleteBtn').style.display='none';document.getElementById('wishSaveBtn').textContent='추가';
+      document.getElementById('wishModal').classList.add('open');
+      setTimeout(function(){document.getElementById('wishMapsUrl').focus();},100);
+    }
+    function editWishItem(id){
+      var w=WISHLIST.find(function(x){return x.id===id;});if(!w)return;
+      editingWishId=id;
+      document.getElementById('wishModalTitle').textContent='위시리스트 수정';
+      document.getElementById('wishMapsUrl').value=w.mapsUrl||'';document.getElementById('wishName').value=w.name||'';
+      document.getElementById('wishNotes').value=w.notes||'';document.getElementById('wishCategory').value=w.category||'food';
+      document.getElementById('wishDeleteBtn').style.display='';document.getElementById('wishSaveBtn').textContent='저장';
+      document.getElementById('wishModal').classList.add('open');
+    }
+    function closeWishModal(){document.getElementById('wishModal').classList.remove('open');editingWishId=null;}
+    function saveWishItem(e){
+      e.preventDefault();
+      var url=document.getElementById('wishMapsUrl').value.trim(),name=document.getElementById('wishName').value.trim();
+      var notes=document.getElementById('wishNotes').value.trim(),cat=document.getElementById('wishCategory').value;
+      var lat=null,lng=null,cm=url.match(/@(-?\d+\.?\d*),(-?\d+\.?\d*)/);
+      if(!cm)cm=url.match(/[?&]q=(-?\d+\.?\d*),(-?\d+\.?\d*)/);
+      if(cm){lat=parseFloat(cm[1]);lng=parseFloat(cm[2]);}
+      if(editingWishId){
+        var w=WISHLIST.find(function(x){return x.id===editingWishId;});
+        if(w){w.name=name;w.notes=notes;w.category=cat;w.mapsUrl=url;w.lat=lat||w.lat;w.lng=lng||w.lng;if(w.calEventId){var ev=getEv(w.calDayId,w.calEventId);if(ev){ev.title=name;ev.category=cat;ev.subtitle=notes;}}}
+      } else {
+        WISHLIST.push({id:'wl_'+genId(),name:name,notes:notes,category:cat,mapsUrl:url,lat:lat,lng:lng,visited:false,fromItinerary:false,dayLabel:'',calDayId:null,calEventId:null});
+        wishStatusFilter='all';
+      }
+      closeWishModal();rerender();
+    }
+    function deleteWishItem(){
+      if(!editingWishId)return;if(!confirm('위시리스트에서 삭제할까요?'))return;
+      var w=WISHLIST.find(function(x){return x.id===editingWishId;});
+      if(w&&w.calDayId&&w.calEventId){var day=DAYS.find(function(d){return d.id===w.calDayId;});if(day)day.events=day.events.filter(function(e){return e.id!==w.calEventId;});}
+      WISHLIST=WISHLIST.filter(function(x){return x.id!==editingWishId;});closeWishModal();rerender();
+    }
+
+    // ==================== SCHEDULE MODAL ====================
+    var schedWishId=null,schedDayId=null,schedStartMin=600,schedDurMin=60;
+    var schedDragType=null,schedDragStartY=0,schedDragStartMin=0,schedDragStartDur=0;
+    function openSchedModal(wishId){
+      schedWishId=wishId;var w=WISHLIST.find(function(x){return x.id===wishId;});if(!w)return;
+      if(w.calDayId&&w.calEventId){var ev=getEv(w.calDayId,w.calEventId);if(ev){schedDayId=w.calDayId;schedStartMin=toMin(ev.time);schedDurMin=ev.endTime?Math.max(15,toMin(ev.endTime)-schedStartMin):60;}else{w.calDayId=null;w.calEventId=null;w.visited=false;schedDayId=DAYS[0].id;schedStartMin=600;schedDurMin=60;}}
+      else{schedDayId=DAYS[0].id;schedStartMin=600;schedDurMin=60;}
+      renderSchedModal();document.getElementById('schedModal').classList.add('open');
+    }
+    function closeSchedModal(){document.getElementById('schedModal').classList.remove('open');document.removeEventListener('mousemove',onSchedDrag);document.removeEventListener('mouseup',onSchedDragEnd);schedDragType=null;}
+    function renderSchedModal(){
+      var w=WISHLIST.find(function(x){return x.id===schedWishId;});if(!w)return;
+      var isEdit=!!(w.calDayId&&w.calEventId),hv=Math.floor(schedStartMin/60),mv=schedStartMin%60;
+      var h='<div class="sched-header"><div><div class="sched-title">'+(isEdit?'📅 일정 수정':'📅 일정 추가')+'</div><div class="sched-item-name">'+w.name+'</div></div><button class="modal-close" onclick="closeSchedModal()">✕</button></div>';
+      h+='<div class="sched-days">';
+      DAYS.forEach(function(d){var ia=schedDayId===d.id;h+='<button class="sched-day-btn'+(ia?' active':'')+'" onclick="setSchedDay(\''+d.id+'\')"'+(ia?' style="background:'+d.color+';color:white;border-color:transparent"':'')+'>'+d.date+'<br><span style="font-size:0.62rem;opacity:0.8">'+d.theme.slice(0,8)+'</span></button>';});
+      h+='</div><div class="sched-time-row"><div class="sched-time-group"><label>시작</label><div class="sched-time-inputs"><input type="number" id="schedHour" min="8" max="22" value="'+hv+'" oninput="onSchedTimeChange()"><span style="font-weight:700">:</span><select id="schedMin" onchange="onSchedTimeChange()">';
+      [0,15,30,45].forEach(function(m){h+='<option value="'+m+'"'+(mv===m?' selected':'')+'>'+('0'+m).slice(-2)+'</option>';});
+      h+='</select></div></div><div class="sched-time-group"><label>소요</label><select id="schedDur" onchange="onSchedDurChange()">';
+      [[30,'30분'],[60,'1시간'],[90,'1.5시간'],[120,'2시간'],[180,'3시간'],[240,'4시간']].forEach(function(o){h+='<option value="'+o[0]+'"'+(schedDurMin===o[0]?' selected':'')+'>'+o[1]+'</option>';});
+      h+='</select></div></div><div class="sched-cal" id="schedCal" style="min-height:200px;max-height:340px">'+renderSchedCalInner()+'</div>';
+      h+='<div class="sched-footer">'+(isEdit?'<button class="sched-del-btn" onclick="removeFromCalendar()">⏰ 시간 제거</button>':'<span></span>');
+      h+='<div class="sched-footer-right"><button class="sched-cancel-btn" onclick="closeSchedModal()">취소</button><button class="sched-save-btn" onclick="saveSchedule()">저장</button></div></div>';
+      document.getElementById('schedModalInner').innerHTML=h;setTimeout(attachSchedCalEvents,0);
+    }
+    function renderSchedCalInner(){
+      var PX=44,S=8,E=23,w=WISHLIST.find(function(x){return x.id===schedWishId;}),day=DAYS.find(function(d){return d.id===schedDayId;});if(!day)return'';
+      var linked=w?w.calEventId:null,h='<div id="schedCalInner" style="position:relative;height:'+((E-S)*PX)+'px;padding:0 0 4px 0">';
+      for(var hr=S;hr<E;hr++)h+='<div class="sched-cal-hr" style="top:'+((hr-S)*PX)+'px"><span class="sched-cal-hr-label">'+hr+':00</span></div>';
+      sortEvs(day.events).forEach(function(ev){
+        if(ev.id===linked)return;
+        var sm=toMin(ev.time),em=ev.endTime?toMin(ev.endTime):sm+60;
+        h+='<div class="sched-ev-block" style="top:'+((sm/60-S)*PX)+'px;height:'+Math.max(18,(em-sm)/60*PX)+'px;background:'+day.color+'25;border-left:3px solid '+day.color+'"><div style="font-size:0.68rem;font-weight:700;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">'+ev.title+'</div><div style="font-size:0.6rem;opacity:0.7">'+fmtTime(ev.time)+(ev.endTime?' – '+fmtTime(ev.endTime):'')+'</div></div>';
+      });
+      var nt=(schedStartMin/60-S)*PX,nh=Math.max(20,schedDurMin/60*PX);
+      h+='<div class="sched-new-block" id="schedNewBlock" style="top:'+nt+'px;height:'+nh+'px" onmousedown="startSchedDrag(event)"><div style="font-size:0.7rem;font-weight:700;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">'+(w?w.name:'')+'</div><div style="font-size:0.62rem;opacity:0.9">'+minToStr(schedStartMin)+' – '+minToStr(schedStartMin+schedDurMin)+'</div><div class="sched-resize-handle" onmousedown="startSchedResize(event)">⠿</div></div></div>';
+      return h;
+    }
+    function attachSchedCalEvents(){
+      var inner=document.getElementById('schedCalInner');if(!inner)return;
+      inner.addEventListener('click',function(e){
+        if(e.target.closest('.sched-new-block')||e.target.closest('.sched-ev-block'))return;
+        var rect=inner.getBoundingClientRect();
+        schedStartMin=Math.max(8*60,Math.min(22*60,Math.round(((e.clientY-rect.top)/44+8)*60/15)*15));
+        syncSchedInputs();refreshSchedCal();
+      });
+    }
+    function startSchedDrag(e){e.preventDefault();schedDragType='move';schedDragStartY=e.clientY;schedDragStartMin=schedStartMin;document.addEventListener('mousemove',onSchedDrag);document.addEventListener('mouseup',onSchedDragEnd);}
+    function startSchedResize(e){e.preventDefault();e.stopPropagation();schedDragType='resize';schedDragStartY=e.clientY;schedDragStartDur=schedDurMin;document.addEventListener('mousemove',onSchedDrag);document.addEventListener('mouseup',onSchedDragEnd);}
+    function onSchedDrag(e){var dm=Math.round((e.clientY-schedDragStartY)/44*60/15)*15;if(schedDragType==='move')schedStartMin=Math.max(8*60,Math.min(22*60,schedDragStartMin+dm));else schedDurMin=Math.max(15,schedDragStartDur+dm);syncSchedInputs();refreshSchedCal();}
+    function onSchedDragEnd(){schedDragType=null;document.removeEventListener('mousemove',onSchedDrag);document.removeEventListener('mouseup',onSchedDragEnd);}
+    function syncSchedInputs(){var hi=document.getElementById('schedHour'),ms=document.getElementById('schedMin'),ds=document.getElementById('schedDur');if(hi)hi.value=Math.floor(schedStartMin/60);if(ms)ms.value=schedStartMin%60;if(ds){var durs=[30,60,90,120,180,240];schedDurMin=durs.reduce(function(p,c){return Math.abs(c-schedDurMin)<Math.abs(p-schedDurMin)?c:p;});ds.value=schedDurMin;}}
+    function refreshSchedCal(){var cal=document.getElementById('schedCal');if(cal){cal.innerHTML=renderSchedCalInner();setTimeout(attachSchedCalEvents,0);}}
+    function onSchedTimeChange(){var h=Math.max(8,Math.min(22,parseInt(document.getElementById('schedHour').value)||10)),m=parseInt(document.getElementById('schedMin').value)||0;schedStartMin=h*60+m;refreshSchedCal();}
+    function onSchedDurChange(){schedDurMin=parseInt(document.getElementById('schedDur').value)||60;refreshSchedCal();}
+    function setSchedDay(id){schedDayId=id;renderSchedModal();}
+    function saveSchedule(){
+      var w=WISHLIST.find(function(x){return x.id===schedWishId;});if(!w){closeSchedModal();return;}
+      var day=DAYS.find(function(d){return d.id===schedDayId;});if(!day){closeSchedModal();return;}
+      var s=minToStr(schedStartMin),e=minToStr(schedStartMin+schedDurMin);
+      if(w.calEventId&&w.calDayId){
+        var od=DAYS.find(function(d){return d.id===w.calDayId;}),ev=od?od.events.find(function(x){return x.id===w.calEventId;}):null;
+        if(ev){if(w.calDayId!==schedDayId){od.events=od.events.filter(function(x){return x.id!==w.calEventId;});ev.id='wl_ev_'+genId();day.events.push(ev);w.calDayId=schedDayId;w.calEventId=ev.id;}ev.time=s;ev.endTime=e;}
+      } else {
+        var nid='wl_ev_'+genId();
+        day.events.push({id:nid,title:w.name,subtitle:w.notes||'',category:w.category||'other',time:s,endTime:e,notes:'',optional:false,lat:w.lat||null,lng:w.lng||null});
+        w.calDayId=schedDayId;w.calEventId=nid;w.visited=true;
+      }
+      w.dayLabel=day.date;closeSchedModal();rerender();
+    }
+    function removeFromCalendar(){
+      var w=WISHLIST.find(function(x){return x.id===schedWishId;});
+      if(w&&w.calDayId&&w.calEventId){var day=DAYS.find(function(d){return d.id===w.calDayId;});if(day)day.events=day.events.filter(function(e){return e.id!==w.calEventId;});w.calDayId=null;w.calEventId=null;w.visited=false;w.dayLabel='';}
+      closeSchedModal();rerender();
+    }
+
+    // ==================== MENU ====================
+    function toggleMenu(){document.getElementById('vizMenuDropdown').classList.toggle('open');}
+    document.addEventListener('click',function(ev){
+      if(!ev.target.closest('.viz-menu'))document.getElementById('vizMenuDropdown').classList.remove('open');
+      if(ev.target===document.getElementById('editModal'))closeEditModal();
+      if(ev.target===document.getElementById('wishModal'))closeWishModal();
+    });
+    document.addEventListener('keydown',function(ev){
+      if(ev.key==='Escape'){document.getElementById('vizMenuDropdown').classList.remove('open');closeEditModal();closeWishModal();closeCalPickModal();closeSchedModal();}
+    });
+
+    // ==================== THEME ====================
+    var savedTheme=localStorage.getItem('viz-theme');
+    var currentTheme=savedTheme||(window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark');
+    function applyTheme(t){
+      document.documentElement.className='theme-'+t;
+      document.getElementById('themeIcon').textContent=t==='dark'?'🌙':'☀️';
+      document.getElementById('themeLabel').textContent=t==='dark'?'다크모드':'라이트모드';
+      localStorage.setItem('viz-theme',t);currentTheme=t;
+      if(leafletMap)setTiles(t==='dark');rerender();
+    }
+    function cycleTheme(){applyTheme(currentTheme==='dark'?'light':'dark');}
+    async function downloadImage(){
+      var menu=document.querySelector('.viz-menu');menu.style.display='none';
+      try{var url=await htmlToImage.toPng(document.body,{quality:1,pixelRatio:2});var a=document.createElement('a');a.href=url;a.download='mexico-city-travel-plan.png';a.click();}catch(err){console.error(err);}
+      menu.style.display='';
+    }
+
+    // ==================== INIT ====================
+    document.addEventListener('DOMContentLoaded', async function() {
+      applyTheme(currentTheme);
+      try {
+        await loadData();
+      } catch(e) {
+        console.error('Firebase load error:', e);
+        // Fall back to seed data if Firestore is unreachable
+        DAYS = JSON.parse(JSON.stringify(SEED_DAYS));
+        WISHLIST = JSON.parse(JSON.stringify(SEED_WISHLIST));
+      }
+      document.getElementById('loadingScreen').style.display = 'none';
+      renderCal();
+    });
+  </script>
+</body>
+</html>
