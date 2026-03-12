@@ -37,20 +37,26 @@
     .reveal.visible { opacity:1; transform:translateY(0); }
     @media (prefers-reduced-motion:reduce) { *,*::before,*::after{animation:none!important;transition:none!important} .reveal{opacity:1;transform:none} }
     /* HEADER */
-    .app-header { position:sticky; top:0; z-index:200; background:var(--bg); border-bottom:1px solid var(--border); padding:10px 20px; display:flex; align-items:center; gap:14px; backdrop-filter:blur(16px); }
-    .app-logo { display:flex; align-items:center; gap:8px; white-space:nowrap; }
-    .app-logo-flag { font-size:1.6rem; line-height:1; }
-    .app-logo-text h1 { font-size:1.05rem; font-weight:700; letter-spacing:-0.02em; }
-    .app-logo-text .dates { font-size:0.72rem; color:var(--text-secondary); font-weight:400; }
-    .app-header .view-tabs { position:absolute; left:50%; transform:translateX(-50%); }
+    .app-header { position:sticky; top:0; z-index:200; background:var(--bg); border-bottom:1px solid var(--border); padding:0 20px; height:56px; display:flex; align-items:center; gap:14px; backdrop-filter:blur(16px); }
+    .app-logo { display:flex; align-items:center; gap:6px; white-space:nowrap; }
+    .app-logo-flag { font-size:1.5rem; line-height:1; }
+    .app-logo-trip { font-size:0.82rem; font-weight:600; color:var(--text-secondary); }
+    /* CURRENCY CONVERTER */
+    .curr-fields { display:flex; flex-direction:column; gap:10px; margin-bottom:14px; }
+    .curr-field { display:flex; align-items:center; gap:10px; background:var(--surface-hover); border-radius:10px; padding:12px 14px; }
+    .curr-field-label { font-size:1rem; line-height:1; display:flex; align-items:center; gap:6px; font-weight:700; white-space:nowrap; flex-shrink:0; min-width:70px; }
+    .curr-field input { flex:1; background:transparent; border:none; color:var(--text); font-family:inherit; font-size:1.2rem; font-weight:700; text-align:right; outline:none; min-width:0; }
+    .curr-divider { display:flex; align-items:center; justify-content:center; gap:8px; color:var(--text-secondary); font-size:0.72rem; }
+    .curr-divider::before,.curr-divider::after { content:''; flex:1; height:1px; background:var(--border); }
+    .curr-footer { display:flex; align-items:center; justify-content:space-between; }
+    .curr-rate-info { font-size:0.68rem; color:var(--text-secondary); }
+    .curr-refresh { padding:4px 10px; border-radius:6px; border:1px solid var(--border); background:transparent; color:var(--text-secondary); font-family:inherit; font-size:0.72rem; cursor:pointer; transition:all 0.2s; }
+    .curr-refresh:hover { border-color:var(--accent); color:var(--accent); }
+    .app-header .view-tabs { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); }
     .view-tabs { display:flex; gap:3px; background:var(--surface); padding:3px; border-radius:10px; border:1px solid var(--border); }
     .view-tab { padding:5px 13px; border-radius:7px; border:none; background:transparent; color:var(--text-secondary); font-family:inherit; font-size:0.82rem; font-weight:500; cursor:pointer; transition:all 0.2s; white-space:nowrap; }
     .view-tab.active { background:var(--accent); color:white; }
     .view-tab:hover:not(.active) { background:var(--surface-hover); color:var(--text); }
-    .save-indicator { font-size:0.7rem; color:var(--text-secondary); opacity:0; transition:opacity 0.3s; white-space:nowrap; margin-left:auto; }
-    .save-indicator.saving { opacity:1; color:var(--warning); }
-    .save-indicator.saved { opacity:1; color:var(--positive); }
-    .save-indicator.error { opacity:1; color:var(--negative); }
     /* Loading overlay */
     .loading-screen { position:fixed; inset:0; background:var(--bg); z-index:9000; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:12px; }
     .loading-screen .spinner { width:32px; height:32px; border:3px solid var(--border-strong); border-top-color:var(--accent); border-radius:50%; animation:spin 0.8s linear infinite; }
@@ -63,7 +69,8 @@
     /* CALENDAR */
     .cal-scroll-outer { overflow-x:auto; -webkit-overflow-scrolling:touch; }
     .cal-wrap { min-width:1100px; }
-    .cal-header-row { display:grid; grid-template-columns:58px repeat(5,1fr); border-bottom:1px solid var(--border); position:sticky; top:57px; z-index:100; background:var(--bg); }
+    .cal-header-scroll { overflow-x:hidden; position:sticky; top:56px; z-index:100; background:var(--bg); }
+    .cal-header-row { display:grid; grid-template-columns:58px repeat(5,1fr); border-bottom:1px solid var(--border); }
     .cal-header-time { padding:10px 0; }
     .cal-day-header { padding:10px 12px; border-left:1px solid var(--border); }
     .cal-day-date { font-size:0.95rem; font-weight:700; display:flex; align-items:center; gap:6px; }
@@ -75,8 +82,10 @@
     .cal-time-col { padding-right:6px; }
     .cal-time-slot { height:64px; display:flex; align-items:flex-start; padding-top:3px; font-size:0.68rem; color:var(--text-secondary); text-align:right; justify-content:flex-end; padding-right:8px; white-space:nowrap; }
     .cal-day-col { position:relative; border-left:1px solid var(--border); height:calc(16 * 64px); cursor:crosshair; }
-    .cal-day-col:hover::after { content:'+ 위시리스트에서 추가'; position:absolute; bottom:6px; left:0; right:0; text-align:center; font-size:0.6rem; color:var(--border-strong); pointer-events:none; }
+    .cal-day-col:hover::after { content:'+ 장소에서 추가'; position:absolute; bottom:6px; left:0; right:0; text-align:center; font-size:0.6rem; color:var(--border-strong); pointer-events:none; }
     .hour-line { position:absolute; left:0; right:0; border-top:1px dashed var(--border); pointer-events:none; }
+    .cal-now-line { position:absolute; left:0; right:0; height:2px; background:#ef4444; z-index:20; pointer-events:none; }
+    .cal-now-line::before { content:''; position:absolute; left:-1px; top:-3px; width:8px; height:8px; border-radius:50%; background:#ef4444; }
     .cal-event { position:absolute; border-radius:6px; padding:5px 7px; cursor:pointer; overflow:hidden; transition:filter 0.2s,transform 0.15s; border-left:3px solid; box-shadow:0 1px 4px rgba(0,0,0,0.15); }
     .cal-event:hover { filter:brightness(1.1); transform:scaleX(1.02); z-index:10!important; }
     .cal-event.optional { opacity:0.6; border-style:dashed; }
@@ -191,7 +200,7 @@
     .viz-menu-dropdown button { width:100%; padding:9px 12px; border:none; border-radius:7px; background:transparent; color:var(--text); font-size:13px; font-family:inherit; cursor:pointer; text-align:left; display:flex; align-items:center; gap:9px; transition:background 0.15s; }
     .viz-menu-dropdown button:hover { background:var(--surface-hover); }
     /* MAP */
-    .map-view { height:calc(100vh - 57px); overflow:hidden; }
+    .map-view { height:calc(100vh - 57px); height:calc(100dvh - 57px); overflow:hidden; }
     .map-sidebar { width:300px; min-width:260px; overflow-y:auto; border-right:1px solid var(--border); padding:14px; background:var(--bg); flex-shrink:0; }
     .map-main { flex:1; position:relative; min-height:0; min-width:0; }
     #leaflet-map { position:absolute; top:0; left:0; right:0; bottom:0; width:100%; height:100%; }
@@ -215,6 +224,10 @@
     .fab:active { transform:scale(0.95); }
     .fab-label { position:fixed; bottom:38px; right:90px; z-index:500; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:5px 10px; font-size:0.78rem; color:var(--text); white-space:nowrap; pointer-events:none; opacity:0; transition:opacity 0.2s; box-shadow:0 2px 8px rgba(0,0,0,0.15); }
     .fab:hover + .fab-label { opacity:1; }
+    .weather-chip { font-size:0.72rem; color:var(--text-secondary); display:inline-flex; align-items:center; gap:2px; margin-top:3px; white-space:nowrap; }
+    .weather-min { opacity:0.6; }
+    .map-weather-chip { font-size:0.72rem; opacity:0.85; margin-left:auto; white-space:nowrap; }
+    .mob-weather-row { font-size:0.78rem; color:var(--text-secondary); margin-bottom:8px; display:flex; align-items:center; gap:6px; }
     @media print { body{background:white!important;color:black!important} .viz-menu,.app-header,.modal-overlay,.loading-screen{display:none!important} .view{display:block!important} #view-map{display:none!important} .cal-scroll-outer{overflow:visible} }
     @media (max-width:375px) { .map-view{flex-direction:column;height:auto} .map-sidebar{width:100%;min-width:100%;height:240px;border-right:none;border-bottom:1px solid var(--border)} .map-main{height:400px} }
 
@@ -278,7 +291,36 @@
       .map-mob-card-time { font-size:0.65rem; color:var(--text-secondary); font-weight:600; margin-bottom:2px; }
       .map-mob-card-name { font-size:0.8rem; font-weight:700; line-height:1.25; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     }
-    @media (max-width:768px) { .app-header{padding:9px 12px;gap:10px} .view-tab{padding:4px 9px;font-size:0.78rem} .map-sidebar{width:240px} }
+    @media (max-width:768px) { .app-header{padding:9px 12px;gap:10px} .view-tab{padding:4px 9px;font-size:0.78rem} .map-sidebar{width:240px} .tab-label{display:none} }
+    /* MOBILE CALENDAR */
+    .cal-day-nav { display:none; }
+    @media (max-width:768px) {
+      .cal-day-nav {
+        display:flex; align-items:center; gap:10px; padding:10px 14px;
+        position:sticky; top:56px; z-index:100;
+        background:var(--bg); border-bottom:1px solid var(--border);
+      }
+      .cal-day-nav-info { flex:1; min-width:0; }
+      .cal-day-nav-date { font-size:0.95rem; font-weight:700; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+      .cal-day-nav-theme { font-size:0.7rem; color:var(--text-secondary); margin-top:1px; }
+      .cal-day-nav-dots { display:flex; gap:5px; align-items:center; flex-shrink:0; }
+      .cal-day-nav-dot { width:6px; height:6px; border-radius:50%; background:var(--border-strong); transition:all 0.2s; cursor:pointer; flex-shrink:0; }
+      .cal-day-nav-dot.active { width:16px; border-radius:3px; }
+      .cal-nav-btn {
+        width:34px; height:34px; border-radius:8px; border:1px solid var(--border);
+        background:var(--surface); color:var(--text); cursor:pointer;
+        display:flex; align-items:center; justify-content:center; transition:all 0.2s; flex-shrink:0;
+      }
+      .cal-nav-btn:disabled { opacity:0.3; cursor:default; }
+      .cal-nav-btn:not(:disabled):hover { border-color:var(--accent); color:var(--accent); }
+      .cal-header-scroll { display:none; }
+      .cal-scroll-outer { overflow-x:hidden; }
+      .cal-wrap { min-width:0; }
+      .cal-header-row { display:none; }
+      .cal-body-row { display:flex; }
+      .cal-time-col { flex-shrink:0; width:58px; }
+      .cal-day-col { flex:1; min-width:0; }
+    }
   </style>
 </head>
 <body>
@@ -297,6 +339,7 @@
     </button>
     <div class="viz-menu-dropdown" id="vizMenuDropdown">
       <button onclick="cycleTheme()"><span id="themeIcon">🌙</span><span id="themeLabel">다크모드</span></button>
+      <button onclick="openCurrConverter()"><span>💱</span><span>환율 계산기</span></button>
       <button onclick="downloadImage()"><span>📥</span><span>PNG 저장</span></button>
       <button onclick="window.print()"><span>🖨️</span><span>인쇄 / PDF</span></button>
     </div>
@@ -304,22 +347,21 @@
   <header class="app-header animate">
     <div class="app-logo">
       <span class="app-logo-flag">🇲🇽</span>
-      <div class="app-logo-text">
-        <h1>멕시코시티</h1>
-        <div class="dates">3월 17일(화) ~ 21일(토) · 5일</div>
-      </div>
+      <span class="app-logo-trip">3/17 · 5d</span>
     </div>
     <div class="view-tabs" role="tablist">
-      <button class="view-tab active" onclick="switchView('calendar')" role="tab" aria-selected="true">📅 캘린더</button>
-      <button class="view-tab" onclick="switchView('map')" role="tab" aria-selected="false">🗺️ 지도</button>
-      <button class="view-tab" onclick="switchView('wishlist')" role="tab" aria-selected="false">⭐ 위시리스트</button>
+      <button class="view-tab active" onclick="switchView('calendar')" role="tab" aria-selected="true"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3V5.25M17.25 3V5.25M3 18.75V7.5C3 6.25736 4.00736 5.25 5.25 5.25H18.75C19.9926 5.25 21 6.25736 21 7.5V18.75M3 18.75C3 19.9926 4.00736 21 5.25 21H18.75C19.9926 21 21 19.9926 21 18.75M3 18.75V11.25C3 10.0074 4.00736 9 5.25 9H18.75C19.9926 9 21 10.0074 21 11.25V18.75M12 12.75H12.0075V12.7575H12V12.75ZM12 15H12.0075V15.0075H12V15ZM12 17.25H12.0075V17.2575H12V17.25ZM9.75 15H9.7575V15.0075H9.75V15ZM9.75 17.25H9.7575V17.2575H9.75V17.25ZM7.5 15H7.5075V15.0075H7.5V15ZM7.5 17.25H7.5075V17.2575H7.5V17.25ZM14.25 12.75H14.2575V12.7575H14.25V12.75ZM14.25 15H14.2575V15.0075H14.25V15ZM14.25 17.25H14.2575V17.2575H14.25V17.25ZM16.5 12.75H16.5075V12.7575H16.5V12.75ZM16.5 15H16.5075V15.0075H16.5V15"/></svg> <span class="tab-label">일정</span></button>
+      <button class="view-tab" onclick="switchView('map')" role="tab" aria-selected="false"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75002V15M15 9.00002V17.25M15.5031 20.7485L20.3781 18.311C20.7592 18.1204 21 17.7309 21 17.3047V4.82031C21 3.98401 20.1199 3.44007 19.3719 3.81408L15.5031 5.74847C15.1864 5.90683 14.8136 5.90683 14.4969 5.74847L9.50312 3.25158C9.1864 3.09322 8.8136 3.09322 8.49688 3.25158L3.62188 5.68908C3.24075 5.87965 3 6.26919 3 6.69531V19.1797C3 20.016 3.8801 20.56 4.62811 20.186L8.49688 18.2516C8.8136 18.0932 9.1864 18.0932 9.50312 18.2516L14.4969 20.7485C14.8136 20.9068 15.1864 20.9068 15.5031 20.7485Z"/></svg> <span class="tab-label">지도</span></button>
+      <button class="view-tab" onclick="switchView('wishlist')" role="tab" aria-selected="false"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M11.4806 3.4987C11.6728 3.03673 12.3272 3.03673 12.5193 3.4987L14.6453 8.61016C14.7263 8.80492 14.9095 8.93799 15.1197 8.95485L20.638 9.39724C21.1367 9.43722 21.339 10.0596 20.959 10.3851L16.7546 13.9866C16.5945 14.1238 16.5245 14.3391 16.5734 14.5443L17.8579 19.9292C17.974 20.4159 17.4446 20.8005 17.0176 20.5397L12.2932 17.6541C12.1132 17.5441 11.8868 17.5441 11.7068 17.6541L6.98238 20.5397C6.55539 20.8005 6.02594 20.4159 6.14203 19.9292L7.42652 14.5443C7.47546 14.3391 7.4055 14.1238 7.24531 13.9866L3.04099 10.3851C2.661 10.0596 2.86323 9.43722 3.36197 9.39724L8.88022 8.95485C9.09048 8.93799 9.27363 8.80492 9.35464 8.61016L11.4806 3.4987Z"/></svg> <span class="tab-label">장소</span></button>
     </div>
-    <span class="save-indicator" id="saveIndicator"></span>
   </header>
   <main id="main-content">
     <section id="view-calendar" class="view active" role="tabpanel">
-      <div class="cal-scroll-outer"><div class="cal-wrap">
+      <div class="cal-day-nav" id="calDayNav"></div>
+      <div class="cal-header-scroll" id="calHeaderScroll"><div class="cal-wrap">
         <div class="cal-header-row" id="calHeaderRow"></div>
+      </div></div>
+      <div class="cal-scroll-outer" id="calScrollOuter"><div class="cal-wrap">
         <div class="cal-body-row" id="calBodyRow"></div>
       </div></div>
     </section>
@@ -338,15 +380,37 @@
       </div>
     </section>
   </main>
-  <button class="fab" onclick="openWishAdd()" aria-label="위시리스트에 추가">
+  <button class="fab" onclick="openWishAdd()" aria-label="장소 추가">
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
   </button>
-  <span class="fab-label">위시리스트 추가</span>
+  <span class="fab-label">장소 추가</span>
+
+  <!-- CURRENCY CONVERTER MODAL -->
+  <div class="modal-overlay" id="currModal" onclick="if(event.target===this)closeCurrConverter()" role="dialog" aria-modal="true">
+    <div class="modal" style="max-width:320px">
+      <div class="modal-head"><h2>💱 환율 계산기</h2><button class="modal-close" onclick="closeCurrConverter()">✕</button></div>
+      <div class="curr-fields">
+        <div class="curr-field">
+          <span class="curr-field-label">🇲🇽 MXN</span>
+          <input type="number" id="currMXN" value="1000" min="0" oninput="currConvert('MXN')">
+        </div>
+        <div class="curr-divider">=</div>
+        <div class="curr-field">
+          <span class="curr-field-label">🇺🇸 USD</span>
+          <input type="number" id="currUSD" min="0" oninput="currConvert('USD')">
+        </div>
+      </div>
+      <div class="curr-footer">
+        <span class="curr-rate-info" id="currRateInfo">환율 불러오는 중…</span>
+        <button class="curr-refresh" onclick="refreshCurrRates()">↻ 새로고침</button>
+      </div>
+    </div>
+  </div>
 
   <!-- WISHLIST MODAL -->
   <div class="modal-overlay" id="wishModal" role="dialog" aria-modal="true">
     <div class="modal">
-      <div class="modal-head"><h2 id="wishModalTitle">위시리스트 추가</h2><button class="modal-close" onclick="closeWishModal()">✕</button></div>
+      <div class="modal-head"><h2 id="wishModalTitle">장소 추가</h2><button class="modal-close" onclick="closeWishModal()">✕</button></div>
       <form id="wishForm" onsubmit="saveWishItem(event)">
         <div class="form-group"><label class="form-label" for="wishMapsUrl">구글맵 링크 <span style="color:var(--text-secondary);font-weight:400">(붙여넣으면 자동 파싱)</span></label><input type="url" class="form-input" id="wishMapsUrl" placeholder="https://maps.app.goo.gl/..." oninput="parseGmapsUrl(this.value)"></div>
         <div class="form-group"><label class="form-label" for="wishName">장소 이름 <span style="color:var(--negative)">*</span></label><input type="text" class="form-input" id="wishName" required placeholder="예: Contramar"></div>
@@ -454,6 +518,23 @@
     })();
 
     // ==================== CONSTANTS ====================
+    // ==================== WEATHER ====================
+    var weatherData = {}; // keyed by 'YYYY-MM-DD'
+    function wmoIcon(c){if(c===0)return'☀️';if(c<=2)return'🌤️';if(c===3)return'☁️';if(c<=48)return'🌫️';if(c<=55)return'🌦️';if(c<=65)return'🌧️';if(c<=77)return'❄️';if(c<=82)return'🌦️';if(c<=86)return'❄️';return'⛈️';}
+    function dayIsoDate(day){var ds=day.dateShort||'';return'2026-03-'+(ds.length<2?'0'+ds:ds);}
+    function weatherChip(day){var w=weatherData[dayIsoDate(day)];if(!w)return'';return'<span class="weather-chip">'+w.icon+' '+w.tempMax+'°<span class="weather-min">/'+w.tempMin+'°</span></span>';}
+    function mapWeatherChip(day){var w=weatherData[dayIsoDate(day)];if(!w)return'';return'<span class="map-weather-chip">'+w.icon+' '+w.tempMax+'°/'+w.tempMin+'°</span>';}
+    async function fetchWeather(){
+      try{
+        var days=DAYS.length?DAYS:SEED_DAYS;
+        var start=dayIsoDate(days[0]),end=dayIsoDate(days[days.length-1]);
+        var url='https://api.open-meteo.com/v1/forecast?latitude=19.43&longitude=-99.13&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=America%2FMexico_City&start_date='+start+'&end_date='+end;
+        var resp=await fetch(url);var data=await resp.json();if(!data.daily)return;
+        data.daily.time.forEach(function(date,i){weatherData[date]={tempMax:Math.round(data.daily.temperature_2m_max[i]),tempMin:Math.round(data.daily.temperature_2m_min[i]),code:data.daily.weathercode[i],icon:wmoIcon(data.daily.weathercode[i])};});
+        renderCal();if(currentView==='map')renderMapUI();
+      }catch(e){console.warn('Weather fetch failed:',e);}
+    }
+
     var CAT = {
       food:{label:'음식',color:'#f97316',bg:'rgba(249,115,22,0.16)'},
       bar:{label:'바/음료',color:'#a855f7',bg:'rgba(168,85,247,0.16)'},
@@ -467,8 +548,9 @@
     var HOUR_PX=64,START_HR=8,END_HR=24,TOTAL_HRS=16;
     var DAYS=[],WISHLIST=[];
     var currentView='calendar',editingDayId=null,editingEvId=null,addingDayId=null;
-    var mapFilter='all',leafletMap=null,mapMarkers=[],tileLayer=null;
+    var mapFilter='all',leafletMap=null,mapMarkers=[],tileLayer=null,mapRoutes=[],_routeBuildId=0;
     var mapMobDay=0; // mobile map: index of currently selected day
+    var calPage=0; // mobile calendar: index of visible day
     var wishCatFilter='all',wishStatusFilter='all',editingWishId=null;
     var calPickDayId=null,calPickTime=null;
 
@@ -511,22 +593,25 @@
       try { DOC_REF.set({ days: DAYS, wishlist: WISHLIST }); } catch(e) {}
     }
 
+    // ==================== ICONS (Heroicons v2 outline) ====================
+    var ICONS = {
+      calendar: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3V5.25M17.25 3V5.25M3 18.75V7.5C3 6.25736 4.00736 5.25 5.25 5.25H18.75C19.9926 5.25 21 6.25736 21 7.5V18.75M3 18.75C3 19.9926 4.00736 21 5.25 21H18.75C19.9926 21 21 19.9926 21 18.75M3 18.75V11.25C3 10.0074 4.00736 9 5.25 9H18.75C19.9926 9 21 10.0074 21 11.25V18.75M12 12.75H12.0075V12.7575H12V12.75ZM12 15H12.0075V15.0075H12V15ZM12 17.25H12.0075V17.2575H12V17.25ZM9.75 15H9.7575V15.0075H9.75V15ZM9.75 17.25H9.7575V17.2575H9.75V17.25ZM7.5 15H7.5075V15.0075H7.5V15ZM7.5 17.25H7.5075V17.2575H7.5V17.25ZM14.25 12.75H14.2575V12.7575H14.25V12.75ZM14.25 15H14.2575V15.0075H14.25V15ZM14.25 17.25H14.2575V17.2575H14.25V17.25ZM16.5 12.75H16.5075V12.7575H16.5V12.75ZM16.5 15H16.5075V15.0075H16.5V15"/></svg>',
+      map: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75002V15M15 9.00002V17.25M15.5031 20.7485L20.3781 18.311C20.7592 18.1204 21 17.7309 21 17.3047V4.82031C21 3.98401 20.1199 3.44007 19.3719 3.81408L15.5031 5.74847C15.1864 5.90683 14.8136 5.90683 14.4969 5.74847L9.50312 3.25158C9.1864 3.09322 8.8136 3.09322 8.49688 3.25158L3.62188 5.68908C3.24075 5.87965 3 6.26919 3 6.69531V19.1797C3 20.016 3.8801 20.56 4.62811 20.186L8.49688 18.2516C8.8136 18.0932 9.1864 18.0932 9.50312 18.2516L14.4969 20.7485C14.8136 20.9068 15.1864 20.9068 15.5031 20.7485Z"/></svg>',
+      star: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M11.4806 3.4987C11.6728 3.03673 12.3272 3.03673 12.5193 3.4987L14.6453 8.61016C14.7263 8.80492 14.9095 8.93799 15.1197 8.95485L20.638 9.39724C21.1367 9.43722 21.339 10.0596 20.959 10.3851L16.7546 13.9866C16.5945 14.1238 16.5245 14.3391 16.5734 14.5443L17.8579 19.9292C17.974 20.4159 17.4446 20.8005 17.0176 20.5397L12.2932 17.6541C12.1132 17.5441 11.8868 17.5441 11.7068 17.6541L6.98238 20.5397C6.55539 20.8005 6.02594 20.4159 6.14203 19.9292L7.42652 14.5443C7.47546 14.3391 7.4055 14.1238 7.24531 13.9866L3.04099 10.3851C2.661 10.0596 2.86323 9.43722 3.36197 9.39724L8.88022 8.95485C9.09048 8.93799 9.27363 8.80492 9.35464 8.61016L11.4806 3.4987Z"/></svg>',
+    };
+    function icon(name, size) { size=size||16; return ICONS[name].replace('<svg ','<svg width="'+size+'" height="'+size+'" '); }
+
     var saveTimer = null;
     function scheduleSave() {
-      var i = document.getElementById('saveIndicator');
-      if (i) { i.textContent = '저장 중…'; i.className = 'save-indicator saving'; }
       clearTimeout(saveTimer);
       saveTimer = setTimeout(doSave, 1000);
     }
     async function doSave() {
-      var i = document.getElementById('saveIndicator');
       lsSave();
       try {
         await DOC_REF.set({ days: DAYS, wishlist: WISHLIST });
-        if (i) { i.textContent = '저장됨 ✓'; i.className = 'save-indicator saved'; setTimeout(function(){ i.className='save-indicator'; }, 2000); }
       } catch(e) {
         console.error('Firestore save failed:', e);
-        if (i) { i.textContent = '저장됨 (로컬) ✓'; i.className = 'save-indicator saved'; setTimeout(function(){ i.className='save-indicator'; }, 2000); }
       }
     }
 
@@ -579,11 +664,37 @@
     }
 
     // ==================== CALENDAR ====================
-    function renderCal(){renderCalHeader();renderCalBody();}
+    function renderCal(){renderCalDayNav();renderCalHeader();renderCalBody();}
+    function renderCalDayNav(){
+      var el=document.getElementById('calDayNav');if(!el)return;
+      if(!DAYS.length){el.innerHTML='';return;}
+      var day=DAYS[calPage];if(!day)return;
+      var dots=DAYS.map(function(d,i){
+        return '<div class="cal-day-nav-dot'+(i===calPage?' active':'')+'" style="'+(i===calPage?'background:'+day.color+';':'')+'" onclick="setCalPage('+i+')" title="Day '+(i+1)+'"></div>';
+      }).join('');
+      el.innerHTML=
+        '<button class="cal-nav-btn" onclick="setCalPage('+(calPage-1)+')"'+(calPage===0?' disabled':'')+'>'+
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>'+
+        '</button>'+
+        '<div class="cal-day-nav-info">'+
+          '<div class="cal-day-nav-date"><span class="cal-day-dot" style="background:'+day.color+'"></span>'+day.date+'</div>'+
+          +(weatherChip(day)?'<div class="cal-day-nav-theme">'+weatherChip(day)+'</div>':'')+
+        '</div>'+
+        '<div class="cal-day-nav-dots">'+dots+'</div>'+
+        '<button class="cal-nav-btn" onclick="goToMapDay(\''+day.id+'\')" title="지도보기">'+icon('map',14)+'</button>'+
+        '<button class="cal-nav-btn" onclick="setCalPage('+(calPage+1)+')"'+(calPage===DAYS.length-1?' disabled':'')+'>'+
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>'+
+        '</button>';
+    }
+    function setCalPage(idx){
+      calPage=Math.max(0,Math.min(DAYS.length-1,idx));
+      renderCalDayNav();renderCalBody();
+      // scrollCalToFirstEvent and renderCalNowLine are called inside renderCalBody via setTimeout
+    }
     function renderCalHeader(){
       var el=document.getElementById('calHeaderRow'),h='<div class="cal-header-time"></div>';
       DAYS.forEach(function(day){
-        h+='<div class="cal-day-header" style="border-left-color:'+day.color+'40"><div class="cal-day-date"><span class="cal-day-dot" style="background:'+day.color+'"></span><span>'+day.date+'</span></div><div class="cal-day-theme">'+day.theme+'</div><button class="cal-day-add" onclick="event.stopPropagation();openCalPickModal(\''+day.id+'\',null)">+ 추가</button></div>';
+        h+='<div class="cal-day-header" style="border-left-color:'+day.color+'40"><div class="cal-day-date"><span class="cal-day-dot" style="background:'+day.color+'"></span><span>'+day.date+'</span></div>'+weatherChip(day)+'<div style="display:flex;gap:5px;margin-top:4px"><button class="cal-day-add" onclick="event.stopPropagation();openCalPickModal(\''+day.id+'\',null)">+ 추가</button><button class="cal-day-add" onclick="event.stopPropagation();goToMapDay(\''+day.id+'\')" title="지도보기" style="padding:3px 7px">'+icon('map',12)+'</button></div></div>';
       });
       el.innerHTML=h;
     }
@@ -591,9 +702,11 @@
       var el=document.getElementById('calBodyRow'),h='<div class="cal-time-col">';
       for(var hr=START_HR;hr<END_HR;hr++){var lbl=hr===12?'12PM':hr>12?(hr-12)+'PM':hr+'AM';h+='<div class="cal-time-slot">'+lbl+'</div>';}
       h+='</div>';
-      DAYS.forEach(function(day){
+      var isMob=window.innerWidth<=768;
+      var daysToRender=isMob?(DAYS[calPage]?[DAYS[calPage]]:[]):DAYS;
+      daysToRender.forEach(function(day){
         var sorted=sortEvs(day.events),layout=computeEventLayout(day.events);
-        h+='<div class="cal-day-col" style="border-left-color:'+day.color+'25" onclick="onCalColClick(event,\''+day.id+'\')">';
+        h+='<div class="cal-day-col" data-dayid="'+day.id+'" style="border-left-color:'+day.color+'25" onclick="onCalColClick(event,\''+day.id+'\')">';
         for(var i=0;i<TOTAL_HRS;i++)h+='<div class="hour-line" style="top:'+(i*HOUR_PX)+'px"></div>';
         sorted.forEach(function(ev){
           var top=evTop(ev.time),height=Math.max(evH(ev.time,ev.endTime),46);
@@ -611,6 +724,34 @@
         h+='</div>';
       });
       el.innerHTML=h;
+      setTimeout(function(){ scrollCalToFirstEvent(); renderCalNowLine(); }, 0);
+    }
+    function scrollCalToFirstEvent(){
+      var isMob=window.innerWidth<=768;
+      var days=isMob?(DAYS[calPage]?[DAYS[calPage]]:[]):DAYS;
+      var mins=[];
+      days.forEach(function(d){d.events.forEach(function(e){if(e.time)mins.push(toMin(e.time));});});
+      if(!mins.length)return;
+      var earliest=Math.min.apply(null,mins);
+      var scrollTop=Math.max(0,((earliest-START_HR*60)/60)*HOUR_PX-56);
+      var outer=document.getElementById('calScrollOuter');
+      if(outer)outer.scrollTop=scrollTop;
+    }
+    function renderCalNowLine(){
+      document.querySelectorAll('.cal-now-line').forEach(function(el){el.remove();});
+      var now=new Date();
+      var isoToday=now.getFullYear()+'-'+(('0'+(now.getMonth()+1)).slice(-2))+'-'+(('0'+now.getDate()).slice(-2));
+      var mins=now.getHours()*60+now.getMinutes();
+      if(mins<START_HR*60||mins>=END_HR*60)return;
+      var top=((mins-START_HR*60)/60)*HOUR_PX;
+      DAYS.forEach(function(day){
+        if(dayIsoDate(day)!==isoToday)return;
+        var col=document.querySelector('.cal-day-col[data-dayid="'+day.id+'"]');
+        if(!col)return;
+        var line=document.createElement('div');
+        line.className='cal-now-line';line.style.top=top+'px';
+        col.appendChild(line);
+      });
     }
     function onCalColClick(e,dayId){
       if(e.target.closest('.cal-event')||e.target.closest('.cal-day-add'))return;
@@ -626,7 +767,7 @@
       document.getElementById('calPickTitle').textContent=(day?day.date:'')+tl+' 일정 추가';
       var unscheduled=WISHLIST.filter(function(w){return!w.calEventId;}),h='';
       if(unscheduled.length===0){
-        h='<div style="text-align:center;padding:32px 16px;color:var(--text-secondary)"><div style="font-size:2rem;margin-bottom:8px">⭐</div><div style="font-weight:600;margin-bottom:4px">추가 가능한 항목 없음</div><div style="font-size:0.82rem">하단 + 버튼으로 새 장소를 위시리스트에 추가하세요</div></div>';
+        h='<div style="text-align:center;padding:32px 16px;color:var(--text-secondary)"><div style="font-size:2rem;margin-bottom:8px">⭐</div><div style="font-weight:600;margin-bottom:4px">추가 가능한 항목 없음</div><div style="font-size:0.82rem">하단 + 버튼으로 새 장소를 추가하세요</div></div>';
       } else {
         h='<div style="font-size:0.78rem;color:var(--text-secondary)">추가할 장소 선택:</div><div class="cal-pick-list">';
         unscheduled.forEach(function(w){
@@ -647,10 +788,26 @@
     }
 
     // ==================== MAP ====================
+    function goToCalDay(dayId){
+      var idx=DAYS.findIndex(function(d){return d.id===dayId;});
+      if(idx>=0)calPage=idx;
+      switchView('calendar');
+    }
+    function goToMapDay(dayId){
+      mapFilter=dayId;
+      var idx=DAYS.findIndex(function(d){return d.id===dayId;});
+      if(idx>=0)mapMobDay=idx;
+      switchView('map');
+      if(leafletMap)setTimeout(function(){rebuildMarkers();fitMapToDay(mapMobDay);},250);
+    }
     function renderMapUI(){
       var fr=document.getElementById('mapFilterRow');
-      var fh='<button class="map-filter-btn" onclick="setMapFilter(\'all\',this)" style="background:var(--accent);color:white;border-color:transparent">전체</button>';
-      DAYS.forEach(function(d){fh+='<button class="map-filter-btn" onclick="setMapFilter(\''+d.id+'\',this)">3/'+d.dateShort+'</button>';});
+      var isAll=mapFilter==='all';
+      var fh='<button class="map-filter-btn'+(isAll?' active':'')+'" onclick="setMapFilter(\'all\',this)"'+(isAll?' style="background:var(--accent);color:white;border-color:transparent"':'')+'>전체</button>';
+      DAYS.forEach(function(d){
+        var active=mapFilter===d.id;
+        fh+='<button class="map-filter-btn'+(active?' active':'')+'" onclick="setMapFilter(\''+d.id+'\',this)"'+(active?' style="background:'+d.color+';color:white;border-color:transparent"':'')+'>3/'+d.dateShort+'</button>';
+      });
       fr.innerHTML=fh;renderMapList();
       renderMapMobTabs();renderMapMobSheet();
     }
@@ -677,12 +834,14 @@
       el.innerHTML=
         '<div class="map-mob-handle"></div>'+
         '<div class="map-mob-label">Day '+(mapMobDay+1)+'</div>'+
+        (weatherData[dayIsoDate(day)]?'<div class="mob-weather-row">'+weatherData[dayIsoDate(day)].icon+' <span>'+weatherData[dayIsoDate(day)].tempMax+'° / '+weatherData[dayIsoDate(day)].tempMin+'°</span></div>':'')+
         '<div class="map-mob-title-row">'+
           '<div class="map-mob-title">'+day.date+' — '+day.theme+'</div>'+
           '<div class="map-mob-btns">'+
             '<button class="map-mob-btn" onclick="fitMapToDay('+mapMobDay+')" title="이 날 전체 보기">'+
               '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>'+
             '</button>'+
+            '<button class="map-mob-btn" onclick="goToCalDay(\''+day.id+'\')" title="캘린더로 보기">'+icon('calendar',16)+'</button>'+
           '</div>'+
         '</div>'+
         '<div class="map-mob-cards">'+cards+'</div>';
@@ -706,7 +865,7 @@
       var c=document.getElementById('mapEventList'),h='';
       DAYS.forEach(function(day){
         if(mapFilter!=='all'&&mapFilter!==day.id)return;
-        h+='<div class="map-group"><div class="map-group-title" style="background:'+day.color+'20;color:'+day.color+'"><span style="width:7px;height:7px;border-radius:50%;background:'+day.color+';display:inline-block;"></span>'+day.date+' · '+day.theme+'</div>';
+        h+='<div class="map-group"><div class="map-group-title" style="background:'+day.color+'20;color:'+day.color+';display:flex;align-items:center;justify-content:space-between"><span style="display:flex;align-items:center;gap:5px"><span style="width:7px;height:7px;border-radius:50%;background:'+day.color+';display:inline-block;"></span>'+day.date+' · '+day.theme+mapWeatherChip(day)+'</span><button onclick="goToCalDay(\''+day.id+'\')" title="캘린더로 보기" style="background:none;border:none;cursor:pointer;padding:0 2px;opacity:0.75;display:flex;align-items:center">'+icon('calendar',13)+'</button></div>';
         sortEvs(day.events).forEach(function(ev){
           if(!ev.lat)return;
           var cat=CAT[ev.category]||CAT.other;
@@ -744,7 +903,36 @@
       if(tileLayer)leafletMap.removeLayer(tileLayer);
       tileLayer=L.tileLayer(dark?'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png':'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'© OpenStreetMap, © CARTO',subdomains:'abcd',maxZoom:19}).addTo(leafletMap);
     }
+    function clearRoutes(){
+      mapRoutes.forEach(function(r){leafletMap.removeLayer(r);});mapRoutes=[];
+    }
+    async function buildRoutes(){
+      var bid=++_routeBuildId;
+      var days=DAYS.filter(function(d){return mapFilter==='all'||mapFilter===d.id;});
+      for(var i=0;i<days.length;i++){
+        var day=days[i];
+        var pts=sortEvs(day.events).filter(function(e){return e.lat&&e.lng;});
+        if(pts.length<2)continue;
+        var coords=pts.map(function(e){return e.lng+','+e.lat;}).join(';');
+        try{
+          var r=await fetch('https://router.project-osrm.org/route/v1/walking/'+coords+'?overview=full&geometries=geojson');
+          var data=await r.json();
+          if(bid!==_routeBuildId)return;
+          if(data.routes&&data.routes[0]){
+            var latlngs=data.routes[0].geometry.coordinates.map(function(c){return[c[1],c[0]];});
+            var poly=L.polyline(latlngs,{color:day.color,weight:3,opacity:0.55,lineJoin:'round'});
+            poly.addTo(leafletMap);mapRoutes.push(poly);
+          }
+        }catch(e){
+          if(bid!==_routeBuildId)return;
+          var latlngs=pts.map(function(e){return[e.lat,e.lng];});
+          var poly=L.polyline(latlngs,{color:day.color,weight:2,opacity:0.35,dashArray:'6 5'});
+          poly.addTo(leafletMap);mapRoutes.push(poly);
+        }
+      }
+    }
     function rebuildMarkers(){
+      clearRoutes();
       mapMarkers.forEach(function(m){leafletMap.removeLayer(m);});mapMarkers=[];var n=1;
       DAYS.forEach(function(day){
         if(mapFilter!=='all'&&mapFilter!==day.id)return;
@@ -766,6 +954,7 @@
           m._evData={dayId:day.id,evId:ev.id};mapMarkers.push(m);n++;
         });
       });
+      buildRoutes();
     }
     function focusMarker(dayId,evId){var ev=getEv(dayId,evId);if(!ev||!ev.lat||!leafletMap)return;leafletMap.setView([ev.lat,ev.lng],16,{animate:true});mapMarkers.forEach(function(m){if(m._evData&&m._evData.evId===evId)m.openPopup();});}
 
@@ -805,7 +994,7 @@
         return(wishCatFilter==='all'||w.category===wishCatFilter)&&(wishStatusFilter==='all'||(wishStatusFilter==='scheduled'&&w.visited)||(wishStatusFilter==='unscheduled'&&!w.visited));
       });
       var total=WISHLIST.length,done=WISHLIST.filter(function(w){return w.visited;}).length;
-      var h='<div class="wl-toolbar"><div class="wl-toolbar-top"><span class="wl-title">⭐ 위시리스트</span><span class="wl-count">'+done+'/'+total+' 일정추가됨</span></div><div class="wl-filter-rows"><div class="wl-filter-group">';
+      var h='<div class="wl-toolbar"><div class="wl-toolbar-top"><span class="wl-title">⭐ 장소</span><span class="wl-count">'+done+'/'+total+' 일정추가됨</span></div><div class="wl-filter-rows"><div class="wl-filter-group">';
       h+=wlCatBtn('all','전체',wishCatFilter)+wlCatBtn('food','🍽️ 음식',wishCatFilter)+wlCatBtn('bar','🍹 바',wishCatFilter)+wlCatBtn('culture','🏛️ 문화',wishCatFilter);
       h+='</div><div class="wl-filter-group">';
       h+=wlSBtn('all','전체',wishStatusFilter)+wlSBtn('unscheduled','미추가',wishStatusFilter)+wlSBtn('scheduled','일정추가됨',wishStatusFilter);
@@ -852,9 +1041,9 @@
     }
     function applyGmapsInfo(url){
       var name='';
-      var nm=url.match(/maps\/place\/([^/@?&]+)/);
-      if(nm)name=decodeURIComponent(nm[1]).replace(/\+/g,' ').replace(/_/g,' ').replace(/[,+]\d.*$/,'').trim();
-      if(!name){var qm=url.match(/[?&]q=([^&@,]+)/);if(qm)name=decodeURIComponent(qm[1]).replace(/\+/g,' ').trim();}
+      var nm=url.match(/maps\/(?:place|search)\/([^/@?,&]+)/);
+      if(nm)name=decodeURIComponent(nm[1]).replace(/\+/g,' ').replace(/_/g,' ').trim();
+      if(!name){var qm=url.match(/[?&](?:q|query)=([^&@,]+)/);if(qm)name=decodeURIComponent(qm[1]).replace(/\+/g,' ').trim();}
       var nf=document.getElementById('wishName');
       if(name&&nf&&!nf.value){nf.value=name;autoDetectCategory(name);}
     }
@@ -869,7 +1058,7 @@
     }
     function openWishAdd(){
       editingWishId=null;
-      document.getElementById('wishModalTitle').textContent='위시리스트 추가';
+      document.getElementById('wishModalTitle').textContent='장소 추가';
       document.getElementById('wishMapsUrl').value='';document.getElementById('wishName').value='';
       document.getElementById('wishNotes').value='';document.getElementById('wishCategory').value='food';
       document.getElementById('wishDeleteBtn').style.display='none';document.getElementById('wishSaveBtn').textContent='추가';
@@ -879,7 +1068,7 @@
     function editWishItem(id){
       var w=WISHLIST.find(function(x){return x.id===id;});if(!w)return;
       editingWishId=id;
-      document.getElementById('wishModalTitle').textContent='위시리스트 수정';
+      document.getElementById('wishModalTitle').textContent='장소 수정';
       document.getElementById('wishMapsUrl').value=w.mapsUrl||'';document.getElementById('wishName').value=w.name||'';
       document.getElementById('wishNotes').value=w.notes||'';document.getElementById('wishCategory').value=w.category||'food';
       document.getElementById('wishDeleteBtn').style.display='';document.getElementById('wishSaveBtn').textContent='저장';
@@ -903,7 +1092,7 @@
       closeWishModal();rerender();
     }
     function deleteWishItem(){
-      if(!editingWishId)return;if(!confirm('위시리스트에서 삭제할까요?'))return;
+      if(!editingWishId)return;if(!confirm('장소를 삭제할까요?'))return;
       var w=WISHLIST.find(function(x){return x.id===editingWishId;});
       if(w&&w.calDayId&&w.calEventId){var day=DAYS.find(function(d){return d.id===w.calDayId;});if(day)day.events=day.events.filter(function(e){return e.id!==w.calEventId;});}
       WISHLIST=WISHLIST.filter(function(x){return x.id!==editingWishId;});closeWishModal();rerender();
@@ -985,6 +1174,39 @@
       closeSchedModal();rerender();
     }
 
+    // ==================== CURRENCY CONVERTER ====================
+    var currRate = null; // USD per 1 MXN
+    async function loadCurrRates(){
+      try{
+        var r=await fetch('https://api.frankfurter.app/latest?from=MXN&to=USD');
+        var d=await r.json();
+        currRate=d.rates.USD;
+        currConvert('MXN');
+        var info=document.getElementById('currRateInfo');
+        if(info)info.textContent='1 MXN = '+currRate.toFixed(4)+' USD · '+d.date;
+      }catch(e){
+        currRate=0.0515;
+        currConvert('MXN');
+        var info=document.getElementById('currRateInfo');
+        if(info)info.textContent='오프라인 환율 (근사치)';
+      }
+    }
+    function currConvert(from){
+      if(!currRate)return;
+      var mxnEl=document.getElementById('currMXN'),usdEl=document.getElementById('currUSD');
+      if(!mxnEl||!usdEl)return;
+      if(from==='MXN'){var v=parseFloat(mxnEl.value)||0;usdEl.value=+(v*currRate).toFixed(2);}
+      else{var v=parseFloat(usdEl.value)||0;mxnEl.value=+(v/currRate).toFixed(2);}
+    }
+    function openCurrConverter(){
+      document.getElementById('vizMenuDropdown').classList.remove('open');
+      document.getElementById('currModal').classList.add('open');
+      if(!currRate)loadCurrRates();else currConvert('MXN');
+      setTimeout(function(){var el=document.getElementById('currMXN');if(el){el.focus();el.select();}},100);
+    }
+    function closeCurrConverter(){document.getElementById('currModal').classList.remove('open');}
+    function refreshCurrRates(){currRate=null;var info=document.getElementById('currRateInfo');if(info)info.textContent='환율 불러오는 중…';loadCurrRates();}
+
     // ==================== MENU ====================
     function toggleMenu(){document.getElementById('vizMenuDropdown').classList.toggle('open');}
     document.addEventListener('click',function(ev){
@@ -993,7 +1215,7 @@
       if(ev.target===document.getElementById('wishModal'))closeWishModal();
     });
     document.addEventListener('keydown',function(ev){
-      if(ev.key==='Escape'){document.getElementById('vizMenuDropdown').classList.remove('open');closeEditModal();closeWishModal();closeCalPickModal();closeSchedModal();}
+      if(ev.key==='Escape'){document.getElementById('vizMenuDropdown').classList.remove('open');closeEditModal();closeWishModal();closeCalPickModal();closeSchedModal();closeCurrConverter();}
     });
 
     // ==================== THEME ====================
@@ -1026,6 +1248,12 @@
       }
       document.getElementById('loadingScreen').style.display = 'none';
       renderCal();
+      fetchWeather();
+      document.getElementById('calScrollOuter').addEventListener('scroll', function() {
+        var hs = document.getElementById('calHeaderScroll');
+        if (hs) hs.scrollLeft = this.scrollLeft;
+      });
+      setInterval(renderCalNowLine, 60000);
     });
   </script>
 </body>
