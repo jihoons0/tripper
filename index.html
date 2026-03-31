@@ -2074,7 +2074,7 @@
       url=(url||'').trim();if(!url)return;
       var mu=document.getElementById('editMapsUrl');
       if(/maps\.app\.goo\.gl|goo\.gl\/maps/.test(url)){
-        fetch('/api/expand-url?url='+encodeURIComponent(url))
+        fetch('https://palo-travel-expand-url.jihoon8846.workers.dev/api/expand-url?url='+encodeURIComponent(url))
           .then(function(r){return r.json();})
           .then(function(d){
             if(d.lat!=null)mu.dataset.lat=d.lat;if(d.lng!=null)mu.dataset.lng=d.lng;
@@ -2173,7 +2173,7 @@
       url=(url||'').trim();if(!url)return;
       if(/maps\.app\.goo\.gl|goo\.gl\/maps/.test(url)){
         var nf=document.getElementById('wishName');if(nf)nf.placeholder='불러오는 중…';
-        fetch('/api/expand-url?url='+encodeURIComponent(url))
+        fetch('https://palo-travel-expand-url.jihoon8846.workers.dev/api/expand-url?url='+encodeURIComponent(url))
           .then(function(r){return r.json();})
           .then(function(d){
             var nf2=document.getElementById('wishName');if(nf2)nf2.placeholder='예: Contramar';
