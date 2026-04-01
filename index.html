@@ -228,7 +228,7 @@
     .cal-pick-sub { font-size:0.75rem; color:var(--text-secondary); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-top:1px; }
     .cal-pick-cat { font-size:0.68rem; padding:2px 7px; border-radius:8px; flex-shrink:0; }
     /* VIZ MENU */
-    .viz-menu { position:fixed; top:12px; right:14px; z-index:9999; }
+    .viz-menu { position:fixed; top:0; right:12px; z-index:9999; height:56px; display:flex; align-items:center; }
     .viz-menu-toggle { width:40px; height:40px; border-radius:10px; background:var(--surface); border:1px solid var(--border); color:var(--text); cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(12px); transition:all 0.2s; }
     .viz-menu-toggle:hover { background:var(--surface-hover); }
     .viz-menu-dropdown { position:absolute; top:48px; right:0; min-width:190px; background:var(--surface); border:1px solid var(--border); border-radius:11px; padding:6px; opacity:0; visibility:hidden; transform:translateY(-6px); transition:all 0.2s; }
@@ -333,7 +333,7 @@
       .map-mob-card-time { font-size:0.65rem; color:var(--text-secondary); font-weight:600; margin-bottom:2px; }
       .map-mob-card-name { font-size:0.8rem; font-weight:700; line-height:1.25; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     }
-    @media (max-width:768px) { .app-header{padding:9px 12px;gap:10px} .view-tab{padding:4px 9px;font-size:0.78rem} .map-sidebar{width:240px} .tab-label{display:none} }
+    @media (max-width:768px) { .app-header{padding:9px 12px;padding-right:58px;gap:10px} .view-tab{padding:4px 9px;font-size:0.78rem} .map-sidebar{width:240px} .tab-label{display:none} .app-header .view-tabs{position:static;transform:none;margin-left:auto} .viz-menu-toggle{width:34px;height:34px;border-radius:8px} }
     /* DASHBOARD */
     .dash-view { max-width:900px; margin:0 auto; padding:32px 20px 120px; }
     .dash-hero { display:flex; flex-direction:column; align-items:center; padding:8px 0 0; user-select:none; }
@@ -341,22 +341,32 @@
     #cobeCanvas { width:100%; height:100%; cursor:grab; display:block; }
     #cobeCanvas:active { cursor:grabbing; }
     #globeOverlay { position:absolute; inset:0; pointer-events:none; }
-    .globe-flag { position:absolute; transform:translate(-50%,-50%); font-size:26px; line-height:1; filter:drop-shadow(0 2px 6px rgba(0,0,0,0.55)); display:none; }
+    .globe-flag { position:absolute; transform:translate(-50%,-50%); font-size:28px; line-height:1; display:none; }
     .globe-legend { display:flex; flex-wrap:wrap; gap:7px; justify-content:center; margin-top:14px; }
     .globe-chip { display:flex; align-items:center; gap:5px; padding:4px 10px 4px 7px; border-radius:20px; background:var(--surface); border:1px solid var(--border); font-size:0.76rem; }
     .globe-chip-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
     .globe-chip-city { font-weight:600; color:var(--text); }
     .globe-chip-count { font-size:0.7rem; font-weight:700; color:var(--text-secondary); background:var(--surface-hover); border-radius:10px; padding:1px 6px; }
-    @media (max-width:520px) { .globe-wrap { width:320px; height:320px; } .globe-flag { font-size:18px; } }
+    @media (max-width:520px) { .globe-wrap { width:320px; height:320px; } .globe-flag { font-size:22px; } }
     .dash-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px; margin-top:24px; }
-    .trip-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:20px; cursor:pointer; transition:transform var(--dur-small) var(--ease-out), box-shadow var(--dur-small), border-color var(--dur-small); will-change:transform; }
+    .hometown-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:16px 20px; cursor:pointer; display:flex; align-items:center; gap:12px; transition:transform var(--dur-small) var(--ease-out), box-shadow var(--dur-small), border-color var(--dur-small); position:relative; }
+    .hometown-card:hover { box-shadow:0 8px 32px rgba(0,0,0,0.14); transform:translateY(-2px); border-color:var(--border-strong); }
+    .hometown-card:active { transform:scale(0.99); }
+    .hometown-card .ht-info { flex:1; min-width:0; }
+    .hometown-card .ht-label { font-size:0.7rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.04em; display:flex; align-items:center; gap:3px; }
+    .hometown-card .ht-city { font-size:1rem; font-weight:700; margin-top:1px; }
+    .hometown-card .ht-saved { display:flex; align-items:center; gap:4px; font-size:0.82rem; font-weight:600; color:var(--accent); background:var(--surface-hover); padding:4px 10px; border-radius:20px; white-space:nowrap; }
+    .hometown-card .ht-actions { display:flex; gap:2px; }
+    .dash-cta-btn { display:inline-flex; align-items:center; gap:6px; padding:8px 20px; border-radius:10px; border:1px solid var(--border); background:var(--surface); color:var(--text); font-family:inherit; font-size:0.82rem; font-weight:600; cursor:pointer; transition:all 0.15s; }
+    .dash-cta-btn:hover { background:var(--surface-hover); border-color:var(--border-strong); box-shadow:0 4px 16px rgba(0,0,0,0.1); transform:translateY(-1px); }
+    .trip-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:18px 20px; cursor:pointer; transition:transform var(--dur-small) var(--ease-out), box-shadow var(--dur-small), border-color var(--dur-small); will-change:transform; position:relative; }
     .trip-card:hover { box-shadow:0 8px 32px rgba(0,0,0,0.14); transform:translateY(-3px); border-color:var(--border-strong); }
     .trip-card:active { transform:scale(0.98) translateY(0); transition-duration:var(--dur-micro); }
-    .trip-card-top { display:flex; align-items:flex-start; gap:12px; margin-bottom:12px; }
-    .trip-card-emoji { width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.6rem; flex-shrink:0; }
-    .trip-card-name { font-size:1.05rem; font-weight:700; }
-    .trip-card-dates { font-size:0.78rem; color:var(--text-secondary); margin-top:2px; }
-    .trip-card-meta { display:flex; align-items:center; justify-content:space-between; }
+    .trip-card-name { font-size:1.05rem; font-weight:700; line-height:1.3; }
+    .trip-card-city { font-size:0.82rem; color:var(--text-secondary); margin-top:3px; }
+    .trip-card-dates { font-size:0.75rem; color:var(--text-secondary); margin-top:6px; }
+    .trip-card-actions { position:absolute; top:14px; right:14px; display:flex; gap:2px; opacity:0; transition:opacity 0.15s; }
+    .trip-card:hover .trip-card-actions { opacity:1; }
     .dash-card-btn { background:none; border:none; cursor:pointer; padding:4px; display:flex; align-items:center; transition:opacity 0.15s; color:var(--text-primary); opacity:0.55; }
     .dash-card-btn:hover { opacity:1; }
     .new-trip-card { border:2px dashed var(--border-strong); background:transparent; display:flex; align-items:center; justify-content:center; gap:10px; font-size:0.9rem; color:var(--text-secondary); min-height:120px; border-radius:14px; transition:border-color var(--dur-small), color var(--dur-small), transform var(--dur-small) var(--ease-out); cursor:pointer; }
@@ -372,10 +382,25 @@
     .dash-grid > *:nth-child(4){animation:cardStagger var(--dur-medium) var(--ease-out) both;animation-delay:150ms}
     .dash-grid > *:nth-child(5){animation:cardStagger var(--dur-medium) var(--ease-out) both;animation-delay:200ms}
     .dash-grid > *:nth-child(n+6){animation:cardStagger var(--dur-medium) var(--ease-out) both;animation-delay:250ms}
-    .app-logo-back { font-size:0.78rem; color:var(--text-secondary); flex-shrink:0; }
-    .app-logo-text { display:flex; flex-direction:column; }
+    .app-logo-back { display:flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:8px; color:var(--text-secondary); flex-shrink:0; transition:background 0.15s; }
+    .app-logo-back:hover { background:var(--surface-hover); }
+    .app-logo-text { display:flex; flex-direction:column; cursor:pointer; }
     .app-logo-name { font-size:0.9rem; font-weight:700; line-height:1.2; }
     .app-logo-dates { font-size:0.68rem; color:var(--text-secondary); }
+    .trip-switcher { position:relative; }
+    .trip-switcher-chevron { display:none; margin-left:2px; color:var(--text-secondary); transition:transform 0.15s; flex-shrink:0; }
+    .trip-switcher.has-trip .trip-switcher-chevron { display:flex; align-items:center; }
+    .trip-dropdown { position:absolute; top:calc(100% + 6px); left:0; min-width:240px; background:var(--surface); border:1px solid var(--border-strong); border-radius:12px; box-shadow:0 8px 28px rgba(0,0,0,0.22); z-index:300; overflow:hidden; animation:viewEnter 0.15s var(--ease-out) both; }
+    .trip-dropdown-item { display:flex; align-items:center; gap:10px; padding:10px 14px; cursor:pointer; transition:background 0.12s; font-size:0.85rem; }
+    .trip-dropdown-item:hover { background:var(--surface-hover); }
+    .trip-dropdown-item.active { background:var(--surface-hover); font-weight:600; }
+    .trip-dropdown-item .tdi-emoji { font-size:1.2rem; width:28px; text-align:center; flex-shrink:0; }
+    .trip-dropdown-item .tdi-info { display:flex; flex-direction:column; gap:1px; min-width:0; }
+    .trip-dropdown-item .tdi-name { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .trip-dropdown-item .tdi-dates { font-size:0.72rem; color:var(--text-secondary); font-weight:400; }
+    .trip-dropdown-divider { height:1px; background:var(--border); margin:4px 0; }
+    .trip-dropdown-dash { color:var(--text-secondary); font-size:0.82rem; }
+    .trip-dropdown-dash .tdi-emoji { font-size:0.95rem; }
     .color-swatch { width:24px; height:24px; border-radius:6px; cursor:pointer; border:2px solid transparent; transition:border 0.15s; flex-shrink:0; }
     .color-swatch:hover { border-color:rgba(255,255,255,0.6); }
     /* CITY AUTOCOMPLETE */
@@ -497,19 +522,20 @@
       </svg>
     </button>
     <div class="viz-menu-dropdown" id="vizMenuDropdown">
-      <button onclick="cycleTheme()"><span id="themeIcon">🌙</span><span id="themeLabel">다크모드</span></button>
-      <button id="currMenuBtn" onclick="openCurrConverter()"><span>💱</span><span>환율 계산기</span></button>
-      <button onclick="window.print()"><span>🖨️</span><span>인쇄 / PDF</span></button>
+      <button onclick="cycleTheme()"><span id="themeIcon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg></span><span id="themeLabel">다크모드</span></button>
+      <button id="currMenuBtn" onclick="openCurrConverter()"><span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z"/></svg></span><span>환율 계산기</span></button>
+      <button onclick="window.print()"><span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18.75 7.159H5.25"/></svg></span><span>인쇄 / PDF</span></button>
     </div>
   </div>
   <header class="app-header animate">
-    <div class="app-logo" id="appLogo" onclick="handleLogoClick()" style="display:flex;align-items:center;gap:8px;cursor:pointer">
-      <span class="app-logo-back" id="appBackBtn" style="display:none">← 전체</span>
-      <span class="app-logo-flag" id="appLogoFlag">🌍</span>
-      <div class="app-logo-text">
-        <div class="app-logo-name" id="appLogoName">여행 플래너</div>
+    <div class="app-logo trip-switcher" id="appLogo" style="display:flex;align-items:center;gap:8px">
+      <span class="app-logo-back" id="appBackBtn" style="display:none" onclick="goToDashboard()"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg></span>
+      <span class="app-logo-flag" id="appLogoFlag"></span>
+      <div class="app-logo-text" onclick="toggleTripDropdown(event)">
+        <div class="app-logo-name" id="appLogoName" style="display:flex;align-items:center;gap:3px">PALO<span class="trip-switcher-chevron" id="tripSwitcherChevron"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg></span></div>
         <div class="app-logo-dates" id="appLogoDates"></div>
       </div>
+      <div class="trip-dropdown" id="tripDropdown" style="display:none"></div>
     </div>
     <div class="view-tabs" id="viewTabs" role="tablist" style="display:none">
       <button class="view-tab active" onclick="switchView('calendar')" role="tab" aria-selected="true"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3V5.25M17.25 3V5.25M3 18.75V7.5C3 6.25736 4.00736 5.25 5.25 5.25H18.75C19.9926 5.25 21 6.25736 21 7.5V18.75M3 18.75C3 19.9926 4.00736 21 5.25 21H18.75C19.9926 21 21 19.9926 21 18.75M3 18.75V11.25C3 10.0074 4.00736 9 5.25 9H18.75C19.9926 9 21 10.0074 21 11.25V18.75M12 12.75H12.0075V12.7575H12V12.75ZM12 15H12.0075V15.0075H12V15ZM12 17.25H12.0075V17.2575H12V17.25ZM9.75 15H9.7575V15.0075H9.75V15ZM9.75 17.25H9.7575V17.2575H9.75V17.25ZM7.5 15H7.5075V15.0075H7.5V15ZM7.5 17.25H7.5075V17.2575H7.5V17.25ZM14.25 12.75H14.2575V12.7575H14.25V12.75ZM14.25 15H14.2575V15.0075H14.25V15ZM14.25 17.25H14.2575V17.2575H14.25V17.25ZM16.5 12.75H16.5075V12.7575H16.5V12.75ZM16.5 15H16.5075V15.0075H16.5V15"/></svg> <span class="tab-label">일정</span></button>
@@ -543,15 +569,13 @@
     </section>
     <section id="view-dashboard" style="display:block">
       <div class="dash-view">
+        <div id="hometownCard" style="max-width:360px;margin:8px auto 0"></div>
         <div class="dash-hero">
           <div class="globe-wrap">
             <canvas id="cobeCanvas"></canvas>
             <div id="globeOverlay"></div>
           </div>
-          <div id="globeLegend" class="globe-legend"></div>
-        </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px">
-          <h2 style="font-size:1.4rem;font-weight:800">나의 여행</h2>
+          <div id="dashCtas" style="display:flex;justify-content:center;gap:8px;margin-top:14px"></div>
         </div>
         <div class="dash-grid" id="dashGrid"></div>
       </div>
@@ -625,7 +649,7 @@
   <!-- CURRENCY CONVERTER MODAL -->
   <div class="modal-overlay" id="currModal" onclick="if(event.target===this)closeCurrConverter()" role="dialog" aria-modal="true">
     <div class="modal" style="max-width:320px">
-      <div class="modal-head"><h2>💱 환율 계산기</h2><button class="modal-close" onclick="closeCurrConverter()">✕</button></div>
+      <div class="modal-head"><h2>환율 계산기</h2><button class="modal-close" onclick="closeCurrConverter()">✕</button></div>
       <div class="curr-fields">
         <div class="curr-field">
           <span class="curr-field-label" id="currLocalLabel">MXN</span>
@@ -658,6 +682,25 @@
     </div>
   </div>
 
+  <!-- HOMETOWN MODAL -->
+  <div class="modal-overlay" id="hometownModal" role="dialog" aria-modal="true">
+    <div class="modal" style="max-width:400px">
+      <div class="modal-head"><h2 style="display:flex;align-items:center;gap:6px"></h2><button class="modal-close" onclick="closeHometownModal()">✕</button></div>
+      <div class="form-group">
+        <label class="form-label">도시 검색</label>
+        <div class="city-autocomplete">
+          <input type="text" class="form-input" id="htCityInput" placeholder="도시 검색… (예: Seoul, Tokyo)" autocomplete="off" oninput="onHtCityInput(this.value)" onkeydown="onHtCityKeydown(event)">
+          <div class="city-dropdown" id="htCityDropdown" style="display:none"></div>
+          <div class="city-selected-row" id="htCitySelected" style="display:none">
+            <span class="city-selected-name" id="htCitySelectedName"></span>
+            <button type="button" class="city-clear" onclick="clearHtCity()" title="다시 선택">✕</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions"><button type="button" class="btn btn-secondary" onclick="closeHometownModal()">취소</button><button type="button" class="btn btn-primary" id="htSaveBtn" onclick="saveHometown()" disabled style="opacity:0.4;cursor:not-allowed">설정</button></div>
+    </div>
+  </div>
+
   <!-- SCHEDULE MODAL -->
   <div class="modal-overlay" id="schedModal" onclick="closeSchedModal()">
     <div class="sched-modal-box" onclick="event.stopPropagation()"><div id="schedModalInner"></div></div>
@@ -671,7 +714,7 @@
         <button class="modal-close" onclick="closeCalAdd()">✕</button>
       </div>
       <div class="edit-type-seg" style="margin-bottom:12px">
-        <button type="button" class="edit-type-btn active" id="calAddModePlace" onclick="setCalAddMode('place')">📍 장소 배정</button>
+        <button type="button" class="edit-type-btn active" id="calAddModePlace" onclick="setCalAddMode('place')" style="display:inline-flex;align-items:center;gap:4px"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg> 장소 배정</button>
         <button type="button" class="edit-type-btn" id="calAddModeBlock" onclick="setCalAddMode('block')">📝 시간 블록</button>
       </div>
       <!-- Time + Duration (shared) -->
@@ -728,8 +771,8 @@
       <div class="modal-head"><h2 id="editModalTitle">일정 수정</h2><button class="modal-close" onclick="closeEditModal()">✕</button></div>
       <form id="editForm" onsubmit="saveEditEvent(event)">
         <div class="edit-type-seg" id="editTypeSeg">
-          <button type="button" class="edit-type-btn active" data-type="event" onclick="setEditMode('event')">📅 시간 일정</button>
-          <button type="button" class="edit-type-btn" data-type="place" onclick="setEditMode('place')">📍 장소</button>
+          <button type="button" class="edit-type-btn active" data-type="event" onclick="setEditMode('event')" style="display:inline-flex;align-items:center;gap:4px"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3V5.25M17.25 3V5.25M3 18.75V7.5C3 6.25736 4.00736 5.25 5.25 5.25H18.75C19.9926 5.25 21 6.25736 21 7.5V18.75M3 18.75C3 19.9926 4.00736 21 5.25 21H18.75C19.9926 21 21 19.9926 21 18.75M3 18.75V11.25C3 10.0074 4.00736 9 5.25 9H18.75C19.9926 9 21 10.0074 21 11.25V18.75"/></svg> 시간 일정</button>
+          <button type="button" class="edit-type-btn" data-type="place" onclick="setEditMode('place')" style="display:inline-flex;align-items:center;gap:4px"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg> 장소</button>
         </div>
         <div class="form-row fg-time"><div class="form-group"><label class="form-label" id="editTimeLbl">시작 시간</label><input type="time" class="form-input" id="editTime" required></div><div class="form-group"><label class="form-label">종료 시간</label><input type="time" class="form-input" id="editEndTime"></div></div>
         <div class="form-group fg-title"><label class="form-label">이벤트 이름</label><input type="text" class="form-input" id="editTitle" required placeholder="장소 또는 이벤트명"></div>
@@ -845,7 +888,7 @@
       transport:{label:'교통',color:'#64748b',bg:'rgba(100,116,139,0.16)'},
       other:{label:'기타',color:'#84cc16',bg:'rgba(132,204,22,0.16)'}
     };
-    var CAT_ICONS={food:'🍽️',bar:'🍹',culture:'🏛️',hotel:'🏨',conference:'💼',transport:'✈️',other:'📍'};
+    function catIcon(cat,size){return icon(cat==='other'?'pin':cat,size||14);}
     var HOUR_PX=64,START_HR=8,END_HR=24,TOTAL_HRS=16;
     var DAYS=[],WISHLIST=[];
     var currentTripId=null,currentTripMeta=null;
@@ -885,8 +928,8 @@
         );
         const snap = await Promise.race([DATA_REF.get(), timeout]);
         const d = snap.exists ? snap.data() : null;
-        if (d && d.days && d.days.length > 0) {
-          DAYS = d.days; WISHLIST = d.wishlist || [];
+        if (d && ((d.days && d.days.length > 0) || (d.wishlist && d.wishlist.length > 0))) {
+          DAYS = d.days || []; WISHLIST = d.wishlist || [];
           lsSaveTripData(tripId); return;
         }
       } catch(e) { console.warn('Firestore unavailable:', e.message); }
@@ -905,8 +948,8 @@
       }
       // Try localStorage
       var cached = lsLoadTripData(tripId);
-      if (cached && cached.days && cached.days.length > 0) {
-        DAYS = cached.days; WISHLIST = cached.wishlist || []; return;
+      if (cached && ((cached.days && cached.days.length > 0) || (cached.wishlist && cached.wishlist.length > 0))) {
+        DAYS = cached.days || []; WISHLIST = cached.wishlist || []; return;
       }
       // Seed fallback (mexico_legacy only)
       if (tripId === 'mexico_legacy') {
@@ -978,12 +1021,16 @@
       dashEl.style.display = 'none';
       destroyCobe();
       document.querySelector('.fab').style.display = '';
-      calPage = 0; mapMobDay = 0; mapFilter = 'all';
+      calPage = 0; mapMobDay = 0; mapFilter = isHometown ? 'wishlist' : 'all';
+      var isHometown = currentTripMeta && currentTripMeta.type === 'hometown';
+      // Hide/show calendar tab based on trip type
+      var calTab = document.querySelectorAll('.view-tab')[0];
+      if (calTab) calTab.style.display = isHometown ? 'none' : '';
       // Slide in from right when entering a trip
       var mainEl = document.getElementById('main-content');
       if (mainEl) { mainEl.classList.remove('view-enter-right'); requestAnimationFrame(function(){ mainEl.classList.add('view-enter-right'); }); }
-      switchView('calendar');
-      fetchWeather();
+      switchView(isHometown ? 'map' : 'calendar');
+      if (!isHometown) fetchWeather();
     }
     function goToDashboard() {
       currentTripId = null; currentTripMeta = null;
@@ -1004,22 +1051,30 @@
       var datesEl = document.getElementById('appLogoDates');
       var tabsEl = document.getElementById('viewTabs');
       var currBtn = document.getElementById('currMenuBtn');
+      var switcher = document.getElementById('appLogo');
+      closeTripDropdown();
       if (!trip) {
         if (backBtn) backBtn.style.display = 'none';
-        if (flagEl) flagEl.textContent = '🌍';
-        if (nameEl) nameEl.textContent = '여행 플래너';
+        if (flagEl) flagEl.textContent = '';
+        if (nameEl) { nameEl.childNodes[0].textContent = 'PALO'; }
         if (datesEl) datesEl.textContent = '';
         if (tabsEl) tabsEl.style.display = 'none';
         if (currBtn) currBtn.style.display = 'none';
-        document.title = '여행 플래너';
+        if (switcher) switcher.classList.remove('has-trip');
+        document.title = 'PALO';
       } else {
-        if (currBtn) currBtn.style.display = '';
+        var isHt = trip.type === 'hometown';
+        if (currBtn) currBtn.style.display = isHt ? 'none' : '';
         if (backBtn) backBtn.style.display = '';
-        if (flagEl) flagEl.textContent = trip.emoji || '🌍';
-        if (nameEl) nameEl.textContent = trip.name || trip.city || '여행';
-        if (datesEl) datesEl.textContent = tripDateLabel(trip);
+        if (flagEl) {
+          if (isHt) { flagEl.innerHTML = icon('home',18); }
+          else { flagEl.textContent = trip.emoji || '🌍'; }
+        }
+        if (nameEl) { nameEl.childNodes[0].textContent = trip.name || trip.city || '여행'; }
+        if (datesEl) datesEl.textContent = isHt ? '내 도시' : tripDateLabel(trip);
         if (tabsEl) tabsEl.style.display = '';
-        document.title = (trip.emoji||'🌍') + ' ' + (trip.name||'여행');
+        if (switcher) switcher.classList.add('has-trip');
+        document.title = (isHt ? '🏠 ' : (trip.emoji||'🌍') + ' ') + (trip.name||'여행');
       }
     }
     function tripDateLabel(trip) {
@@ -1029,7 +1084,43 @@
       var dn = ['일','월','화','수','목','금','토'];
       return (s.getMonth()+1)+'월 '+s.getDate()+'일('+dn[s.getDay()]+') ~ '+e.getDate()+'일('+dn[e.getDay()]+') · '+days+'일';
     }
-    function handleLogoClick() { if (currentTripId) goToDashboard(); }
+    function toggleTripDropdown(e) {
+      if (!currentTripId) return;
+      e.stopPropagation();
+      var dd = document.getElementById('tripDropdown');
+      if (dd.style.display !== 'none') { closeTripDropdown(); return; }
+      var trips = lsLoadTripList() || [];
+      var html = '';
+      trips.forEach(function(t) {
+        var isActive = t.id === currentTripId;
+        var dates = t.type==='hometown' ? '' : tripDateLabel(t);
+        var emojiOrIcon = t.type==='hometown' ? '<span style="display:flex;align-items:center;justify-content:center">'+icon('home',16)+'</span>' : (t.emoji||icon('globe',18));
+        html += '<div class="trip-dropdown-item'+(isActive?' active':'')+'" onclick="selectTripFromDropdown(\''+t.id+'\')">' +
+          '<span class="tdi-emoji">'+emojiOrIcon+'</span>' +
+          '<div class="tdi-info"><span class="tdi-name">'+(t.type==='hometown'?'내 도시 · ':'')+(t.name||t.city||'Trip')+'</span>' +
+          (dates ? '<span class="tdi-dates">'+dates+'</span>' : '') +
+          '</div></div>';
+      });
+      html += '<div class="trip-dropdown-divider"></div>';
+      html += '<div class="trip-dropdown-item trip-dropdown-dash" onclick="goToDashboard();closeTripDropdown()"><span class="tdi-emoji" style="display:flex;align-items:center;justify-content:center"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg></span><span>모든 여행 보기</span></div>';
+      dd.innerHTML = html;
+      dd.style.display = '';
+      document.addEventListener('click', _closeTripDdOutside);
+    }
+    function closeTripDropdown() {
+      var dd = document.getElementById('tripDropdown');
+      if (dd) dd.style.display = 'none';
+      document.removeEventListener('click', _closeTripDdOutside);
+    }
+    function _closeTripDdOutside(e) {
+      var dd = document.getElementById('tripDropdown');
+      if (dd && !dd.contains(e.target) && !e.target.closest('.app-logo-text')) closeTripDropdown();
+    }
+    function selectTripFromDropdown(tripId) {
+      closeTripDropdown();
+      if (tripId === currentTripId) return;
+      navigateTo('#trip/' + tripId);
+    }
 
     // ==================== CITY AUTOCOMPLETE ====================
     var tcCityData = null;
@@ -1118,10 +1209,10 @@
       // Show loading state in selected row
       var sel = document.getElementById('citySelected');
       document.getElementById('tcCityInput').style.display = 'none';
-      var _loadingFlag = countryCode && countryCode.length === 2 ? Array.from(countryCode).map(function(ch){ return String.fromCodePoint(0x1F1E6-65+ch.charCodeAt(0)); }).join('') : '📍';
+      var _loadingFlag = countryCode && countryCode.length === 2 ? Array.from(countryCode).map(function(ch){ return String.fromCodePoint(0x1F1E6-65+ch.charCodeAt(0)); }).join('') : '';
       document.getElementById('citySelectedName').textContent = _loadingFlag + ' ' + displayName;
       document.getElementById('citySelectedTz').textContent = '시간대 감지 중…';
-      sel.style.display = 'flex';
+      sel.style.display = 'block';
       // Fetch timezone
       var tz = await fetchCityTimezone(lat, lng);
       tcCityData = { name: cityName, displayName: displayName, lat: lat, lng: lng, country: country, countryCode: countryCode, state: state, timezone: tz };
@@ -1152,7 +1243,7 @@
       if (!cityData) return;
       document.getElementById('tcCityInput').style.display = 'none';
       var cc = (cityData.countryCode || cityData.country || '').toUpperCase().slice(0,2);
-      var flag = /^[A-Z]{2}$/.test(cc) ? Array.from(cc).map(function(ch){ return String.fromCodePoint(0x1F1E6-65+ch.charCodeAt(0)); }).join('') : '📍';
+      var flag = /^[A-Z]{2}$/.test(cc) ? Array.from(cc).map(function(ch){ return String.fromCodePoint(0x1F1E6-65+ch.charCodeAt(0)); }).join('') : '';
       document.getElementById('citySelectedName').textContent = flag + ' ' + cityData.displayName;
       document.getElementById('citySelectedTz').textContent = cityData.timezone || '';
       document.getElementById('citySelected').style.display = 'flex';
@@ -1347,19 +1438,32 @@
         trips.sort(function(a,b){ return ((b.createdAt&&b.createdAt.seconds)||0)-((a.createdAt&&a.createdAt.seconds)||0); });
         lsSaveTripList(trips);
         renderDashboard(trips);
-        // Backfill cityLat/cityLng in background — don't block render
-        trips.forEach(async function(trip) {
-          if (trip.cityLat && trip.cityLng) return;
-          if (!trip.city) return;
-          try {
-            var geo = await fetch('https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(trip.city)+'&format=json&limit=1',{headers:{'Accept-Language':'en'}});
-            var gd = await geo.json();
-            if (!gd || !gd.length) return;
-            var lat = parseFloat(gd[0].lat), lng = parseFloat(gd[0].lon);
-            trip.cityLat = lat; trip.cityLng = lng;
-            await db.collection('trips').doc(trip.id).update({ cityLat: lat, cityLng: lng });
-          } catch(e) {}
-        });
+        // Force re-geocode all trips once to fix bad coordinates
+        var _geoFixKey = 'geo-fix-v2';
+        if (!localStorage.getItem(_geoFixKey)) {
+          (async function() {
+            var changed = false;
+            for (var i = 0; i < trips.length; i++) {
+              var trip = trips[i];
+              if (!trip.city) continue;
+              try {
+                var q = trip.cityDisplayName || trip.city;
+                if (i > 0) await new Promise(function(r){ setTimeout(r, 1100); });
+                console.log('[geocode] fixing', trip.city, '→ query:', q);
+                var geo = await fetch('https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(q)+'&format=json&limit=1',{headers:{'Accept-Language':'en'}});
+                var gd = await geo.json();
+                if (!gd || !gd.length) { console.warn('[geocode] no results for', q); continue; }
+                var lat = parseFloat(gd[0].lat), lng = parseFloat(gd[0].lon);
+                console.log('[geocode]', trip.city, 'old:', trip.cityLat, trip.cityLng, '→ new:', lat, lng);
+                trip.cityLat = lat; trip.cityLng = lng;
+                changed = true;
+                await db.collection('trips').doc(trip.id).update({ cityLat: lat, cityLng: lng });
+              } catch(e) { console.error('[geocode] failed for', trip.city, e); }
+            }
+            localStorage.setItem(_geoFixKey, '1');
+            if (changed) { lsSaveTripList(trips); initCobe(trips); }
+          })();
+        }
       } catch(e) {
         var cached = lsLoadTripList();
         renderDashboard(cached || []);
@@ -1367,33 +1471,76 @@
     }
     function renderDashboard(trips) {
       var el = document.getElementById('dashGrid'); if(!el) return;
-      var h = '<div class="trip-card new-trip-card" onclick="openTripCreate()"><span style="font-size:1.4rem">+</span> 새 여행 추가</div>';
+      // Separate hometown from regular trips
+      var hometown = null, regularTrips = [];
+      trips.forEach(function(t){ if(t.type==='hometown') hometown=t; else regularTrips.push(t); });
+      // Render CTAs
+      var ctaEl = document.getElementById('dashCtas');
+      if (ctaEl) {
+        var ctaH = '';
+        if (!hometown) ctaH += '<button onclick="openHometownModal()" class="dash-cta-btn">'+icon('home',15)+' 내 도시 설정</button>';
+        ctaH += '<button onclick="openTripCreate()" class="dash-cta-btn"><span style="font-size:1.1rem;line-height:1">+</span> 새 여행 추가</button>';
+        ctaEl.innerHTML = ctaH;
+      }
+      // Render hometown card
+      var htEl = document.getElementById('hometownCard');
+      if (htEl) {
+        if (hometown) {
+          var htWl = lsLoadTripData(hometown.id);
+          var htWlCount = htWl && htWl.wishlist ? htWl.wishlist.length : 0;
+          htEl.innerHTML = '<div class="hometown-card" onclick="navigateTo(\'#trip/'+hometown.id+'\')">'+
+            '<div class="ht-info">'+
+              '<div class="ht-label">'+icon('home',12)+' 내 도시</div>'+
+              '<div class="ht-city">'+(hometown.emoji?hometown.emoji+' ':'')+hometown.name+'</div>'+
+            '</div>'+
+            '<div class="ht-saved">'+icon('star',13)+' '+(htWlCount||0)+'</div>'+
+            '<div class="ht-actions">'+
+              '<button onclick="event.stopPropagation();openHometownModal(\''+hometown.id+'\')" class="dash-card-btn" title="수정">'+icon('pencil',15)+'</button>'+
+            '</div>'+
+          '</div>';
+        } else {
+          htEl.innerHTML = '';
+        }
+      }
+      // Render trip cards
+      trips = regularTrips;
+      var h = '';
       if (trips.length === 0) {
-        h += '<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--text-secondary)"><div style="font-size:3rem;margin-bottom:12px">🌍</div><div style="font-weight:600;margin-bottom:4px">아직 여행이 없어요</div><div style="font-size:0.85rem">새 여행 추가 버튼으로 시작하세요</div></div>';
+        h += '<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--text-secondary)"><div style="display:flex;justify-content:center;margin-bottom:12px">'+icon('globe',40)+'</div><div style="font-weight:600;margin-bottom:4px">아직 여행이 없어요</div><div style="font-size:0.85rem">새 여행 추가 버튼으로 시작하세요</div></div>';
       }
       trips.forEach(function(trip) {
         var days = 0;
         if (trip.startDate && trip.endDate) days = Math.round((new Date(trip.endDate)-new Date(trip.startDate))/86400000)+1;
-        var col = trip.coverColor || '#f97316';
+        var dateStr = tripDateLabel(trip);
+        var durationStr = days ? days + '일' : '';
+        var dateLine = dateStr ? dateStr : (durationStr || '');
+        var cached = lsLoadTripData(trip.id);
+        var wlCount = cached && cached.wishlist ? cached.wishlist.length : -1;
         h += '<div class="trip-card" onclick="navigateTo(\'#trip/'+trip.id+'\')">'+
-          '<div class="trip-card-top">'+
-            '<div class="trip-card-emoji" style="background:'+col+'20;border:1px solid '+col+'40">'+(trip.emoji||'🌍')+'</div>'+
-            '<div style="flex:1;min-width:0">'+
-              '<div class="trip-card-name">'+trip.name+'</div>'+
-              '<div class="trip-card-dates">'+(trip.city||'')+(trip.city&&trip.startDate?' · ':'')+tripDateLabel(trip)+'</div>'+
-            '</div>'+
+          '<div class="trip-card-actions">'+
+            '<button onclick="event.stopPropagation();openTripEdit(\''+trip.id+'\')" class="dash-card-btn" title="수정">'+icon('pencil',15)+'</button>'+
+            '<button onclick="event.stopPropagation();archiveTrip(\''+trip.id+'\')" class="dash-card-btn" title="삭제">'+icon('trash',15)+'</button>'+
           '</div>'+
-          '<div class="trip-card-meta">'+
-            '<span style="font-size:0.72rem;padding:3px 10px;border-radius:10px;background:'+col+'20;color:'+col+';font-weight:600">'+days+'일</span>'+
-            '<div style="display:flex;gap:4px">'+
-              '<button onclick="event.stopPropagation();openTripEdit(\''+trip.id+'\')" class="dash-card-btn" title="수정">'+icon('pencil',15)+'</button>'+
-              '<button onclick="event.stopPropagation();archiveTrip(\''+trip.id+'\')" class="dash-card-btn" title="삭제">'+icon('trash',15)+'</button>'+
-            '</div>'+
-          '</div>'+
+          '<div class="trip-card-name">'+(trip.emoji?trip.emoji+' ':'')+trip.name+'</div>'+
+          (trip.city ? '<div class="trip-card-city">'+trip.city+'</div>' : '')+
+          (dateLine ? '<div class="trip-card-dates">'+dateLine+'</div>' : '')+
+          '<div class="trip-card-dates trip-card-wl" id="wl-count-'+trip.id+'" style="margin-top:2px;display:flex;align-items:center;gap:4px">'+(wlCount>0?icon('star',12)+' '+wlCount+'개 장소':'')+'</div>'+
         '</div>';
       });
       el.innerHTML = h;
-      setTimeout(function(){ initCobe(trips); }, 50);
+      setTimeout(function(){ initCobe(regularTrips.concat(hometown?[hometown]:[])); }, 50);
+      // Backfill wishlist counts from Firestore for all trips (including hometown)
+      regularTrips.concat(hometown?[hometown]:[]).forEach(function(trip) {
+        var cached = lsLoadTripData(trip.id);
+        if (cached && cached.wishlist) return;
+        db.collection('trips').doc(trip.id).collection('data').doc('main').get().then(function(snap) {
+          if (!snap || !snap.exists) return;
+          var d = snap.data();
+          var wl = d.wishlist || [];
+          var el = document.getElementById('wl-count-'+trip.id);
+          if (el && wl.length) el.innerHTML = icon('star',12)+' '+wl.length+'개 장소';
+        }).catch(function(){});
+      });
     }
 
     // ==================== TRIP CREATE/EDIT (Phase 6 + Phase 9 edit) ====================
@@ -1482,7 +1629,7 @@
       if (!name || !start || !end) return;
       if (new Date(end) < new Date(start)) { alert('종료일이 시작일보다 빠릅니다.'); return; }
       // Auto-derive emoji from country code; fall back to globe
-      var emoji = '🌍';
+      var emoji = '';
       var color = '#6366f1';
       if (tcCityData && tcCityData.countryCode) {
         var cc = tcCityData.countryCode.toUpperCase().slice(0,2);
@@ -1543,6 +1690,109 @@
       } catch(e) { console.error('Failed to archive trip:', e); }
     }
 
+    // ==================== HOMETOWN ====================
+    var _htCityData = null, _htCityResults = [], _htCityTimer = null, _htCityIdx = -1, _htEditId = null;
+    function openHometownModal(editId) {
+      _htEditId = editId || null;
+      _htCityData = null; _htCityResults = []; _htCityIdx = -1;
+      document.getElementById('htCityInput').value = '';
+      document.getElementById('htCityInput').style.display = '';
+      document.getElementById('htCityDropdown').style.display = 'none';
+      document.getElementById('htCityDropdown').innerHTML = '';
+      document.getElementById('htCitySelected').style.display = 'none';
+      _updateHtSave();
+      document.getElementById('hometownModal').classList.add('open');
+      setTimeout(function(){ document.getElementById('htCityInput').focus(); },100);
+    }
+    function closeHometownModal() { document.getElementById('hometownModal').classList.remove('open'); }
+    function _updateHtSave() {
+      var btn = document.getElementById('htSaveBtn');
+      var ok = !!_htCityData;
+      btn.disabled = !ok; btn.style.opacity = ok?'':'0.4'; btn.style.cursor = ok?'':'not-allowed';
+    }
+    function onHtCityInput(val) {
+      clearTimeout(_htCityTimer);
+      if (val.length < 2) { document.getElementById('htCityDropdown').style.display='none'; return; }
+      _htCityTimer = setTimeout(function(){
+        fetch('https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(val)+'&format=json&limit=5&addressdetails=1',{headers:{'Accept-Language':'en'}})
+          .then(function(r){return r.json();}).then(function(data){
+            _htCityResults = data; _htCityIdx = -1;
+            var dd = document.getElementById('htCityDropdown');
+            if (!data.length) { dd.style.display='none'; return; }
+            dd.innerHTML = data.map(function(c,i){
+              var name = c.address.city||c.address.town||c.address.village||c.name;
+              var country = c.address.country||'';
+              return '<div class="city-dropdown-item" onmousedown="selectHtCity('+i+')">'+name+(country?', '+country:'')+'</div>';
+            }).join('');
+            dd.style.display='';
+          }).catch(function(){});
+      }, 300);
+    }
+    function onHtCityKeydown(e) {
+      var dd = document.getElementById('htCityDropdown');
+      if (dd.style.display==='none') return;
+      if (e.key==='ArrowDown') { e.preventDefault(); _htCityIdx = Math.min(_htCityIdx+1, _htCityResults.length-1); _highlightHtCity(); }
+      else if (e.key==='ArrowUp') { e.preventDefault(); _htCityIdx = Math.max(_htCityIdx-1, 0); _highlightHtCity(); }
+      else if (e.key==='Enter' && _htCityIdx>=0) { e.preventDefault(); selectHtCity(_htCityIdx); }
+      else if (e.key==='Escape') { dd.style.display='none'; }
+    }
+    function _highlightHtCity() {
+      document.querySelectorAll('#htCityDropdown .city-dropdown-item').forEach(function(el,i){
+        el.style.background = i===_htCityIdx?'var(--surface-hover)':'';
+      });
+    }
+    async function selectHtCity(idx) {
+      var c = _htCityResults[idx]; if (!c) return;
+      document.getElementById('htCityDropdown').style.display='none';
+      var cityName = c.address.city||c.address.town||c.address.village||c.address.suburb||c.name;
+      var country = c.address.country||'';
+      var cc = (c.address.country_code||'').toUpperCase();
+      var lat = parseFloat(c.lat), lng = parseFloat(c.lon);
+      var displayName = [cityName, country].filter(Boolean).join(', ');
+      var tz = await fetchCityTimezone(lat, lng);
+      _htCityData = { name:cityName, displayName:displayName, lat:lat, lng:lng, country:country, countryCode:cc, timezone:tz };
+      document.getElementById('htCityInput').style.display='none';
+      var flag = cc.length===2 ? Array.from(cc).map(function(ch){return String.fromCodePoint(0x1F1E6-65+ch.charCodeAt(0));}).join('') : '';
+      document.getElementById('htCitySelectedName').textContent = (flag?flag+' ':'')+displayName;
+      document.getElementById('htCitySelected').style.display='flex';
+      _updateHtSave();
+    }
+    function clearHtCity() {
+      _htCityData = null;
+      document.getElementById('htCityInput').value=''; document.getElementById('htCityInput').style.display='';
+      document.getElementById('htCitySelected').style.display='none';
+      _updateHtSave();
+      document.getElementById('htCityInput').focus();
+    }
+    async function saveHometown() {
+      if (!_htCityData) return;
+      var cc = _htCityData.countryCode;
+      var emoji = cc.length===2 ? Array.from(cc).map(function(ch){return String.fromCodePoint(0x1F1E6-65+ch.charCodeAt(0));}).join('') : '';
+      var data = {
+        name: _htCityData.name, city: _htCityData.name, cityDisplayName: _htCityData.displayName,
+        cityLat: _htCityData.lat, cityLng: _htCityData.lng, cityCountry: _htCityData.country,
+        cityCountryCode: cc, emoji: emoji, timezone: _htCityData.timezone||'UTC',
+        type: 'hometown', archived: false, coverColor: '#6366f1'
+      };
+      try {
+        if (_htEditId) {
+          await db.collection('trips').doc(_htEditId).update(data);
+        } else {
+          // Check if hometown already exists
+          var existing = (lsLoadTripList()||[]).find(function(t){return t.type==='hometown';});
+          if (existing) {
+            await db.collection('trips').doc(existing.id).update(data);
+          } else {
+            var id = 'hometown_'+Date.now().toString(36);
+            data.id = id; data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+            await db.collection('trips').doc(id).set(data);
+          }
+        }
+        closeHometownModal();
+        loadDashboard();
+      } catch(e) { console.error('Failed to save hometown:', e); }
+    }
+
     // ==================== ICONS (Heroicons v2 outline) ====================
     var ICONS = {
       calendar: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3V5.25M17.25 3V5.25M3 18.75V7.5C3 6.25736 4.00736 5.25 5.25 5.25H18.75C19.9926 5.25 21 6.25736 21 7.5V18.75M3 18.75C3 19.9926 4.00736 21 5.25 21H18.75C19.9926 21 21 19.9926 21 18.75M3 18.75V11.25C3 10.0074 4.00736 9 5.25 9H18.75C19.9926 9 21 10.0074 21 11.25V18.75M12 12.75H12.0075V12.7575H12V12.75ZM12 15H12.0075V15.0075H12V15ZM12 17.25H12.0075V17.2575H12V17.25ZM9.75 15H9.7575V15.0075H9.75V15ZM9.75 17.25H9.7575V17.2575H9.75V17.25ZM7.5 15H7.5075V15.0075H7.5V15ZM7.5 17.25H7.5075V17.2575H7.5V17.25ZM14.25 12.75H14.2575V12.7575H14.25V12.75ZM14.25 15H14.2575V15.0075H14.25V15ZM14.25 17.25H14.2575V17.2575H14.25V17.25ZM16.5 12.75H16.5075V12.7575H16.5V12.75ZM16.5 15H16.5075V15.0075H16.5V15"/></svg>',
@@ -1550,6 +1800,16 @@
       star: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M11.4806 3.4987C11.6728 3.03673 12.3272 3.03673 12.5193 3.4987L14.6453 8.61016C14.7263 8.80492 14.9095 8.93799 15.1197 8.95485L20.638 9.39724C21.1367 9.43722 21.339 10.0596 20.959 10.3851L16.7546 13.9866C16.5945 14.1238 16.5245 14.3391 16.5734 14.5443L17.8579 19.9292C17.974 20.4159 17.4446 20.8005 17.0176 20.5397L12.2932 17.6541C12.1132 17.5441 11.8868 17.5441 11.7068 17.6541L6.98238 20.5397C6.55539 20.8005 6.02594 20.4159 6.14203 19.9292L7.42652 14.5443C7.47546 14.3391 7.4055 14.1238 7.24531 13.9866L3.04099 10.3851C2.661 10.0596 2.86323 9.43722 3.36197 9.39724L8.88022 8.95485C9.09048 8.93799 9.27363 8.80492 9.35464 8.61016L11.4806 3.4987Z"/></svg>',
       pencil: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125"/></svg>',
       trash: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>',
+      food: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.871c1.355 0 2.697.056 4.024.166C17.155 8.51 18 9.473 18 10.608v2.513M15 8.25v-1.5m-6 1.5v-1.5m12 9.75l-1.5.75a3.354 3.354 0 01-3 0 3.354 3.354 0 00-3 0 3.354 3.354 0 01-3 0 3.354 3.354 0 00-3 0 3.354 3.354 0 01-3 0L3 16.5m15-3.379a48.474 48.474 0 00-6-.371c-2.032 0-4.034.126-6 .371m12 0c.39.049.777.102 1.163.16 1.07.16 1.837 1.094 1.837 2.175v5.169c0 .621-.504 1.125-1.125 1.125H4.125A1.125 1.125 0 013 20.625v-5.17c0-1.08.768-2.014 1.837-2.174A47.78 47.78 0 016 13.12M12.265 3.11a.375.375 0 11-.53 0L12 2.845l.265.265z"/></svg>',
+      bar: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8 22h8M12 11v11M19 3l-7 8-7-8Z"/></svg>',
+      culture: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z"/></svg>',
+      hotel: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3H21m-3.75 3H21"/></svg>',
+      conference: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 17.25c-2.97 0-5.828-.541-8.453-1.533a2.032 2.032 0 01-.673-.38m0 0A2.18 2.18 0 013.75 13.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0014.25 3h-4.5A2.25 2.25 0 007.5 5.25v.894m9 0a48.667 48.667 0 00-7.5 0"/></svg>',
+      transport: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/></svg>',
+      pin: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>',
+      globe: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"/></svg>',
+      currency: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z"/></svg>',
+      home: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>',
     };
     function icon(name, size) { size=size||16; return ICONS[name].replace('<svg ','<svg width="'+size+'" height="'+size+'" '); }
 
@@ -1580,7 +1840,7 @@
         showSaveToast('저장됨', '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--positive)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>');
       } catch(e) {
         console.error('Firestore save failed:', e);
-        showSaveToast('저장 실패', '⚠️');
+        showSaveToast('저장 실패', '!');
       }
     }
 
@@ -1763,12 +2023,12 @@
       document.getElementById('calPickTitle').textContent=(day?day.date:'')+tl+' 일정 추가';
       var unscheduled=WISHLIST.filter(function(w){return!w.calEventId;}),h='';
       if(unscheduled.length===0){
-        h='<div style="text-align:center;padding:32px 16px;color:var(--text-secondary)"><div style="font-size:2rem;margin-bottom:8px">⭐</div><div style="font-weight:600;margin-bottom:4px">추가 가능한 항목 없음</div><div style="font-size:0.82rem">하단 + 버튼으로 새 장소를 추가하세요</div></div>';
+        h='<div style="text-align:center;padding:32px 16px;color:var(--text-secondary)"><div style="margin-bottom:8px;display:flex;justify-content:center">'+icon('star',28)+'</div><div style="font-weight:600;margin-bottom:4px">추가 가능한 항목 없음</div><div style="font-size:0.82rem">하단 + 버튼으로 새 장소를 추가하세요</div></div>';
       } else {
         h='<div style="font-size:0.78rem;color:var(--text-secondary)">추가할 장소 선택:</div><div class="cal-pick-list">';
         unscheduled.forEach(function(w){
-          var cat=CAT[w.category]||CAT.other,icon=CAT_ICONS[w.category]||'📍';
-          h+='<button class="cal-pick-item" onclick="calPickSelect(\''+w.id+'\')"><div class="cal-pick-icon" style="background:'+cat.bg+'">'+icon+'</div><div class="cal-pick-info"><div class="cal-pick-name">'+w.name+'</div>'+(w.notes?'<div class="cal-pick-sub">'+w.notes+'</div>':'')+'</div><span class="cal-pick-cat" style="background:'+cat.bg+';color:'+cat.color+'">'+cat.label+'</span></button>';
+          var cat=CAT[w.category]||CAT.other,cic=catIcon(w.category,16);
+          h+='<button class="cal-pick-item" onclick="calPickSelect(\''+w.id+'\')"><div class="cal-pick-icon" style="background:'+cat.bg+'">'+cic+'</div><div class="cal-pick-info"><div class="cal-pick-name">'+w.name+'</div>'+(w.notes?'<div class="cal-pick-sub">'+w.notes+'</div>':'')+'</div><span class="cal-pick-cat" style="background:'+cat.bg+';color:'+cat.color+'">'+cat.label+'</span></button>';
         });
         h+='</div>';
       }
@@ -1798,24 +2058,30 @@
     }
     function renderMapUI(){
       var fr=document.getElementById('mapFilterRow');
-      var isAll=mapFilter==='all';
-      var fh='<button class="map-filter-btn'+(isAll?' active':'')+'" onclick="setMapFilter(\'all\',this)"'+(isAll?' style="background:var(--accent);color:var(--accent-fg);border-color:transparent"':'')+'>전체</button>';
-      DAYS.forEach(function(d,i){
-        var active=mapFilter===d.id;
-        fh+='<button class="map-filter-btn'+(active?' active':'')+'" onclick="setMapFilter(\''+d.id+'\',this)"'+(active?' style="background:'+d.color+';color:white;border-color:transparent"':'')+'>'+'Day '+(i+1)+'</button>';
-      });
-      var isWish=mapFilter==='wishlist';
-      fh+='<button class="map-filter-btn'+(isWish?' active':'')+'" onclick="setMapFilter(\'wishlist\',this)"'+(isWish?' style="background:#8b5cf6;color:white;border-color:transparent"':'')+'>⭐ 미배정</button>';
-      fr.innerHTML=fh;renderMapList();
+      var isHt=currentTripMeta&&currentTripMeta.type==='hometown';
+      if(isHt){
+        fr.innerHTML='';renderMapList();
+      } else {
+        var isAll=mapFilter==='all';
+        var fh='<button class="map-filter-btn'+(isAll?' active':'')+'" onclick="setMapFilter(\'all\',this)"'+(isAll?' style="background:var(--accent);color:var(--accent-fg);border-color:transparent"':'')+'>전체</button>';
+        DAYS.forEach(function(d,i){
+          var active=mapFilter===d.id;
+          fh+='<button class="map-filter-btn'+(active?' active':'')+'" onclick="setMapFilter(\''+d.id+'\',this)"'+(active?' style="background:'+d.color+';color:white;border-color:transparent"':'')+'>'+'Day '+(i+1)+'</button>';
+        });
+        var isWish=mapFilter==='wishlist';
+        fh+='<button class="map-filter-btn'+(isWish?' active':'')+'" onclick="setMapFilter(\'wishlist\',this)"'+(isWish?' style="background:#8b5cf6;color:white;border-color:transparent"':'')+'><span style="display:inline-flex;vertical-align:middle">'+icon('star',13)+'</span> 미배정</button>';
+        fr.innerHTML=fh;renderMapList();
+      }
       renderMapMobTabs();renderMapMobSheet();
     }
 
     function renderMapMobTabs(){
       var el=document.getElementById('mapMobTabs');if(!el)return;
-      var tabs=DAYS.map(function(d,i){
+      var isHt=currentTripMeta&&currentTripMeta.type==='hometown';
+      var tabs=isHt?[]:DAYS.map(function(d,i){
         return '<button class="map-mob-tab'+(i===mapMobDay&&mapFilter!=='wishlist'?' active':'')+'" onclick="setMapMobDay('+i+')">Day '+(i+1)+'</button>';
       });
-      tabs.push('<button class="map-mob-tab'+(mapFilter==='wishlist'?' active':'')+'" onclick="setMapMobWishlist()" style="'+(mapFilter==='wishlist'?'background:#8b5cf6;color:white;border-color:#8b5cf6':'')+'">⭐</button>');
+      tabs.push('<button class="map-mob-tab'+(mapFilter==='wishlist'||(isHt&&mapFilter==='all')?' active':'')+'" onclick="setMapMobWishlist()" style="display:inline-flex;align-items:center;justify-content:center;'+(mapFilter==='wishlist'||(isHt&&mapFilter==='all')?'background:#8b5cf6;color:white;border-color:#8b5cf6':'')+'">'+icon('star',14)+'</button>');
       el.innerHTML=tabs.join('');
     }
     function setMapMobWishlist(){
@@ -1829,7 +2095,7 @@
       if(mapFilter==='wishlist'){
         var unassigned=WISHLIST.filter(function(w){return !w.calDayId&&w.lat!=null;});
         var cards=unassigned.map(function(w){
-          var ic=CAT_ICONS[w.category]||'📍';
+          var ic=catIcon(w.category,16);
           return '<div class="map-mob-card" onclick="focusWishMarker(\''+w.id+'\')">'+
             '<div class="map-mob-card-thumb" style="background:#8b5cf620">'+ic+'</div>'+
             '<div class="map-mob-card-info">'+
@@ -1838,13 +2104,13 @@
             '</div></div>';
         }).join('');
         el.innerHTML='<div class="map-mob-handle"></div>'+
-          '<div class="map-mob-title-row"><div class="map-mob-title" style="color:#8b5cf6">⭐ 미배정 장소</div></div>'+
+          '<div class="map-mob-title-row"><div class="map-mob-title" style="color:#8b5cf6;display:flex;align-items:center;gap:5px">'+icon('star',15)+' 미배정 장소</div></div>'+
           '<div class="map-mob-cards">'+(cards||'<div style="padding:16px;font-size:0.82rem;color:var(--text-secondary)">미배정 장소가 없습니다</div>')+'</div>';
         return;
       }
       var day=DAYS[mapMobDay];if(!day){el.innerHTML='';return;}
       var cards=sortEvs(day.events).filter(function(ev){return ev.lat!=null;}).map(function(ev){
-        var cat=CAT[ev.category]||CAT.other,ic=CAT_ICONS[ev.category]||'📍';
+        var cat=CAT[ev.category]||CAT.other,ic=catIcon(ev.category,16);
         return '<div class="map-mob-card" onclick="focusMarker(\''+day.id+'\',\''+ev.id+'\')">'+
           '<div class="map-mob-card-thumb" style="background:'+cat.bg+'">'+ic+'</div>'+
           '<div class="map-mob-card-info">'+
@@ -1860,9 +2126,6 @@
           '<div class="map-mob-title">'+day.date+' — '+day.theme+'</div>'+
           '<div class="map-mob-btns">'+
             '<button class="map-mob-btn map-mob-btn-add" onclick="openCalAdd(\''+day.id+'\',null)" title="장소 추가" style="background:var(--accent);color:var(--accent-fg);border-color:transparent;font-size:1.2rem;font-weight:300">+</button>'+
-            '<button class="map-mob-btn" onclick="fitMapToDay('+mapMobDay+')" title="이 날 전체 보기">'+
-              '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>'+
-            '</button>'+
             '<button class="map-mob-btn" onclick="goToCalDay(\''+day.id+'\')" title="캘린더로 보기">'+icon('calendar',16)+'</button>'+
           '</div>'+
         '</div>'+
@@ -1885,12 +2148,14 @@
     }
     function renderMapList(){
       var c=document.getElementById('mapEventList'),h='';
-      if(mapFilter==='wishlist'){
+      var isHt=currentTripMeta&&currentTripMeta.type==='hometown';
+      if(mapFilter==='wishlist'||(isHt&&mapFilter==='all')){
         var unassigned=WISHLIST.filter(function(w){return !w.calDayId&&w.lat!=null;});
-        h+='<div class="map-group"><div class="map-group-title" style="background:#8b5cf620;color:#8b5cf6;display:flex;align-items:center;justify-content:space-between"><span style="display:flex;align-items:center;gap:5px"><span style="width:7px;height:7px;border-radius:50%;background:#8b5cf6;display:inline-block;"></span>미배정 장소</span></div>';
-        if(!unassigned.length)h+='<div style="padding:14px;font-size:0.82rem;color:var(--text-secondary)">미배정 장소가 없습니다</div>';
+        var groupLabel=isHt?'장소':'미배정 장소';
+        h+='<div class="map-group"><div class="map-group-title" style="background:#8b5cf620;color:#8b5cf6;display:flex;align-items:center;justify-content:space-between"><span style="display:flex;align-items:center;gap:5px"><span style="width:7px;height:7px;border-radius:50%;background:#8b5cf6;display:inline-block;"></span>'+groupLabel+'</span></div>';
+        if(!unassigned.length)h+='<div style="padding:14px;font-size:0.82rem;color:var(--text-secondary)">'+(isHt?'장소가 없습니다':'미배정 장소가 없습니다')+'</div>';
         unassigned.forEach(function(w){
-          var ic=CAT_ICONS[w.category]||'📍';
+          var ic=catIcon(w.category,16);
           h+='<div class="map-event-row" onclick="focusWishMarker(\''+w.id+'\')"><span style="font-size:14px;line-height:1;flex-shrink:0">'+ic+'</span><div style="flex:1;min-width:0"><div class="map-event-name">'+w.name+'</div>'+(w.notes?'<div class="map-event-time">'+w.notes+'</div>':'')+'</div></div>';
         });
         h+='</div>';
@@ -1900,7 +2165,7 @@
           h+='<div class="map-group"><div class="map-group-title" style="background:'+day.color+'20;color:'+day.color+';display:flex;align-items:center;justify-content:space-between"><span style="display:flex;align-items:center;gap:5px"><span style="width:7px;height:7px;border-radius:50%;background:'+day.color+';display:inline-block;"></span>'+day.date+' · '+day.theme+mapWeatherChip(day)+'</span><button onclick="goToCalDay(\''+day.id+'\')" title="캘린더로 보기" style="background:none;border:none;cursor:pointer;padding:0 2px;opacity:0.75;display:flex;align-items:center">'+icon('calendar',13)+'</button></div>';
           sortEvs(day.events).forEach(function(ev){
             if(!ev.lat)return;
-            var ic=CAT_ICONS[ev.category]||'📍';
+            var ic=catIcon(ev.category,16);
             h+='<div class="map-event-row" onclick="focusMarker(\''+day.id+'\',\''+ev.id+'\')"><span style="font-size:14px;line-height:1;flex-shrink:0">'+ic+'</span><div style="flex:1;min-width:0"><div class="map-event-time">'+fmtTime(ev.time)+'</div><div class="map-event-name">'+ev.title+'</div></div></div>';
           });
           h+='</div>';
@@ -1930,13 +2195,13 @@
       var defaultCenter = (currentTripMeta && currentTripMeta.cityLat && currentTripMeta.cityLng) ? [currentTripMeta.cityLat, currentTripMeta.cityLng] : [19.434, -99.162];
       var isMob=window.innerWidth<=768;
       leafletMap=L.map('leaflet-map',{zoomControl:false}).setView(defaultCenter,13);
-      L.control.zoom({position:isMob?'topright':'topleft'}).addTo(leafletMap);
+      if(!isMob) L.control.zoom({position:'topleft'}).addTo(leafletMap);
       setTiles(currentTheme==='dark');
-      if(window.innerWidth<=768){mapFilter=DAYS[mapMobDay].id;}
+      if(window.innerWidth<=768&&DAYS.length){mapFilter=DAYS[mapMobDay].id;}
       rebuildMarkers();
       setTimeout(function(){
         leafletMap.invalidateSize(true);
-        if(window.innerWidth<=768)fitMapToDay(mapMobDay);
+        if(window.innerWidth<=768&&DAYS.length)fitMapToDay(mapMobDay);
       },300);
     }
     function setTiles(dark){
@@ -1974,12 +2239,13 @@
     function rebuildMarkers(){
       clearRoutes();
       mapMarkers.forEach(function(m){leafletMap.removeLayer(m);});mapMarkers=[];var n=1;
-      if(mapFilter==='wishlist'){
+      var isHt=currentTripMeta&&currentTripMeta.type==='hometown';
+      if(mapFilter==='wishlist'||(isHt&&mapFilter==='all')){
         WISHLIST.filter(function(w){return !w.calDayId&&w.lat!=null&&w.lng!=null;}).forEach(function(w){
-          var ic=CAT_ICONS[w.category]||'📍';
+          var ic=catIcon(w.category,16);
           var iconEl=L.divIcon({
             html:'<div style="position:relative;width:36px;height:36px">'+
-              '<div style="width:36px;height:36px;border-radius:10px;background:#8b5cf6;border:2.5px solid white;display:flex;align-items:center;justify-content:center;font-size:17px;box-shadow:0 3px 10px rgba(0,0,0,0.3)">'+ic+'</div>'+
+              '<div style="width:36px;height:36px;border-radius:10px;background:#8b5cf6;border:2.5px solid white;display:flex;align-items:center;justify-content:center;color:white;box-shadow:0 3px 10px rgba(0,0,0,0.3)">'+ic+'</div>'+
               '<div style="position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:6px solid #8b5cf6"></div>'+
               '</div>',
             className:'',iconSize:[36,41],iconAnchor:[18,41]
@@ -1994,10 +2260,10 @@
         if(mapFilter!=='all'&&mapFilter!==day.id)return;
         sortEvs(day.events).forEach(function(ev){
           if(ev.lat==null||ev.lng==null)return;
-          var cat=CAT[ev.category]||CAT.other,emoji=CAT_ICONS[ev.category]||'📍';
-          var icon=L.divIcon({
+          var cat=CAT[ev.category]||CAT.other,emoji=catIcon(ev.category,16);
+          var mIcon=L.divIcon({
             html:'<div style="position:relative;width:36px;height:36px">'
-              +'<div style="width:36px;height:36px;border-radius:10px;background:'+day.color+';border:2.5px solid white;display:flex;align-items:center;justify-content:center;font-size:17px;box-shadow:0 3px 10px rgba(0,0,0,0.3)">'
+              +'<div style="width:36px;height:36px;border-radius:10px;background:'+day.color+';border:2.5px solid white;display:flex;align-items:center;justify-content:center;color:white;box-shadow:0 3px 10px rgba(0,0,0,0.3)">'
               +emoji
               +'</div>'
               +'<div style="position:absolute;top:-6px;right:-6px;min-width:16px;height:16px;border-radius:8px;background:white;border:1.5px solid '+day.color+';color:'+day.color+';font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 3px;line-height:1;font-family:Inter,sans-serif">'+n+'</div>'
@@ -2005,8 +2271,8 @@
               +'</div>',
             className:'',iconSize:[36,41],iconAnchor:[18,41]
           });
-          var popup='<div style="font-family:Noto Sans KR,Inter,sans-serif;min-width:160px"><div style="font-weight:700;font-size:13px;margin-bottom:3px">'+ev.title+'</div><div style="font-size:11px;color:#888">'+fmtTime(ev.time)+(ev.endTime?' – '+fmtTime(ev.endTime):'')+'</div>'+(ev.subtitle?'<div style="font-size:11px;margin-top:4px">'+ev.subtitle+'</div>':'')+(ev.notes?'<div style="font-size:11px;color:#f59e0b;margin-top:4px">📌 '+ev.notes+'</div>':'')+'</div>';
-          var m=L.marker([ev.lat,ev.lng],{icon:icon}).addTo(leafletMap).bindPopup(popup);
+          var popup='<div style="font-family:Noto Sans KR,Inter,sans-serif;min-width:160px"><div style="font-weight:700;font-size:13px;margin-bottom:3px">'+ev.title+'</div><div style="font-size:11px;color:#888">'+fmtTime(ev.time)+(ev.endTime?' – '+fmtTime(ev.endTime):'')+'</div>'+(ev.subtitle?'<div style="font-size:11px;margin-top:4px">'+ev.subtitle+'</div>':'')+(ev.notes?'<div style="font-size:11px;color:#f59e0b;margin-top:4px;display:flex;align-items:start;gap:3px">'+icon('pin',11)+' '+ev.notes+'</div>':'')+'</div>';
+          var m=L.marker([ev.lat,ev.lng],{icon:mIcon}).addTo(leafletMap).bindPopup(popup);
           m._evData={dayId:day.id,evId:ev.id};mapMarkers.push(m);n++;
         });
       });
@@ -2132,29 +2398,35 @@
     // ==================== WISHLIST ====================
     function renderWishlist(){
       var c=document.getElementById('wishlistContent');
+      var isHtF=currentTripMeta&&currentTripMeta.type==='hometown';
       var filtered=WISHLIST.filter(function(w){
-        return(wishCatFilter==='all'||w.category===wishCatFilter)&&(wishStatusFilter==='all'||(wishStatusFilter==='scheduled'&&w.visited)||(wishStatusFilter==='unscheduled'&&!w.visited));
+        return(wishCatFilter==='all'||w.category===wishCatFilter)&&(isHtF||wishStatusFilter==='all'||(wishStatusFilter==='scheduled'&&w.visited)||(wishStatusFilter==='unscheduled'&&!w.visited));
       });
       var total=WISHLIST.length,done=WISHLIST.filter(function(w){return w.visited;}).length;
-      var h='<div class="wl-toolbar"><div class="wl-toolbar-top"><span class="wl-title">⭐ 장소</span><span class="wl-count">'+done+'/'+total+' 일정추가됨</span></div><div class="wl-filter-rows"><div class="wl-filter-group">';
-      h+=wlCatBtn('all','전체',wishCatFilter)+wlCatBtn('food','🍽️ 음식',wishCatFilter)+wlCatBtn('bar','🍹 바',wishCatFilter)+wlCatBtn('culture','🏛️ 문화',wishCatFilter);
-      h+='</div><div class="wl-filter-group">';
-      h+=wlSBtn('all','전체',wishStatusFilter)+wlSBtn('unscheduled','미추가',wishStatusFilter)+wlSBtn('scheduled','일정추가됨',wishStatusFilter);
+      var isHt=currentTripMeta&&currentTripMeta.type==='hometown';
+      var h='<div class="wl-toolbar"><div class="wl-toolbar-top"><span class="wl-title" style="display:inline-flex;align-items:center;gap:5px">'+icon('star',16)+' 장소</span>'+(isHt?'<span class="wl-count">'+total+'개</span>':'<span class="wl-count">'+done+'/'+total+' 일정추가됨</span>')+'</div><div class="wl-filter-rows"><div class="wl-filter-group">';
+      h+=wlCatBtn('all','전체',wishCatFilter)+wlCatBtn('food',icon('food',13)+' 음식',wishCatFilter)+wlCatBtn('bar',icon('bar',13)+' 바',wishCatFilter)+wlCatBtn('culture',icon('culture',13)+' 문화',wishCatFilter);
+      if(!isHt){
+        h+='</div><div class="wl-filter-group">';
+        h+=wlSBtn('all','전체',wishStatusFilter)+wlSBtn('unscheduled','미추가',wishStatusFilter)+wlSBtn('scheduled','일정추가됨',wishStatusFilter);
+      }
       h+='</div></div></div><div class="wl-grid">';
-      if(filtered.length===0)h+='<div class="wl-empty"><div class="wl-empty-icon">⭐</div><div>아직 항목이 없어요<br><span style="font-size:0.85rem">하단 + 버튼으로 추가해보세요</span></div></div>';
+      if(filtered.length===0)h+='<div class="wl-empty"><div class="wl-empty-icon" style="display:flex;justify-content:center">'+icon('star',32)+'</div><div>아직 항목이 없어요<br><span style="font-size:0.85rem">하단 + 버튼으로 추가해보세요</span></div></div>';
       filtered.forEach(function(w){
-        var cat=CAT[w.category]||CAT.other,icon=CAT_ICONS[w.category]||'📍';
+        var cat=CAT[w.category]||CAT.other,cic=catIcon(w.category,16);
         var st='';if(w.calDayId&&w.calEventId){var ev=getEv(w.calDayId,w.calEventId);if(ev)st=fmtTime(ev.time)+(ev.endTime?' – '+fmtTime(ev.endTime):'');}
         h+='<div class="wl-card'+(w.visited?' visited':'')+'" onclick="editWishItem(\''+w.id+'\')">';
-        h+='<div class="wl-card-top"><div class="wl-card-icon" style="background:'+cat.bg+'">'+icon+'</div><div class="wl-card-info"><div class="wl-card-name">'+w.name+'</div>'+(w.notes?'<div class="wl-card-sub">'+w.notes+'</div>':'')+'</div></div>';
-        h+='<div class="wl-card-badges"><span class="wl-badge" style="background:'+cat.bg+';color:'+cat.color+'">'+icon+' '+cat.label+'</span>';
-        if(w.visited&&w.dayLabel)h+='<span class="wl-badge" style="background:rgba(99,102,241,0.15);color:#6366f1">📅 '+w.dayLabel+'</span>';
-        if(st)h+='<span class="wl-badge" style="background:rgba(16,185,129,0.12);color:var(--positive)">🕐 '+st+'</span>';
+        h+='<div class="wl-card-top"><div class="wl-card-info"><div class="wl-card-name">'+w.name+'</div>'+(w.notes?'<div class="wl-card-sub">'+w.notes+'</div>':'')+'</div></div>';
+        h+='<div class="wl-card-badges"><span class="wl-badge" style="background:'+cat.bg+';color:'+cat.color+'">'+cic+' '+cat.label+'</span>';
+        if(w.visited&&w.dayLabel)h+='<span class="wl-badge" style="background:rgba(99,102,241,0.15);color:#6366f1;display:inline-flex;align-items:center;gap:3px">'+icon('calendar',11)+' '+w.dayLabel+'</span>';
+        if(st)h+='<span class="wl-badge" style="background:rgba(16,185,129,0.12);color:var(--positive);display:inline-flex;align-items:center;gap:3px">'+icon('calendar',11)+' '+st+'</span>';
         h+='</div><div class="wl-card-bottom">';
         if(w.mapsUrl)h+='<a class="wl-maps-link" href="'+w.mapsUrl+'" target="_blank" rel="noopener" onclick="event.stopPropagation()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg> 구글맵</a>';
         else h+='<span></span>';
-        if(w.visited&&w.calEventId)h+='<div style="display:flex;gap:5px"><button class="wl-visited-toggle adjust" onclick="event.stopPropagation();openSchedModal(\''+w.id+'\')">✏️ 시간 조정</button><button class="wl-visited-toggle wl-time-remove" onclick="event.stopPropagation();removeTimeFromWish(\''+w.id+'\')">⏰ 시간 제거</button></div>';
-        else h+='<button class="wl-visited-toggle" onclick="event.stopPropagation();openSchedModal(\''+w.id+'\')">＋ 일정 추가</button>';
+        if(!isHt){
+          if(w.visited&&w.calEventId)h+='<div style="display:flex;gap:5px"><button class="wl-visited-toggle adjust" onclick="event.stopPropagation();openSchedModal(\''+w.id+'\')" style="display:inline-flex;align-items:center;gap:3px">'+icon('pencil',12)+' 시간 조정</button><button class="wl-visited-toggle wl-time-remove" onclick="event.stopPropagation();removeTimeFromWish(\''+w.id+'\')" style="display:inline-flex;align-items:center;gap:3px">'+icon('calendar',12)+' 시간 제거</button></div>';
+          else h+='<button class="wl-visited-toggle" onclick="event.stopPropagation();openSchedModal(\''+w.id+'\')">＋ 일정 추가</button>';
+        }
         h+='</div></div>';
       });
       h+='</div>';c.innerHTML=h;
@@ -2336,10 +2608,10 @@
       var unassigned=WISHLIST.filter(function(w){return !w.calDayId&&w.wishType!=='note';});
       if(!unassigned.length){el.innerHTML='<div class="cal-add-empty">추가된 장소가 없습니다.<br><button type="button" class="cal-add-empty-btn" onclick="closeCalAdd();openWishAdd()">장소 추가하기</button></div>';return;}
       el.innerHTML=unassigned.map(function(w){
-        var icon=CAT_ICONS[w.category]||'📍';
+        var cic=catIcon(w.category,16);
         var sel=calAddWishId===w.id;
         return '<div class="cal-add-wish-item'+(sel?' selected':'')+'" onclick="selectCalAddWish(\''+w.id+'\')">'+
-          '<div class="cal-add-wish-item-icon">'+icon+'</div>'+
+          '<div class="cal-add-wish-item-icon">'+cic+'</div>'+
           '<div style="flex:1;min-width:0"><div class="cal-add-wish-item-name">'+w.name+'</div>'+(w.notes?'<div class="cal-add-wish-item-notes">'+w.notes+'</div>':'')+'</div>'+
           (sel?'<div style="color:var(--accent);font-size:1rem">✓</div>':'')+
         '</div>';
@@ -2393,7 +2665,7 @@
     function renderSchedModal(){
       var w=WISHLIST.find(function(x){return x.id===schedWishId;});if(!w)return;
       var isEdit=!!(w.calDayId&&w.calEventId),hv=Math.floor(schedStartMin/60),mv=schedStartMin%60;
-      var h='<div class="sched-header"><div><div class="sched-title">'+(isEdit?'📅 일정 수정':'📅 일정 추가')+'</div><div class="sched-item-name">'+w.name+'</div></div><button class="modal-close" onclick="closeSchedModal()">✕</button></div>';
+      var h='<div class="sched-header"><div><div class="sched-title">'+(isEdit?'일정 수정':'일정 추가')+'</div><div class="sched-item-name">'+w.name+'</div></div><button class="modal-close" onclick="closeSchedModal()">✕</button></div>';
       h+='<div class="sched-days">';
       DAYS.forEach(function(d){var ia=schedDayId===d.id;h+='<button class="sched-day-btn'+(ia?' active':'')+'" onclick="setSchedDay(\''+d.id+'\')"'+(ia?' style="background:'+d.color+';color:white;border-color:transparent"':'')+'>'+d.date+'<br><span style="font-size:0.62rem;opacity:0.8">'+d.theme.slice(0,8)+'</span></button>';});
       h+='</div><div class="sched-time-row"><div class="sched-time-group"><label>시작</label><div class="sched-time-inputs"><input type="number" id="schedHour" min="8" max="22" value="'+hv+'" oninput="onSchedTimeChange()"><span style="font-weight:700">:</span><select id="schedMin" onchange="onSchedTimeChange()">';
@@ -2401,7 +2673,7 @@
       h+='</select></div></div><div class="sched-time-group"><label>소요</label><select id="schedDur" onchange="onSchedDurChange()">';
       [[30,'30분'],[60,'1시간'],[90,'1.5시간'],[120,'2시간'],[180,'3시간'],[240,'4시간']].forEach(function(o){h+='<option value="'+o[0]+'"'+(schedDurMin===o[0]?' selected':'')+'>'+o[1]+'</option>';});
       h+='</select></div></div><div class="sched-cal" id="schedCal" style="min-height:200px;max-height:340px">'+renderSchedCalInner()+'</div>';
-      h+='<div class="sched-footer">'+(isEdit?'<button class="sched-del-btn" onclick="removeFromCalendar()">⏰ 시간 제거</button>':'<span></span>');
+      h+='<div class="sched-footer">'+(isEdit?'<button class="sched-del-btn" onclick="removeFromCalendar()" style="display:inline-flex;align-items:center;gap:4px">'+icon('trash',13)+' 시간 제거</button>':'<span></span>');
       h+='<div class="sched-footer-right"><button class="sched-cancel-btn" onclick="closeSchedModal()">취소</button><button class="sched-save-btn" onclick="saveSchedule()">저장</button></div></div>';
       document.getElementById('schedModalInner').innerHTML=h;setTimeout(attachSchedCalEvents,0);
     }
@@ -2495,7 +2767,7 @@
         VND:'🇻🇳',IDR:'🇮🇩',MYR:'🇲🇾',PHP:'🇵🇭',CHF:'🇨🇭',SEK:'🇸🇪',NOK:'🇳🇴',
         DKK:'🇩🇰',AED:'🇦🇪',SAR:'🇸🇦',TRY:'🇹🇷',ZAR:'🇿🇦',NZD:'🇳🇿',ILS:'🇮🇱',
         USD:'🇺🇸',CLP:'🇨🇱',COP:'🇨🇴',ARS:'🇦🇷',PEN:'🇵🇪'};
-      return (map[code]||'💱')+' '+code;
+      return (map[code]||'')+' '+code;
     }
     var currRate = null, currLocalCode = 'USD';
     async function loadCurrRates(){
@@ -2602,19 +2874,7 @@
       var pinMap = {};
       mappable.forEach(function(t,i){ pinMap[t.id] = counts[i]; });
 
-      // Legend chips
-      var legend = document.getElementById('globeLegend');
-      if (legend) {
-        legend.innerHTML = mappable.map(function(t) {
-          var col = t.coverColor || '#f97316';
-          var n = pinMap[t.id] || 0;
-          return '<div class="globe-chip">'+
-            '<span class="globe-chip-dot" style="background:'+col+'"></span>'+
-            '<span class="globe-chip-city">'+(t.emoji ? t.emoji+' ' : '')+(t.city||t.name)+'</span>'+
-            '<span class="globe-chip-count">'+n+'</span>'+
-          '</div>';
-        }).join('');
-      }
+
 
       // Build flag overlay elements (one per trip)
       var overlay = document.getElementById('globeOverlay');
@@ -2624,7 +2884,7 @@
         mappable.forEach(function(t) {
           var el = document.createElement('div');
           el.className = 'globe-flag';
-          el.textContent = t.emoji || '📍';
+          el.textContent = t.emoji || '';
           el.dataset.id = t.id;
           overlay.appendChild(el);
           flagEls.push(el);
@@ -2636,6 +2896,12 @@
 
       import('https://esm.sh/cobe').then(function(mod) {
         var createGlobe = mod.default;
+        var phi = startPhi;
+        var isDragging = false, lastX = 0;
+        canvas.addEventListener('pointerdown', function(e){ isDragging = true; lastX = e.clientX; canvas.style.cursor='grabbing'; });
+        canvas.addEventListener('pointerup',   function(){ isDragging = false; canvas.style.cursor='grab'; });
+        canvas.addEventListener('pointermove', function(e){ if(isDragging){ phi += (e.clientX-lastX)/200; lastX=e.clientX; } });
+
         cobeGlobe = createGlobe(canvas, {
           devicePixelRatio: 2,
           width: s * 2,
@@ -2645,24 +2911,18 @@
           dark: dark ? 1 : 0,
           diffuse: 1.2,
           mapSamples: 16000,
-          mapBrightness: dark ? 2 : 6,
-          baseColor: dark ? [0.1, 0.1, 0.2] : [1, 1, 1],
-          markerColor: [0, 0, 0],
-          glowColor: dark ? [0.1, 0.1, 0.3] : [1, 1, 1],
-          markers: mappable.map(function(t){ return { location:[parseFloat(t.cityLat),parseFloat(t.cityLng)], size:0.01, id:t.id }; }),
+          mapBrightness: 6,
+          baseColor: dark ? [0.3, 0.3, 0.3] : [1, 1, 1],
+          markerColor: [0.2, 0.4, 1],
+          glowColor: dark ? [0.1, 0.1, 0.1] : [1, 1, 1],
+          markers: mappable.map(function(t){ return { location:[parseFloat(t.cityLat),parseFloat(t.cityLng)], size:0.03 }; }),
         });
 
-        var phi = startPhi;
-        var isDragging = false, lastX = 0;
-        canvas.addEventListener('pointerdown', function(e){ isDragging = true; lastX = e.clientX; canvas.style.cursor='grabbing'; });
-        canvas.addEventListener('pointerup',   function(){ isDragging = false; canvas.style.cursor='grab'; });
-        canvas.addEventListener('pointermove', function(e){ if(isDragging){ phi += (e.clientX-lastX)/200; lastX=e.clientX; } });
-
+        // Animate globe + position flag overlays
         function animate() {
-          cobeRafId = requestAnimationFrame(animate);
           if (!isDragging) phi += 0.005;
           cobeGlobe.update({ phi: phi });
-          // Position flag emoji via JS sphere projection
+          // Position flag overlays
           mappable.forEach(function(t, i) {
             var el = flagEls[i]; if (!el) return;
             var pos = projectGlobe(parseFloat(t.cityLat), parseFloat(t.cityLng), phi, COBE_THETA, s);
@@ -2675,9 +2935,10 @@
               el.style.display = 'none';
             }
           });
+          cobeRafId = requestAnimationFrame(animate);
         }
         animate();
-      }).catch(function(){});
+      }).catch(function(e){ console.error('[cobe] init failed:', e); });
     }
 
     // ==================== THEME ====================
@@ -2685,7 +2946,7 @@
     var currentTheme=savedTheme||(window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark');
     function applyTheme(t){
       document.documentElement.className='theme-'+t;
-      document.getElementById('themeIcon').textContent=t==='dark'?'🌙':'☀️';
+      document.getElementById('themeIcon').innerHTML=t==='dark'?'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg>':'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/></svg>';
       document.getElementById('themeLabel').textContent=t==='dark'?'다크모드':'라이트모드';
       localStorage.setItem('viz-theme',t);currentTheme=t;
       if(leafletMap)setTiles(t==='dark');rerender();
