@@ -5,6 +5,7 @@
     { "src": "index.html", "use": "@vercel/static" }
   ],
   "routes": [
+    { "src": "/__/auth/(.*)", "dest": "https://mexico-trip-c5644.firebaseapp.com/__/auth/$1" },
     { "src": "/api/(.*)", "dest": "/api/$1" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]

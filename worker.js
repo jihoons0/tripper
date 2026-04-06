@@ -28,7 +28,7 @@ export default {
       let name = '';
       const placeMatch = finalUrl.match(/\/maps\/(?:place|search)\/([^/@?&]+)/);
       if (placeMatch) {
-        name = decodeURIComponent(placeMatch[1].replace(/\+/g, ' ')).trim();
+        name = decodeURIComponent(placeMatch[1]).replace(/\+/g, ' ').trim();
       }
       if (/^(dropped pin|google maps?|maps?)$/i.test(name)) name = '';
 

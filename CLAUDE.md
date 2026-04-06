@@ -82,14 +82,14 @@ Three in-trip views toggled via `switchView(v)`. Tab order: Calendar → Map →
 
 ### Trip Switcher Dropdown
 
-Header shows current trip name with a chevron. Clicking opens a dropdown listing all trips for quick switching. `toggleTripDropdown(event)` / `closeTripDropdown()`. Hometown appears with a home icon.
+Header shows current trip name with a chevron. Clicking the trip name or flag emoji opens a dropdown listing all trips for quick switching. `toggleTripDropdown(event)` / `closeTripDropdown()`. Hometown appears first with a home icon, then regular trips in reverse chronological order.
 
 ### Dashboard
 
 - **Hometown card** — pinned above the globe, max-width 360px centered. Shows home icon + "내 도시" label, city name, wishlist count, always-visible edit button.
 - **Cobe globe** — 3D interactive globe with flag emoji overlays positioned via `projectGlobe()`. Uses `createGlobe()` + `globe.update({ phi })` + `requestAnimationFrame` loop. Markers show trip locations.
 - **CTA buttons** — "내 도시 설정" (if no hometown) and "새 여행 추가", using `.dash-cta-btn` class with hover states.
-- **Trip cards** — simplified: emoji + name, city, date range, hover-reveal edit/delete actions.
+- **Trip cards** — simplified: emoji + name, city, date range, always-visible edit/delete actions. Sorted reverse chronological (furthest trip first).
 
 ### Mobile-Specific UI
 
@@ -134,8 +134,8 @@ All views render via innerHTML string concatenation. `rerender()` refreshes curr
 - `openTripCreate()` / `openTripEdit(tripId)` / `saveTripCreate(e)` — trip create/edit modal
 - `openHometownModal()` / `saveHometown()` — hometown city picker modal
 - `archiveTrip(tripId)` — delete trip
-- `fetchWeather()` — open-meteo forecast → `weatherData`
-- `parseGmapsUrl(url)` / `parseEditMapsUrl(url)` — Google Maps URL parsing (calls CF Worker)
+- `fetchWeather()` — Open-Meteo weather → `weatherData`. Uses forecast API for near-future dates, archive API for past dates, last-year-same-dates fallback for dates beyond forecast range (~16 days). Geocodes city name as fallback if `cityLat`/`cityLng` missing. Weather chips shown inline in calendar headers and map day tabs.
+- `parseGmapsUrl(url)` / `parseEditMapsUrl(url)` — Google Maps URL parsing (calls CF Worker). Triggered via `oninput`, `onpaste`, and `onchange` for mobile compatibility. `extractMapsUrl(s)` extracts the actual URL from pasted text that may include place name + URL (common on mobile share).
 - `geocodeWishItem(w)` — Nominatim geocode for wishlist items without coordinates
 - `icon(name, size)` — Heroicons v2 outline SVG string from `ICONS` object
 - `catIcon(cat, size)` — category-specific icon (maps 'other' → 'pin')
@@ -163,6 +163,36 @@ Rounded-square emoji badges (day color bg, white border), category SVG icon cent
 ### Theme
 
 `--accent` is monochrome: `#e8e8e8` (dark mode) / `#171717` (light mode). `--accent-fg` for text on accent backgrounds: `#0a0a0a` / `#ffffff`. Day/marker colors remain per-trip colored. `cycleTheme()` toggles; persisted in localStorage.
+
+### Calendar Add Modal (`#calAddModal`)
+
+Start time uses native `<input type="time">`. Duration slider (`CAL_ADD_DURS=[30,60,90,...,240]`) — index 0 is 30min, default is 30min. Ghost hover preview and click both snap to 30-minute intervals.
+
+- `tpSetFromMin(min)` / `tpGetMin()` — set/get time from the native time input
+- `updateCalAddEndTime()` — computes end time from start + duration slider
+
+### Data Safety — `reconcileDays(meta)`
+
+**CRITICAL:** `reconcileDays` rebuilds DAYS to match trip date range. It carries over existing events by isoDate match, then by index fallback for days without isoDate. **Never call `scheduleSave()` after a transformation that could result in fewer events.** Firestore has no version history — data loss is permanent.
+
+### Authentication & Sharing
+
+**Auth:** Firebase Auth with **Google sign-in** (popup). `auth.onAuthStateChanged` gates all routing — unauthenticated users see a login screen. `currentUser` holds the Firebase user object. Viz-menu (hamburger + share button) hidden on login screen.
+
+**User profiles:** `users/{uid}` doc with `email`, `displayName` — written on sign-in via `writeUserProfile(user)`.
+
+**Trip access control:** Trip metadata has `access: { [uid]: 'owner'|'write' }` and `accessEmails: [email]` for query indexing.
+- `getTripRole()` — returns `'owner'`, `'write'`, or `'none'` based on `currentUser.uid` in `currentTripMeta.access`
+- `canEdit()` — true for `owner` or `write` roles
+- `isOwner()` — true for `owner` only
+
+**Sharing UI:** Owner-only share modal (`#shareModal`) to invite by email. `addShareUser(e)` looks up user by email in `users` collection — if found, adds UID to `access`; if not, adds `pending_<email>` entry. Pending invites auto-resolve on sign-in via `resolvePendingInvites(user)`. Share status button in header shows lock icon ("나만 보기") when private, member count when shared. Share button hidden on dashboard.
+
+**Authorship:** Wishlist items have `addedBy` (display name) and `addedByPhoto` (Google avatar URL). Shown as avatar or initials chip on wishlist cards.
+
+### FAB (Floating Action Button)
+
+Fixed-position "장소 추가" button (`.fab`). Hidden on dashboard, on mobile map view (≤768px), and for non-editable trips. Visibility updated via `updateFab(v)` — also re-evaluated on `window.resize`.
 
 ### Currency Converter
 

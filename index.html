@@ -2,7 +2,7 @@
 <html lang="ko" class="theme-dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>🇲🇽 멕시코시티 여행 계획 3/17~3/21</title>
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -18,6 +18,8 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <style>
     *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    html { touch-action:pan-y; }
+    .leaflet-container { touch-action:none; }
     :root {
       interpolate-size: allow-keywords;
       --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
@@ -74,8 +76,8 @@
     .curr-refresh { padding:4px 10px; border-radius:6px; border:1px solid var(--border); background:transparent; color:var(--text-secondary); font-family:inherit; font-size:0.72rem; cursor:pointer; transition:border-color var(--dur-small), color var(--dur-small); }
     .curr-refresh:hover { border-color:var(--accent); color:var(--accent); }
     .app-header .view-tabs { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); }
-    .view-tabs { display:flex; gap:3px; background:var(--surface); padding:3px; border-radius:10px; border:1px solid var(--border); }
-    .view-tab { padding:5px 13px; border-radius:7px; border:none; background:transparent; color:var(--text-secondary); font-family:inherit; font-size:0.82rem; font-weight:500; cursor:pointer; transition:background var(--dur-small) var(--ease-out), color var(--dur-small), transform var(--dur-micro) var(--ease-out); white-space:nowrap; }
+    .view-tabs { display:flex; gap:3px; background:var(--surface); padding:3px; border-radius:10px; border:1px solid var(--border); height:34px; align-items:center; }
+    .view-tab { padding:0 13px; height:26px; display:inline-flex; align-items:center; border-radius:7px; border:none; background:transparent; color:var(--text-secondary); font-family:inherit; font-size:0.82rem; font-weight:500; cursor:pointer; transition:background var(--dur-small) var(--ease-out), color var(--dur-small), transform var(--dur-micro) var(--ease-out); white-space:nowrap; }
     .view-tab.active { background:var(--accent); color:var(--accent-fg); }
     .view-tab:hover:not(.active) { background:var(--surface-hover); color:var(--text); }
     .view-tab:active { transform:scale(0.95); }
@@ -245,11 +247,11 @@
     .cal-pick-cat { font-size:0.68rem; padding:2px 7px; border-radius:8px; flex-shrink:0; }
     /* VIZ MENU */
     .viz-menu { position:fixed; top:0; right:12px; z-index:9999; height:56px; display:flex; align-items:center; gap:8px; }
-    .share-status-btn { height:32px; padding:0 12px; border-radius:8px; border:1px solid var(--border); background:var(--surface); color:var(--text-secondary); font-size:0.75rem; font-weight:600; font-family:inherit; cursor:pointer; display:none; align-items:center; gap:5px; backdrop-filter:blur(12px); transition:background var(--dur-small), color var(--dur-small); white-space:nowrap; }
+    .share-status-btn { height:34px; padding:0 12px; border-radius:8px; border:1px solid var(--border); background:var(--surface); color:var(--text-secondary); font-size:0.75rem; font-weight:600; font-family:inherit; cursor:pointer; display:none; align-items:center; gap:5px; backdrop-filter:blur(12px); transition:background var(--dur-small), color var(--dur-small); white-space:nowrap; }
     .share-status-btn:hover { background:var(--surface-hover); color:var(--text); }
-    .viz-menu-toggle { width:40px; height:40px; border-radius:10px; background:var(--surface); border:1px solid var(--border); color:var(--text); cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(12px); transition:background var(--dur-small); }
+    .viz-menu-toggle { width:34px; height:34px; border-radius:10px; background:var(--surface); border:1px solid var(--border); color:var(--text); cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(12px); transition:background var(--dur-small); }
     .viz-menu-toggle:hover { background:var(--surface-hover); }
-    .viz-menu-dropdown { position:absolute; top:48px; right:0; min-width:190px; background:var(--surface); border:1px solid var(--border); border-radius:11px; padding:6px; opacity:0; visibility:hidden; transform:translateY(-4px) scale(0.97); transition:opacity var(--dur-small) var(--ease-out), transform var(--dur-small) var(--ease-out), visibility var(--dur-small); transform-origin:top right; }
+    .viz-menu-dropdown { position:absolute; top:42px; right:0; min-width:190px; background:var(--surface); border:1px solid var(--border); border-radius:11px; padding:6px; opacity:0; visibility:hidden; transform:translateY(-4px) scale(0.97); transition:opacity var(--dur-small) var(--ease-out), transform var(--dur-small) var(--ease-out), visibility var(--dur-small); transform-origin:top right; }
     .viz-menu-dropdown.open { opacity:1; visibility:visible; transform:translateY(0) scale(1); }
     .viz-menu-dropdown button { width:100%; padding:9px 12px; border:none; border-radius:7px; background:transparent; color:var(--text); font-size:13px; font-family:inherit; cursor:pointer; text-align:left; display:flex; align-items:center; gap:9px; transition:background 0.15s; }
     .viz-menu-dropdown button:hover { background:var(--surface-hover); }
@@ -417,7 +419,8 @@
     .dash-grid > *:nth-child(4){animation:cardStagger var(--dur-medium) var(--ease-out) both;animation-delay:150ms}
     .dash-grid > *:nth-child(5){animation:cardStagger var(--dur-medium) var(--ease-out) both;animation-delay:200ms}
     .dash-grid > *:nth-child(n+6){animation:cardStagger var(--dur-medium) var(--ease-out) both;animation-delay:250ms}
-    .app-logo-text { display:flex; flex-direction:column; cursor:pointer; }
+    .app-logo-text { display:flex; flex-direction:column; cursor:pointer; padding:4px 8px; border-radius:8px; margin:-4px -8px; transition:background var(--dur-small); }
+    .trip-switcher.has-trip .app-logo-text:hover { background:var(--surface-hover); }
     .app-logo-name { font-size:0.9rem; font-weight:700; line-height:1.2; }
     .app-logo-dates { font-size:0.68rem; color:var(--text-secondary); }
     .trip-switcher { position:relative; }
@@ -552,7 +555,7 @@
     <div class="viz-menu-dropdown" id="vizMenuDropdown">
       <button id="shareMenuBtn" onclick="openShareModal()" style="display:none"><span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.935-2.186 2.25 2.25 0 0 0-3.935 2.186Z"/></svg></span><span>공유 설정</span></button>
       <button id="currMenuBtn" onclick="openCurrConverter()"><span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z"/></svg></span><span>환율 계산기</span></button>
-      <button id="langToggleBtn" onclick="setLang(currentLang==='ko'?'en':'ko')"><span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m10.5 21 5.25-11.25L21 21m-9-3h7.5M3 5.621a48.474 48.474 0 0 1 6-.371m0 0c1.12 0 2.233.038 3.334.114M9 5.25V3m3.334 2.364C11.176 10.658 7.69 15.08 3 17.502m9.334-12.138c.896.061 1.785.147 2.666.257m-4.589 8.495a18.023 18.023 0 0 1-3.827-5.802"/></svg></span><span>English</span></button>
+      <button onclick="cycleTheme()"><span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z"/></svg></span><span>다크 모드</span></button>
       <div class="viz-menu-divider"></div>
       <div id="accountSection">
         <div id="accountLoggedIn" style="display:none">
@@ -725,7 +728,7 @@
     <div class="modal">
       <div class="modal-head"><h2 id="wishModalTitle">추가</h2><button class="modal-close" onclick="closeWishModal()">✕</button></div>
       <form id="wishForm" onsubmit="saveWishItem(event)">
-        <div class="form-group"><label class="form-label" for="wishMapsUrl">구글맵 링크</label><input type="text" class="form-input" id="wishMapsUrl" placeholder="https://maps.app.goo.gl/..." oninput="parseGmapsUrl(this.value);updateWishSaveBtn()" onpaste="setTimeout(function(){parseGmapsUrl(document.getElementById('wishMapsUrl').value);updateWishSaveBtn()},150)" onchange="parseGmapsUrl(this.value);updateWishSaveBtn()"><div style="font-size:0.74rem;color:var(--text-secondary);margin-top:4px">구글맵에서 공유 → 링크 복사 후 붙여넣으면 이름·위치가 자동으로 채워집니다</div></div>
+        <div class="form-group"><label class="form-label" for="wishMapsUrl">구글맵 링크</label><input type="text" class="form-input" id="wishMapsUrl" placeholder="https://maps.app.goo.gl/..." oninput="parseGmapsUrl(this.value);updateWishSaveBtn()" onpaste="setTimeout(function(){parseGmapsUrl(document.getElementById('wishMapsUrl').value);updateWishSaveBtn()},150)" onchange="parseGmapsUrl(this.value);updateWishSaveBtn()" onblur="parseGmapsUrl(this.value);updateWishSaveBtn()" ondrop="setTimeout(function(){parseGmapsUrl(document.getElementById('wishMapsUrl').value);updateWishSaveBtn()},150)"><div style="font-size:0.74rem;color:var(--text-secondary);margin-top:4px">구글맵에서 공유 → 링크 복사 후 붙여넣으면 이름·위치가 자동으로 채워집니다</div></div>
         <div class="form-group"><label class="form-label" for="wishName">장소 이름</label><input type="text" class="form-input" id="wishName" placeholder="예: Contramar" oninput="updateWishSaveBtn()"></div>
         <div class="form-group"><label class="form-label" for="wishCategory">카테고리</label><select class="form-input" id="wishCategory"><option value="food">🍽️ 음식</option><option value="bar">🍹 바/음료</option><option value="culture">🏛️ 문화/관광</option><option value="hotel">🏨 호텔</option><option value="conference">💼 비즈니스</option><option value="transport">✈️ 교통</option><option value="other">📍 기타</option></select></div>
         <div class="form-group"><label class="form-label" for="wishNotes">메모</label><input type="text" class="form-input" id="wishNotes" placeholder="가고 싶은 이유, 영업시간 등"></div>
@@ -793,6 +796,10 @@
       <div id="calAddPlaceFields">
         <div class="form-label" style="margin-bottom:6px">위시리스트에서 선택</div>
         <div class="cal-add-wish-list" id="calAddWishList"></div>
+        <div class="form-group" style="margin-top:10px">
+          <label class="form-label">메모</label>
+          <input type="text" class="form-input" id="calAddPlaceNotes" placeholder="예약 여부, 주의사항 등">
+        </div>
       </div>
       <!-- Block mode: title -->
       <div id="calAddBlockFields" style="display:none">
@@ -817,7 +824,7 @@
     <div class="modal" style="max-width:420px">
       <div class="modal-head"><h2>공유 설정</h2><button class="modal-close" onclick="closeShareModal()">✕</button></div>
       <div id="shareContent" style="padding:16px"></div>
-      <div style="padding:0 16px 16px">
+      <div id="shareInviteSection" style="padding:0 16px 16px">
         <div style="font-size:0.8rem;font-weight:600;margin-bottom:8px;color:var(--text-secondary)">사용자 초대</div>
         <form onsubmit="addShareUser(event)" style="display:flex;gap:8px">
           <input id="shareEmail" type="email" placeholder="이메일 주소" required style="flex:1;padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:0.85rem">
@@ -842,7 +849,7 @@
         <div class="form-row fg-time"><div class="form-group"><label class="form-label" id="editTimeLbl">시작 시간</label><input type="time" class="form-input" id="editTime" required></div><div class="form-group"><label class="form-label">종료 시간</label><input type="time" class="form-input" id="editEndTime"></div></div>
         <div class="form-group fg-title"><label class="form-label">이벤트 이름</label><input type="text" class="form-input" id="editTitle" required placeholder="장소 또는 이벤트명"></div>
         <div class="form-group fg-sub"><label class="form-label">설명</label><input type="text" class="form-input" id="editSubtitle" placeholder="장소 설명"></div>
-        <div class="form-group fg-map"><label class="form-label" id="editMapLbl">구글맵 링크 <span style="color:var(--text-secondary);font-weight:400">(지도 표시용)</span></label><input type="text" class="form-input" id="editMapsUrl" placeholder="https://maps.app.goo.gl/..." oninput="parseEditMapsUrl(this.value)" onpaste="setTimeout(function(){parseEditMapsUrl(document.getElementById('editMapsUrl').value)},150)" onchange="parseEditMapsUrl(this.value)"></div>
+        <div class="form-group fg-map"><label class="form-label" id="editMapLbl">구글맵 링크 <span style="color:var(--text-secondary);font-weight:400">(지도 표시용)</span></label><input type="text" class="form-input" id="editMapsUrl" placeholder="https://maps.app.goo.gl/..." oninput="parseEditMapsUrl(this.value)" onpaste="setTimeout(function(){parseEditMapsUrl(document.getElementById('editMapsUrl').value)},150)" onchange="parseEditMapsUrl(this.value)" onblur="parseEditMapsUrl(this.value)" ondrop="setTimeout(function(){parseEditMapsUrl(document.getElementById('editMapsUrl').value)},150)"></div>
         <div class="form-group fg-notes"><label class="form-label">메모</label><input type="text" class="form-input" id="editNotes" placeholder="예약 여부, 주의사항 등"></div>
         <div class="form-group fg-link"><label class="form-label">링크 <span style="color:var(--text-secondary);font-weight:400">(선택)</span></label><input type="url" class="form-input" id="editLink" placeholder="https://..."></div>
         <div class="form-group fg-cat"><label class="form-label">카테고리</label><select class="form-input" id="editCategory"><option value="food">🍽️ 음식</option><option value="bar">🍹 바/음료</option><option value="culture">🏛️ 문화/관광</option><option value="hotel">🏨 호텔</option><option value="conference">💼 비즈니스</option><option value="transport">✈️ 교통</option><option value="other">📍 기타</option></select></div>
@@ -864,7 +871,7 @@
     // ==================== FIREBASE ====================
     const firebaseConfig = {
       apiKey: "AIzaSyBorY6UphXhcsSVQbbjJC8AT-lyWlQ1OHY",
-      authDomain: "mexico-trip-c5644.firebaseapp.com",
+      authDomain: "palo-travel.vercel.app",
       projectId: "mexico-trip-c5644",
       storageBucket: "mexico-trip-c5644.firebasestorage.app",
       messagingSenderId: "580916268978",
@@ -932,6 +939,7 @@
       endBeforeStart: { ko:'종료일이 시작일보다 빠릅니다.', en:'End date is before start date.' },
       createTripFailed: { ko:'여행 생성에 실패했습니다.', en:'Failed to create trip.' },
       confirmDeleteTrip: { ko:'이 여행을 삭제할까요?', en:'Delete this trip?' },
+      confirmLeaveTrip: { ko:'이 여행에서 나가시겠습니까?', en:'Leave this trip?' },
       // Date picker
       dpDow: { ko:['일','월','화','수','목','금','토'], en:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'] },
       dpMo: { ko:['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'], en:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'] },
@@ -1013,15 +1021,15 @@
       viewInCalendar: { ko:'캘린더로 보기', en:'Calendar' },
       // Share
       shareSettings: { ko:'공유 설정', en:'Share Settings' },
+      members: { ko:'멤버', en:'Members' },
       inviteUser: { ko:'사용자 초대', en:'Invite User' },
       invite: { ko:'초대', en:'Invite' },
       copyLink: { ko:'초대 링크 복사', en:'Copy invite link' },
       copied: { ko:'복사됨!', en:'Copied!' },
       private_: { ko:'나만 보기', en:'Private' },
       nPeople: { ko:'명', en:'' },
-      owner: { ko:'소유자', en:'Owner' },
-      writeRole: { ko:'쓰기', en:'Write' },
-      readRole: { ko:'읽기', en:'Read' },
+      owner: { ko:'호스트', en:'Host' },
+      invited: { ko:'초대됨', en:'Invited' },
       pending: { ko:'대기중', en:'Pending' },
       confirmRemoveAccess: { ko:'이 사용자의 접근 권한을 삭제할까요?', en:'Remove access for this user?' },
       inviteFailed: { ko:'초대에 실패했습니다.', en:'Failed to invite.' },
@@ -1139,14 +1147,23 @@
       if (!currentUser || !currentTripMeta || !currentTripMeta.access) return 'none';
       return currentTripMeta.access[currentUser.uid] || 'none';
     }
-    function canEdit() { var r = getTripRole(); return r === 'owner' || r === 'write'; }
+    function canEdit() { return !!currentUser; }
     function isOwner() { return getTripRole() === 'owner'; }
     function doSignIn() {
       var provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithPopup(provider).catch(function(e) {
-        console.error('Sign-in failed:', e);
-        alert(t('signInFailed') + ': ' + e.message);
-      });
+      var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      if (isMobile) {
+        auth.signInWithRedirect(provider);
+      } else {
+        auth.signInWithPopup(provider).catch(function(e) {
+          if (e.code === 'auth/popup-blocked' || e.code === 'auth/cancelled-popup-request') {
+            auth.signInWithRedirect(provider);
+            return;
+          }
+          console.error('Sign-in failed:', e);
+          alert(t('signInFailed') + ': ' + e.message);
+        });
+      }
     }
     function doSignOut() {
       auth.signOut().then(function() {
@@ -1173,6 +1190,7 @@
         await db.collection('users').doc(user.uid).set({
           email: normalizeEmail(user.email),
           displayName: user.displayName || '',
+          photoURL: user.photoURL || '',
           lastSignIn: firebase.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
       } catch(e) { console.warn('Failed to write user profile:', e); }
@@ -1210,16 +1228,20 @@
     // Resolve pending invites for the current user
     async function resolvePendingInvites(user) {
       var email = normalizeEmail(user.email);
-      var pendingKey = 'pending_' + email;
       try {
         var snap = await db.collection('trips')
           .where('accessEmails', 'array-contains', email).get();
         snap.forEach(function(doc) {
           var d = doc.data();
-          if (d.access && d.access[pendingKey] && !d.access[user.uid]) {
+          if (!d.access || d.access[user.uid]) return;
+          // Find any pending key matching this email (case-insensitive)
+          var matchedKey = Object.keys(d.access).find(function(k) {
+            return k.startsWith('pending_') && k.replace('pending_','').toLowerCase() === email;
+          });
+          if (matchedKey) {
             var updates = {};
-            updates['access.' + user.uid] = d.access[pendingKey];
-            updates['access.' + pendingKey] = firebase.firestore.FieldValue.delete();
+            updates['access.' + user.uid] = d.access[matchedKey];
+            updates['access.' + matchedKey] = firebase.firestore.FieldValue.delete();
             db.collection('trips').doc(doc.id).update(updates)
               .then(function() { console.log('[invite] resolved pending invite for', doc.id); })
               .catch(function() {});
@@ -1257,16 +1279,27 @@
       }).join('');
     }
     function openShareModal() {
-      if (!isOwner()) return;
       renderShareList();
+      var inviteSection = document.getElementById('shareInviteSection');
+      if (inviteSection) inviteSection.style.display = isOwner() ? '' : 'none';
+      var title = document.querySelector('#shareModal .modal-head h2');
+      if (title) title.textContent = isOwner() ? t('shareSettings') : t('members');
       document.getElementById('shareModal').classList.add('open');
-      document.getElementById('shareEmail').value = '';
+      var emailInput = document.getElementById('shareEmail');
+      if (emailInput) emailInput.value = '';
     }
     function closeShareModal() {
       document.getElementById('shareModal').classList.remove('open');
     }
     async function renderShareList() {
       var access = (currentTripMeta && currentTripMeta.access) || {};
+      // Auto-resolve any stale pending entries
+      var pendingKeys = Object.keys(access).filter(function(k){return k.startsWith('pending_');});
+      for(var pi=0;pi<pendingKeys.length;pi++){
+        var pe=pendingKeys[pi].replace('pending_','').toLowerCase();
+        try{var ps=await db.collection('users').where('email','==',pe).limit(1).get();
+        if(!ps.empty){var pu=ps.docs[0].id;if(!access[pu]){var up={};up['access.'+pu]=access[pendingKeys[pi]];up['access.'+pendingKeys[pi]]=firebase.firestore.FieldValue.delete();await db.collection('trips').doc(currentTripId).update(up);access[pu]=access[pendingKeys[pi]];delete access[pendingKeys[pi]];}}}catch(e){}
+      }
       var keys = Object.keys(access);
       // Look up display names for UIDs
       var userInfoMap = {};
@@ -1278,7 +1311,7 @@
           docs.forEach(function(doc) {
             if (doc.exists) {
               var d = doc.data();
-              userInfoMap[doc.id] = { name: d.displayName || d.email, email: d.email };
+              userInfoMap[doc.id] = { name: d.displayName || d.email, email: d.email, photo: d.photoURL || '' };
             }
           });
         } catch(e) {}
@@ -1289,9 +1322,9 @@
         var isPending = key.startsWith('pending_');
         var info = isPending ? { name: key.replace('pending_',''), email: key.replace('pending_','') } : (userInfoMap[key] || { name: key, email: '' });
         var displayName = info.name + (isPending ? ' ('+t('pending')+')' : '');
-        var roleLabel = role === 'owner' ? t('owner') : (role === 'write' ? t('writeRole') : t('readRole'));
-        var initials = info.name.slice(0, 2).toUpperCase();
-        h += '<li class="share-item"><div class="share-user-info"><div class="share-avatar">' + initials + '</div><div><div class="share-user-name">' + displayName + '</div>' + (info.email && info.email !== info.name ? '<div class="share-user-email">' + info.email + '</div>' : '') + '</div></div><div style="display:flex;align-items:center;gap:8px"><span class="share-role-badge' + (role === 'owner' ? ' owner' : '') + '">' + roleLabel + '</span>';
+        var roleLabel = role === 'owner' ? t('owner') : t('invited');
+        var avatarHtml = info.photo ? '<img src="'+info.photo+'" class="share-avatar" referrerpolicy="no-referrer" style="object-fit:cover">' : '<div class="share-avatar">' + info.name.slice(0,2).toUpperCase() + '</div>';
+        h += '<li class="share-item"><div class="share-user-info">'+avatarHtml+'<div><div class="share-user-name">' + displayName + '</div>' + (info.email && info.email !== info.name ? '<div class="share-user-email">' + info.email + '</div>' : '') + '</div></div><div style="display:flex;align-items:center;gap:8px"><span class="share-role-badge' + (role === 'owner' ? ' owner' : '') + '">' + roleLabel + '</span>';
         if (role !== 'owner') {
           h += '<button class="share-remove-btn" onclick="removeShareUser(\'' + key + '\')" title="삭제">' + icon('trash', 14) + '</button>';
         }
@@ -1363,16 +1396,19 @@
     function updateShareBtnVisibility() {
       var btn = document.getElementById('shareStatusBtn');
       var menuBtn = document.getElementById('shareMenuBtn');
-      if (menuBtn) menuBtn.style.display = (currentTripId && isOwner()) ? '' : 'none';
-      if (!btn) return;
-      if (!currentTripId || !isOwner()) { btn.style.display = 'none'; return; }
-      btn.style.display = 'inline-flex';
       var access = (currentTripMeta && currentTripMeta.access) || {};
-      var count = Object.keys(access).length;
-      if (count <= 1) {
+      var memberCount = Object.keys(access).length;
+      if (menuBtn) menuBtn.style.display = (currentTripId && (isOwner() || memberCount > 1)) ? '' : 'none';
+      if (!btn) return;
+      if (!currentTripId || !currentUser) { btn.style.display = 'none'; return; }
+      if (memberCount <= 1 && isOwner()) {
+        btn.style.display = 'inline-flex';
         btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></svg> '+t('private_');
+      } else if (memberCount > 1) {
+        btn.style.display = 'inline-flex';
+        btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg> ' + memberCount + '명';
       } else {
-        btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg> ' + count + '명';
+        btn.style.display = 'none';
       }
     }
 
@@ -1398,7 +1434,7 @@
           await migrateOwnership();
           resolvePendingInvites(user);
           document.getElementById('loadingScreen').innerHTML = '<div class="spinner"></div><p>'+t('loading')+'</p>';
-          showDashboard();
+          initRouter();
         }
       }
     });
@@ -1604,6 +1640,27 @@
         try { DATA_REF.set({ days: DAYS, wishlist: WISHLIST }); } catch(e) {}
       }
     }
+    function backfillEventCoords(){
+      var dirty=false;
+      var queue=[];
+      DAYS.forEach(function(day){day.events.forEach(function(ev){
+        if(ev.mapsUrl&&ev.lat==null&&ev.lng==null)queue.push(ev);
+      });});
+      if(!queue.length)return;
+      queue.forEach(function(ev){
+        var url=extractMapsUrl(ev.mapsUrl);
+        if(/maps\.app\.goo\.gl|goo\.gl\/maps/.test(url)){
+          fetch('https://palo-travel-expand-url.jihoon8846.workers.dev/api/expand-url?url='+encodeURIComponent(url))
+            .then(function(r){return r.json();})
+            .then(function(d){
+              if(d.lat!=null&&d.lng!=null){ev.lat=d.lat;ev.lng=d.lng;dirty=true;scheduleSave();if(currentView==='map')rebuildMarkers();}
+            }).catch(function(){});
+        } else {
+          var cm=url.match(/@(-?\d+\.?\d*),(-?\d+\.?\d*)/)||url.match(/[?&]q=(-?\d+\.?\d*),(-?\d+\.?\d*)/);
+          if(cm){ev.lat=parseFloat(cm[1]);ev.lng=parseFloat(cm[2]);dirty=true;scheduleSave();if(currentView==='map')rebuildMarkers();}
+        }
+      });
+    }
 
     // ==================== MIGRATION (Phase 2) ====================
     async function migrateIfNeeded() {
@@ -1632,9 +1689,13 @@
     }
 
     // ==================== HASH ROUTER (Phase 3) ====================
+    var _routerInited = false;
     function initRouter() {
-      window.addEventListener('hashchange', handleRoute);
-      window.addEventListener('resize', function(){updateFab();});
+      if (!_routerInited) {
+        _routerInited = true;
+        window.addEventListener('hashchange', handleRoute);
+        window.addEventListener('resize', function(){updateFab();});
+      }
       handleRoute();
     }
     function handleRoute() {
@@ -1645,6 +1706,7 @@
     }
     function navigateTo(hash) { location.hash = hash; }
     async function openTrip(tripId) {
+      destroyMap();
       document.getElementById('loadingScreen').style.display = 'flex';
       try {
         var snapP = db.collection('trips').doc(tripId).get();
@@ -1667,6 +1729,7 @@
         scheduleSave();
       }
       document.getElementById('loadingScreen').style.display = 'none';
+      backfillEventCoords();
       updateHeader(currentTripMeta);
       updateShareBtnVisibility();
       var dashEl = document.getElementById('view-dashboard');
@@ -1732,13 +1795,8 @@
       var days = Math.round((e - s) / 86400000) + 1;
       return STRINGS.dateLabelFn[currentLang](s, e, days);
     }
-    function toggleTripDropdown(e) {
-      if (!currentTripId) return;
-      e.stopPropagation();
+    function renderTripDropdown(trips) {
       var dd = document.getElementById('tripDropdown');
-      if (dd.style.display !== 'none') { closeTripDropdown(); return; }
-      var trips = lsLoadTripList() || [];
-      // Hometown first, then regular trips reverse-chronological
       var htTrips = [], regTrips = [];
       trips.forEach(function(t){ if(t.type==='hometown') htTrips.push(t); else regTrips.push(t); });
       regTrips.sort(function(a,b){ return (b.startDate||'').localeCompare(a.startDate||''); });
@@ -1758,7 +1816,23 @@
       html += '<div class="trip-dropdown-item trip-dropdown-dash" onclick="goToDashboard();closeTripDropdown()"><span class="tdi-emoji" style="display:flex;align-items:center;justify-content:center"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg></span><span>모든 여행 보기</span></div>';
       dd.innerHTML = html;
       dd.style.display = '';
+    }
+    function toggleTripDropdown(e) {
+      if (!currentTripId) return;
+      e.stopPropagation();
+      var dd = document.getElementById('tripDropdown');
+      if (dd.style.display !== 'none') { closeTripDropdown(); return; }
+      var trips = lsLoadTripList() || [];
+      renderTripDropdown(trips);
       document.addEventListener('click', _closeTripDdOutside);
+      // If cache is empty or stale, fetch from Firestore and refresh
+      if (currentUser && trips.length <= 1) {
+        var q = db.collection('trips').where('archived','==',false).where('accessEmails','array-contains', normalizeEmail(currentUser.email));
+        q.get().then(function(snap) {
+          var fresh = []; snap.forEach(function(doc){ fresh.push(doc.data()); });
+          if (fresh.length > trips.length) { lsSaveTripList(fresh); renderTripDropdown(fresh); }
+        }).catch(function(){});
+      }
     }
     function closeTripDropdown() {
       var dd = document.getElementById('tripDropdown');
@@ -2199,15 +2273,20 @@
         var dateLine = dateStr ? dateStr : (durationStr || '');
         var cached = lsLoadTripData(trip.id);
         var wlCount = cached && cached.wishlist ? cached.wishlist.length : -1;
+        var isTripOwner = trip.access && currentUser && trip.access[currentUser.uid] === 'owner';
         h += '<div class="trip-card" onclick="navigateTo(\'#trip/'+trip.id+'\')">'+
           '<div class="trip-card-actions">'+
-            '<button onclick="event.stopPropagation();openTripEdit(\''+trip.id+'\')" class="dash-card-btn" title="수정">'+icon('pencil',15)+'</button>'+
-            '<button onclick="event.stopPropagation();archiveTrip(\''+trip.id+'\')" class="dash-card-btn" title="삭제">'+icon('trash',15)+'</button>'+
+            (isTripOwner ? '<button onclick="event.stopPropagation();openTripEdit(\''+trip.id+'\')" class="dash-card-btn" title="수정">'+icon('pencil',15)+'</button>' : '')+
+            (isTripOwner ? '<button onclick="event.stopPropagation();archiveTrip(\''+trip.id+'\')" class="dash-card-btn" title="삭제">'+icon('trash',15)+'</button>' : '<button onclick="event.stopPropagation();leaveTrip(\''+trip.id+'\')" class="dash-card-btn" title="나가기">'+icon('trash',15)+'</button>')+
           '</div>'+
           '<div class="trip-card-name">'+(trip.emoji?trip.emoji+' ':'')+trip.name+'</div>'+
           (trip.city ? '<div class="trip-card-city">'+trip.city+'</div>' : '')+
           (dateLine ? '<div class="trip-card-dates">'+dateLine+'</div>' : '')+
-          '<div class="trip-card-dates trip-card-wl" id="wl-count-'+trip.id+'" style="margin-top:2px;display:flex;align-items:center;gap:4px">'+(wlCount>0?icon('star',12)+' '+wlCount+t('nPlaces'):'')+'</div>'+
+          '<div class="trip-card-dates trip-card-wl" id="wl-count-'+trip.id+'" style="margin-top:2px;display:flex;align-items:center;gap:4px">'+
+            (wlCount>0?icon('star',12)+' '+wlCount+t('nPlaces'):'')+
+            (function(){ var ac=trip.access?Object.keys(trip.access).length:0; return ac>1?(wlCount>0?'<span style="margin:0 2px;color:var(--border-strong)">·</span>':'')+
+              '<span style="display:inline-flex;align-items:center;gap:3px"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>'+ac+'명</span>':''; })()+
+          '</div>'+
         '</div>';
       });
       el.innerHTML = h;
@@ -2455,6 +2534,19 @@
     }
 
     // ==================== ARCHIVE/DELETE (Phase 7) ====================
+    async function leaveTrip(tripId) {
+      if (!currentUser || !confirm(t('confirmLeaveTrip'))) return;
+      try {
+        var updates = {};
+        updates['access.' + currentUser.uid] = firebase.firestore.FieldValue.delete();
+        updates.accessEmails = firebase.firestore.FieldValue.arrayRemove(normalizeEmail(currentUser.email));
+        await db.collection('trips').doc(tripId).update(updates);
+        localStorage.removeItem(lsKeyForTrip(tripId));
+        var cached = lsLoadTripList() || [];
+        lsSaveTripList(cached.filter(function(t){ return t.id !== tripId; }));
+        loadDashboard();
+      } catch(e) { console.error('Failed to leave trip:', e); }
+    }
     async function archiveTrip(tripId) {
       if (!confirm(t('confirmDeleteTrip'))) return;
       try {
@@ -2745,7 +2837,7 @@
           h+='<div class="cal-event-title" style="color:'+cat.color+'">'+ev.title+'</div>';
           if(height>58&&ev.subtitle)h+='<div class="cal-event-sub">'+ev.subtitle+'</div>';
           if(ev.optional)h+='<span class="cal-badge">optional</span>';
-          if(ev.notes&&height>80)h+='<span class="cal-badge" style="background:rgba(245,158,11,0.25);color:#f59e0b;">'+ev.notes+'</span>';
+          if(ev.notes&&height>46)h+='<div class="cal-event-sub" style="opacity:0.75;font-style:italic">'+ev.notes+'</div>';
           if(ev.link)h+='<span class="cal-badge" style="background:rgba(59,130,246,0.2);color:#3b82f6;cursor:pointer" onclick="event.stopPropagation();window.open(\''+ev.link.replace(/'/g,"\\'")+'\',\'_blank\')">'+icon('link',10)+' 링크</span>';
           h+='</div>';
         });
@@ -2810,7 +2902,8 @@
       calPickDayId=dayId;calPickTime=time;
       var day=getDay(dayId),tl=time?' · '+fmtTime(time):'';
       document.getElementById('calPickTitle').textContent=(day?day.date:'')+tl+' 일정 추가';
-      var unscheduled=WISHLIST.filter(function(w){return!w.calEventId;}),h='';
+      var multiCat={hotel:1,transport:1};
+      var unscheduled=WISHLIST.filter(function(w){return!w.calEventId||multiCat[w.category];}),h='';
       if(unscheduled.length===0){
         h='<div style="text-align:center;padding:32px 16px;color:var(--text-secondary)"><div style="margin-bottom:8px;display:flex;justify-content:center">'+icon('star',28)+'</div><div style="font-weight:600;margin-bottom:4px">추가 가능한 항목 없음</div><div style="font-size:0.82rem">하단 + 버튼으로 새 장소를 추가하세요</div></div>';
       } else {
@@ -3162,7 +3255,7 @@
           .then(function(d){
             if(d.lat!=null)mu.dataset.lat=d.lat;if(d.lng!=null)mu.dataset.lng=d.lng;
             var titleEl=document.getElementById('editTitle'),notesEl=document.getElementById('editNotes');
-            var best=d.name||(d.address?d.address:'');
+            var best=(d.name||'').replace(/\+/g,' ')||(d.address?d.address:'');
             if(best&&titleEl&&!titleEl.value)titleEl.value=best;
             if(d.name&&d.address&&notesEl&&!notesEl.value)notesEl.value=d.address;
           }).catch(function(){});
@@ -3278,9 +3371,11 @@
       if(day)day.events=day.events.filter(function(e){return e.id!==w.calEventId;});
       w.calDayId=null;w.calEventId=null;w.visited=false;w.dayLabel='';rerender();
     }
+    var _lastParsedGmapsUrl='';
     function parseGmapsUrl(url){
       url=(url||'').trim();if(!url)return;
       url=extractMapsUrl(url);
+      if(url===_lastParsedGmapsUrl)return;_lastParsedGmapsUrl=url;
       if(/maps\.app\.goo\.gl|goo\.gl\/maps/.test(url)){
         var nf=document.getElementById('wishName');if(nf)nf.placeholder=t('loadingPlace');
         fetch('https://palo-travel-expand-url.jihoon8846.workers.dev/api/expand-url?url='+encodeURIComponent(url))
@@ -3295,7 +3390,7 @@
       applyGmapsInfo(url,'','',null,null,'');
     }
     function applyGmapsInfo(url, serverName, serverAddress, lat, lng, serverCategory){
-      var name=serverName||'';
+      var name=(serverName||'').replace(/\+/g,' ');
       // URL-based name fallbacks
       if(!name){
         var nm=url.match(/maps\/(?:place|search)\/([^/@?,&]+)/);
@@ -3405,6 +3500,7 @@
       document.getElementById('calAddBlockFields').style.display='none';
       document.getElementById('calAddBlockTitle').value='';
       document.getElementById('calAddBlockNotes').value='';
+      document.getElementById('calAddPlaceNotes').value='';
       tpSetFromMin(calAddStartMin);
       document.getElementById('calAddDurSlider').value=0;
       updateCalAddEndTime();
@@ -3428,7 +3524,8 @@
     }
     function renderCalAddWishList(){
       var el=document.getElementById('calAddWishList');if(!el)return;
-      var unassigned=WISHLIST.filter(function(w){return !w.calDayId&&w.wishType!=='note';});
+      var multiCat={hotel:1,transport:1};
+      var unassigned=WISHLIST.filter(function(w){return w.wishType!=='note'&&(!w.calDayId||multiCat[w.category]);});
       if(!unassigned.length){el.innerHTML='<div class="cal-add-empty">추가된 장소가 없습니다.<br><button type="button" class="cal-add-empty-btn" onclick="closeCalAdd();openWishAdd()">장소 추가하기</button></div>';return;}
       el.innerHTML=unassigned.map(function(w){
         var cic=catIcon(w.category,16);
@@ -3450,7 +3547,8 @@
         if(!calAddWishId){alert(t('pleaseSelectPlace'));return;}
         var w=WISHLIST.find(function(x){return x.id===calAddWishId;});if(!w)return;
         var nid='wl_ev_'+genId();
-        day.events.push({id:nid,title:w.name,subtitle:w.notes||'',category:w.category||'other',time:s,endTime:e,notes:'',optional:false,mapsUrl:w.mapsUrl||'',lat:w.lat||null,lng:w.lng||null});
+        var placeNotes=(document.getElementById('calAddPlaceNotes')||{}).value||'';
+        day.events.push({id:nid,title:w.name,subtitle:w.notes||'',category:w.category||'other',time:s,endTime:e,notes:placeNotes,optional:false,mapsUrl:w.mapsUrl||'',lat:w.lat||null,lng:w.lng||null});
         w.calDayId=calAddDayId;w.calEventId=nid;w.visited=true;w.dayLabel=day.date;
         if(!w.lat&&w.name)geocodeWishItem(w);
       } else {
@@ -3471,9 +3569,11 @@
     // ==================== SCHEDULE MODAL ====================
     var schedWishId=null,schedDayId=null,schedStartMin=600,schedDurMin=60;
     var schedDragType=null,schedDragStartY=0,schedDragStartMin=0,schedDragStartDur=0;
-    function openSchedModal(wishId){
+    var _multiAssignCat={hotel:1,transport:1};
+    function openSchedModal(wishId,forceNew){
       schedWishId=wishId;var w=WISHLIST.find(function(x){return x.id===wishId;});if(!w)return;
-      if(w.calDayId&&w.calEventId){var ev=getEv(w.calDayId,w.calEventId);if(ev){schedDayId=w.calDayId;schedStartMin=toMin(ev.time);schedDurMin=ev.endTime?Math.max(15,toMin(ev.endTime)-schedStartMin):60;}else{w.calDayId=null;w.calEventId=null;w.visited=false;schedDayId=DAYS[0].id;schedStartMin=600;schedDurMin=60;}}
+      var isMulti=_multiAssignCat[w.category];
+      if(w.calDayId&&w.calEventId&&!forceNew&&!isMulti){var ev=getEv(w.calDayId,w.calEventId);if(ev){schedDayId=w.calDayId;schedStartMin=toMin(ev.time);schedDurMin=ev.endTime?Math.max(15,toMin(ev.endTime)-schedStartMin):60;}else{w.calDayId=null;w.calEventId=null;w.visited=false;schedDayId=DAYS[0].id;schedStartMin=600;schedDurMin=60;}}
       else{
         schedDayId=DAYS[0].id;
         // Use saved timeslot as default if present
@@ -3495,7 +3595,8 @@
       [0,15,30,45].forEach(function(m){h+='<option value="'+m+'"'+(mv===m?' selected':'')+'>'+('0'+m).slice(-2)+'</option>';});
       h+='</select></div></div><div class="sched-time-group"><label>'+t('durationLabel')+'</label><select id="schedDur" onchange="onSchedDurChange()">';
       [[30,t('dur30m')],[60,t('dur1h')],[90,t('dur1_5h')],[120,t('dur2h')],[180,t('dur3h')],[240,t('dur4h')]].forEach(function(o){h+='<option value="'+o[0]+'"'+(schedDurMin===o[0]?' selected':'')+'>'+o[1]+'</option>';});
-      h+='</select></div></div><div class="sched-cal" id="schedCal" style="min-height:200px;max-height:340px">'+renderSchedCalInner()+'</div>';
+      var existingNotes='';if(isEdit){var sev=getEv(w.calDayId,w.calEventId);if(sev)existingNotes=sev.notes||'';}
+      h+='</select></div></div><div style="padding:8px 20px"><input type="text" id="schedNotes" class="form-input" placeholder="'+t('notesPlaceholder')+'" value="'+existingNotes.replace(/"/g,'&quot;')+'" style="font-size:0.82rem;padding:8px 12px"></div><div class="sched-cal" id="schedCal" style="min-height:200px;max-height:340px">'+renderSchedCalInner()+'</div>';
       h+='<div class="sched-footer">'+(isEdit?'<button class="sched-del-btn" onclick="removeFromCalendar()" style="display:inline-flex;align-items:center;gap:4px">'+icon('trash',13)+' '+t('removeTime')+'</button>':'<span></span>');
       h+='<div class="sched-footer-right"><button class="sched-cancel-btn" onclick="closeSchedModal()">'+t('cancel')+'</button><button class="sched-save-btn" onclick="saveSchedule()">'+t('save')+'</button></div></div>';
       document.getElementById('schedModalInner').innerHTML=h;setTimeout(attachSchedCalEvents,0);
@@ -3535,12 +3636,14 @@
       var w=WISHLIST.find(function(x){return x.id===schedWishId;});if(!w){closeSchedModal();return;}
       var day=DAYS.find(function(d){return d.id===schedDayId;});if(!day){closeSchedModal();return;}
       var s=minToStr(schedStartMin),e=minToStr(schedStartMin+schedDurMin);
-      if(w.calEventId&&w.calDayId){
+      var schedNotesEl=document.getElementById('schedNotes');var schedNotes=schedNotesEl?schedNotesEl.value:'';
+      var isMulti=_multiAssignCat[w.category];
+      if(w.calEventId&&w.calDayId&&!isMulti){
         var od=DAYS.find(function(d){return d.id===w.calDayId;}),ev=od?od.events.find(function(x){return x.id===w.calEventId;}):null;
-        if(ev){if(w.calDayId!==schedDayId){od.events=od.events.filter(function(x){return x.id!==w.calEventId;});ev.id='wl_ev_'+genId();day.events.push(ev);w.calDayId=schedDayId;w.calEventId=ev.id;}ev.time=s;ev.endTime=e;}
+        if(ev){if(w.calDayId!==schedDayId){od.events=od.events.filter(function(x){return x.id!==w.calEventId;});ev.id='wl_ev_'+genId();day.events.push(ev);w.calDayId=schedDayId;w.calEventId=ev.id;}ev.time=s;ev.endTime=e;ev.notes=schedNotes;}
       } else {
         var nid='wl_ev_'+genId();
-        day.events.push({id:nid,title:w.name,subtitle:w.notes||'',category:w.category||'other',time:s,endTime:e,notes:'',optional:false,mapsUrl:w.mapsUrl||'',lat:w.lat||null,lng:w.lng||null});
+        day.events.push({id:nid,title:w.name,subtitle:w.notes||'',category:w.category||'other',time:s,endTime:e,notes:schedNotes,optional:false,mapsUrl:w.mapsUrl||'',lat:w.lat||null,lng:w.lng||null});
         w.calDayId=schedDayId;w.calEventId=nid;w.visited=true;
       }
       w.dayLabel=day.date;closeSchedModal();rerender();
