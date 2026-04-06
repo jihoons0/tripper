@@ -2834,10 +2834,9 @@
           var ps=lyt.total===1?'left:6px;right:6px;':'left:calc('+(lyt.col*100/lyt.total)+'% + 2px);width:calc('+(100/lyt.total)+'% - 4px);right:auto;';
           h+='<div class="'+cls+'" style="top:'+top+'px;height:'+height+'px;background:'+cat.bg+';'+ps+'z-index:'+(lyt.col+2)+'" onclick="event.stopPropagation();openEdit(\''+day.id+'\',\''+ev.id+'\')" title="'+ev.title+'">';
           h+='<div class="cal-event-time">'+fmtTime(ev.time)+(ev.endTime?'–'+fmtTime(ev.endTime):'')+'</div>';
-          h+='<div class="cal-event-title" style="color:'+cat.color+'">'+ev.title+'</div>';
+          h+='<div class="cal-event-title" style="color:'+cat.color+';overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+ev.title+(ev.notes?' <span style="opacity:0.55;font-style:italic;font-weight:400"> · '+ev.notes+'</span>':'')+'</div>';
           if(height>58&&ev.subtitle)h+='<div class="cal-event-sub">'+ev.subtitle+'</div>';
           if(ev.optional)h+='<span class="cal-badge">optional</span>';
-          if(ev.notes&&height>46)h+='<div class="cal-event-sub" style="opacity:0.75;font-style:italic">'+ev.notes+'</div>';
           if(ev.link)h+='<span class="cal-badge" style="background:rgba(59,130,246,0.2);color:#3b82f6;cursor:pointer" onclick="event.stopPropagation();window.open(\''+ev.link.replace(/'/g,"\\'")+'\',\'_blank\')">'+icon('link',10)+' 링크</span>';
           h+='</div>';
         });
