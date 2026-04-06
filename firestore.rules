@@ -1,0 +1,61 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /trips/{tripId} {
+      // Read: any authenticated user in accessEmails
+      allow read: if request.auth != null
+        && request.auth.token.email.lower() in resource.data.accessEmails;
+
+      // Create: any authenticated user, must set themselves as owner
+      allow create: if request.auth != null
+        && request.resource.data.ownerId == request.auth.uid;
+
+      // Update/delete: only owner
+      allow delete: if request.auth != null
+        && request.auth.uid == resource.data.ownerId;
+
+      // Update: owner can update anything; shared users can resolve their own pending invite
+      allow update: if request.auth != null
+        && (
+          request.auth.uid == resource.data.ownerId
+          || (
+            request.auth.token.email.lower() in resource.data.accessEmails
+            && resource.data.access['pending_' + request.auth.token.email.lower()] != null
+          )
+        );
+
+      match /data/{docId} {
+        // Read: anyone with access
+        allow read: if request.auth != null
+          && request.auth.token.email.lower() in get(/databases/$(database)/documents/trips/$(tripId)).data.accessEmails;
+
+        // Write: owner, write-access users, or anyone in accessEmails
+        allow write: if request.auth != null
+          && (
+            request.auth.uid == get(/databases/$(database)/documents/trips/$(tripId)).data.ownerId
+            || get(/databases/$(database)/documents/trips/$(tripId)).data.access[request.auth.uid] == "write"
+            || request.auth.token.email.lower() in get(/databases/$(database)/documents/trips/$(tripId)).data.accessEmails
+          );
+      }
+    }
+
+    // User profiles (email lookup for sharing)
+    match /users/{userId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Feedback (bug reports & feature requests)
+    match /feedback/{docId} {
+      allow create: if request.auth != null;
+      allow read, update: if true;
+    }
+
+    // Legacy collection (read-only, for migration)
+    match /travel/{document=**} {
+      allow read: if true;
+      allow write: if false;
+    }
+  }
+}

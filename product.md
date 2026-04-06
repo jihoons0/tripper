@@ -28,7 +28,7 @@ Three tabs per trip: **Calendar → Map → Wishlist**
 **Calendar**
 - Time-grid (8AM–midnight, 64px/hr)
 - Drag-to-schedule wishlist items onto time slots
-- Per-event edit / delete modal
+- Per-event edit / delete modal with **date picker** (locked to trip date window) for moving events between days
 - Weather forecast per day (Open-Meteo)
 - Mobile: single-day view with swipe nav
 
@@ -94,7 +94,7 @@ trips/{tripId}/data/main
 
 **Event fields:** `id, time, endTime, title, subtitle, notes, category, optional, lat, lng, link, mapsUrl`
 
-**Firestore rules:** `allow read, write: if true` on `match /travel/{document=**}` — public read/write (security rules not yet enforced per-user).
+**Firestore rules:** per-trip access enforced — only users whose email is in `accessEmails` can read/write a trip. Owner-only for metadata edits, invites, and deletion. `users/{uid}` world-readable for email→UID lookup.
 
 ---
 
@@ -176,7 +176,6 @@ Wishlist items have:
 
 ## Future / Out of Scope
 
-- Firestore security rules enforced per-user (currently public read/write)
 - Real-time collaborative editing / presence indicators
 - Read-only role (currently only `owner` and `write`)
 - Email notification for invites

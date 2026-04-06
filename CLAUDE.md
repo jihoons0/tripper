@@ -22,7 +22,7 @@ npm start     # starts Express server without watch
 - **Vercel project:** `palo-travel` (team: `jihoon-suhs-projects`)
 - **Production URL:** https://palo-travel.vercel.app (alias; auto-generated deploy URLs are `mexico-travel-*.vercel.app`)
 - **Deploy command:** `vercel --prod` then `vercel alias set <deploy-url> palo-travel.vercel.app`
-- `vercel.json` routes `/api/*` to Vercel Node functions and everything else to `index.html`
+- `vercel.json` routes `/__/auth/*` to Firebase auth proxy, `/api/*` to Vercel Node functions, and everything else to `index.html`
 
 **Google Maps URL expansion:** `/api/expand-url` is NOT used from Vercel (blocked by Vercel auth protection on the team plan). Instead, `index.html` calls the **Cloudflare Worker** directly:
 - Worker URL: `https://palo-travel-expand-url.jihoon8846.workers.dev/api/expand-url`
@@ -31,14 +31,19 @@ npm start     # starts Express server without watch
 
 **Data:** Firebase/Firestore (project: `mexico-trip-c5644`), localStorage as cache.
 
-**Firestore security rules:** `allow read, write: if true` on `match /travel/{document=**}` — public read/write intentional.
+**Firestore security rules** (`firestore.rules`): per-trip access enforced via `accessEmails` + `access` map. Read/write to `trips/{tripId}` and `trips/{tripId}/data/{docId}` requires authenticated user whose lowercased email is in `resource.data.accessEmails`. Create requires `ownerId == auth.uid`. Update allowed for owner, or for shared users resolving their own `pending_<email>` invite. `users/{uid}` is world-readable (needed for email→UID lookup during sharing). Legacy `travel/**` collection still public-read.
+
+## Feedback Workflow
+
+`npm run feedback` fetches bug/feature reports from Firestore `feedback/` collection into `feedback.md`. **Always read items aloud and ask permission before resolving** — never auto-resolve. Resolve with `node fetch-feedback.js resolve <id>`.
 
 ## File Structure
 
-- `index.html` (~220KB, ~5700 lines) — the entire app: HTML, CSS, and JS in one file. Use offset/limit when reading.
+- `index.html` (~3950 lines) — the entire app: HTML, CSS, and JS in one file. Use offset/limit when reading.
 - `server.js` — Express dev server; serves static files + `/api/expand-url` for local Google Maps URL expansion
 - `api/expand-url.js` — Vercel serverless function (same expand-url logic, but bypassed in prod due to Vercel auth)
 - `worker.js` + `wrangler.toml` — Cloudflare Worker for Google Maps URL expansion (used in production)
+- `categorize-wishlist.js` / `fix-categories.js` / `import-saved-places.js` — one-off Node scripts for data migration (not part of the app)
 - `product.md` / `TODO.md` / `itenary.md` — planning docs (not code)
 
 ## Architecture
@@ -171,9 +176,15 @@ Start time uses native `<input type="time">`. Duration slider (`CAL_ADD_DURS=[30
 - `tpSetFromMin(min)` / `tpGetMin()` — set/get time from the native time input
 - `updateCalAddEndTime()` — computes end time from start + duration slider
 
-### Data Safety — `reconcileDays(meta)`
+### Data Safety
 
-**CRITICAL:** `reconcileDays` rebuilds DAYS to match trip date range. It carries over existing events by isoDate match, then by index fallback for days without isoDate. **Never call `scheduleSave()` after a transformation that could result in fewer events.** Firestore has no version history — data loss is permanent.
+**CRITICAL:** Firestore has no version history — data loss is permanent. Multiple guards are in place:
+
+- **`reconcileDays(meta)`** rebuilds DAYS to match trip date range. Events on days that fall outside the new window are NEVER dropped — they are stitched onto the last remaining day with a `[원래 YYYY-MM-DD]` note prefix so the user can relocate them.
+- **`doSave()`** refuses to write if both DAYS and WISHLIST are empty (last-line defense against load/navigation race conditions).
+- **Edit event modal** has a date picker (`#editDate`) constrained to the trip's `startDate`/`endDate` window — `_moveEventToDate(dayId, evId, newIsoDate)` moves events between days without loss, and updates linked wishlist `calDayId`/`dayLabel`.
+- **`addShareUser`** writes `access` as a full object (`update({access: {...}})`) instead of dot-path (`update({'access.key': val})`) because emails contain `.` which Firestore interprets as nested field paths.
+- Never add code paths that silently reduce event/wishlist counts. Any destructive action must show a confirmation dialog first.
 
 ### Authentication & Sharing
 

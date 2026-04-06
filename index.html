@@ -177,6 +177,9 @@
     .form-checkbox-row { display:flex; align-items:center; gap:8px; }
     .form-checkbox-row input { width:15px; height:15px; cursor:pointer; accent-color:var(--accent); }
     .form-checkbox-row label { font-size:0.86rem; cursor:pointer; }
+    .fb-type-btn { flex:1; padding:8px 12px; border-radius:8px; border:1.5px solid var(--border-strong); background:var(--bg); color:var(--text); font-size:0.84rem; font-family:inherit; cursor:pointer; transition:all 0.15s; }
+    .fb-type-btn.active { border-color:var(--accent); background:var(--accent); color:var(--accent-fg); }
+    .fb-type-btn:hover:not(.active) { border-color:var(--text-secondary); }
     .modal-actions { display:flex; gap:7px; justify-content:flex-end; margin-top:22px; }
     /* Edit modal type toggle */
     .edit-type-seg { display:flex; background:var(--surface-hover); border-radius:10px; padding:3px; gap:2px; margin-bottom:18px; }
@@ -555,7 +558,8 @@
     <div class="viz-menu-dropdown" id="vizMenuDropdown">
       <button id="shareMenuBtn" onclick="openShareModal()" style="display:none"><span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.935-2.186 2.25 2.25 0 0 0-3.935 2.186Z"/></svg></span><span>공유 설정</span></button>
       <button id="currMenuBtn" onclick="openCurrConverter()"><span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z"/></svg></span><span>환율 계산기</span></button>
-      <button onclick="cycleTheme()"><span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z"/></svg></span><span>다크 모드</span></button>
+      <button onclick="cycleTheme()"><span id="themeIcon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z"/></svg></span><span id="themeLabel">다크 모드</span></button>
+      <button onclick="openFeedbackModal()"><span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 0 1 1.037-.443 48.282 48.282 0 0 0 5.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"/></svg></span><span>피드백 보내기</span></button>
       <div class="viz-menu-divider"></div>
       <div id="accountSection">
         <div id="accountLoggedIn" style="display:none">
@@ -846,6 +850,7 @@
           <button type="button" class="edit-type-btn active" data-type="event" onclick="setEditMode('event')" style="display:inline-flex;align-items:center;gap:4px"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3V5.25M17.25 3V5.25M3 18.75V7.5C3 6.25736 4.00736 5.25 5.25 5.25H18.75C19.9926 5.25 21 6.25736 21 7.5V18.75M3 18.75C3 19.9926 4.00736 21 5.25 21H18.75C19.9926 21 21 19.9926 21 18.75M3 18.75V11.25C3 10.0074 4.00736 9 5.25 9H18.75C19.9926 9 21 10.0074 21 11.25V18.75"/></svg> 시간 일정</button>
           <button type="button" class="edit-type-btn" data-type="place" onclick="setEditMode('place')" style="display:inline-flex;align-items:center;gap:4px"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg> 장소</button>
         </div>
+        <div class="form-group fg-date"><label class="form-label">날짜</label><input type="date" class="form-input" id="editDate"></div>
         <div class="form-row fg-time"><div class="form-group"><label class="form-label" id="editTimeLbl">시작 시간</label><input type="time" class="form-input" id="editTime" required></div><div class="form-group"><label class="form-label">종료 시간</label><input type="time" class="form-input" id="editEndTime"></div></div>
         <div class="form-group fg-title"><label class="form-label">이벤트 이름</label><input type="text" class="form-input" id="editTitle" required placeholder="장소 또는 이벤트명"></div>
         <div class="form-group fg-sub"><label class="form-label">설명</label><input type="text" class="form-input" id="editSubtitle" placeholder="장소 설명"></div>
@@ -864,6 +869,23 @@
     <div class="modal" onclick="event.stopPropagation()" style="max-width:420px">
       <div class="modal-head"><h2 id="calPickTitle" style="font-size:0.95rem">일정 추가</h2><button class="modal-close" onclick="closeCalPickModal()">✕</button></div>
       <div id="calPickContent"></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="feedbackModal" onclick="if(event.target===this)closeFeedbackModal()">
+    <div class="modal" style="max-width:420px">
+      <div class="modal-head"><h2 style="font-size:0.95rem">피드백 보내기</h2><button class="modal-close" onclick="closeFeedbackModal()">✕</button></div>
+      <form id="feedbackForm" onsubmit="submitFeedback(event)">
+        <div class="form-group">
+          <label class="form-label">유형</label>
+          <div style="display:flex;gap:8px">
+            <button type="button" class="fb-type-btn active" data-type="bug" onclick="setFeedbackType('bug')">🐛 버그 신고</button>
+            <button type="button" class="fb-type-btn" data-type="feature" onclick="setFeedbackType('feature')">💡 기능 제안</button>
+          </div>
+        </div>
+        <div class="form-group"><label class="form-label" for="feedbackMsg">내용</label><textarea class="form-input" id="feedbackMsg" rows="4" placeholder="어떤 문제가 있나요? 또는 어떤 기능을 원하시나요?" required style="resize:vertical"></textarea></div>
+        <div class="modal-actions"><button type="button" class="btn btn-secondary" onclick="closeFeedbackModal()">취소</button><button type="submit" class="btn btn-primary" id="feedbackSubmitBtn">보내기</button></div>
+      </form>
     </div>
   </div>
 
@@ -1342,16 +1364,19 @@
       // Look up user by email
       try {
         var snap = await db.collection('users').where('email', '==', email).limit(1).get();
-        var updates = {};
+        // Build new access map by copying existing to avoid dot-in-key path issues on update()
+        var newAccess = Object.assign({}, currentTripMeta.access || {});
         if (!snap.empty) {
           var uid = snap.docs[0].id;
-          updates['access.' + uid] = role;
+          newAccess[uid] = role;
         } else {
-          // Pending invite
-          updates['access.pending_' + email] = role;
+          // Pending invite — use plain map write so dots in email aren't interpreted as field paths
+          newAccess['pending_' + email] = role;
         }
-        // Add to accessEmails if not already there
-        updates.accessEmails = firebase.firestore.FieldValue.arrayUnion(email);
+        var updates = {
+          access: newAccess,
+          accessEmails: firebase.firestore.FieldValue.arrayUnion(email)
+        };
         await db.collection('trips').doc(currentTripId).update(updates);
         // Update local meta
         if (!currentTripMeta.access) currentTripMeta.access = {};
@@ -1602,6 +1627,8 @@
 
     async function loadTripData(tripId) {
       currentTripId = tripId;
+      // Tear down previous real-time listener
+      if (_dataUnsub) { _dataUnsub(); _dataUnsub = null; }
       DATA_REF = db.collection('trips').doc(tripId).collection('data').doc('main');
       try {
         const timeout = new Promise((_, reject) =>
@@ -1611,7 +1638,10 @@
         const d = snap.exists ? snap.data() : null;
         if (d && ((d.days && d.days.length > 0) || (d.wishlist && d.wishlist.length > 0))) {
           DAYS = d.days || []; WISHLIST = d.wishlist || [];
-          lsSaveTripData(tripId); return;
+          lsSaveTripData(tripId);
+          listenForRemoteChanges(tripId);
+          _geocodeMissingWishCoords();
+          return;
         }
       } catch(e) { console.warn('Firestore unavailable:', e.message); }
       // Legacy Firestore fallback for mexico_legacy (pre-migration)
@@ -1623,14 +1653,20 @@
           const d2 = snap2.exists ? snap2.data() : null;
           if (d2 && d2.days && d2.days.length > 0) {
             DAYS = d2.days; WISHLIST = d2.wishlist || [];
-            lsSaveTripData(tripId); return;
+            lsSaveTripData(tripId);
+            listenForRemoteChanges(tripId);
+            _geocodeMissingWishCoords();
+            return;
           }
         } catch(e) { console.warn('Legacy Firestore fallback failed:', e.message); }
       }
       // Try localStorage
       var cached = lsLoadTripData(tripId);
       if (cached && ((cached.days && cached.days.length > 0) || (cached.wishlist && cached.wishlist.length > 0))) {
-        DAYS = cached.days || []; WISHLIST = cached.wishlist || []; return;
+        DAYS = cached.days || []; WISHLIST = cached.wishlist || [];
+        listenForRemoteChanges(tripId);
+        _geocodeMissingWishCoords();
+        return;
       }
       // Seed fallback (mexico_legacy only)
       if (tripId === 'mexico_legacy') {
@@ -1639,6 +1675,31 @@
         lsSaveTripData(tripId);
         try { DATA_REF.set({ days: DAYS, wishlist: WISHLIST }); } catch(e) {}
       }
+      listenForRemoteChanges(tripId);
+      _geocodeMissingWishCoords();
+    }
+
+    function listenForRemoteChanges(tripId) {
+      if (_dataUnsub) { _dataUnsub(); _dataUnsub = null; }
+      var ref = db.collection('trips').doc(tripId).collection('data').doc('main');
+      _dataUnsub = ref.onSnapshot(function(snap) {
+        // Skip if we have a pending local save or just saved (within 3s)
+        if (saveTimer || Date.now() - _lastSaveTs < 3000) return;
+        // Skip if we navigated away from this trip
+        if (currentTripId !== tripId) { if (_dataUnsub) { _dataUnsub(); _dataUnsub = null; } return; }
+        var d = snap.exists ? snap.data() : null;
+        if (!d) return;
+        var newDays = d.days || [];
+        var newWishlist = d.wishlist || [];
+        // Only update if data actually changed
+        if (JSON.stringify(DAYS) === JSON.stringify(newDays) && JSON.stringify(WISHLIST) === JSON.stringify(newWishlist)) return;
+        DAYS = newDays;
+        WISHLIST = newWishlist;
+        lsSaveTripData(tripId);
+        rerender();
+      }, function(err) {
+        console.warn('Real-time listener error:', err);
+      });
     }
     function backfillEventCoords(){
       var dirty=false;
@@ -2142,6 +2203,8 @@
       loadDashboard();
     }
     async function loadDashboard() {
+      // Stop listening for trip data changes when on dashboard
+      if (_dataUnsub) { _dataUnsub(); _dataUnsub = null; }
       // Show skeleton immediately
       var el = document.getElementById('dashGrid');
       if (el) {
@@ -2274,9 +2337,10 @@
         var cached = lsLoadTripData(trip.id);
         var wlCount = cached && cached.wishlist ? cached.wishlist.length : -1;
         var isTripOwner = trip.access && currentUser && trip.access[currentUser.uid] === 'owner';
+        var canEditTrip = trip.access && currentUser && (trip.access[currentUser.uid] === 'owner' || trip.access[currentUser.uid] === 'write');
         h += '<div class="trip-card" onclick="navigateTo(\'#trip/'+trip.id+'\')">'+
           '<div class="trip-card-actions">'+
-            (isTripOwner ? '<button onclick="event.stopPropagation();openTripEdit(\''+trip.id+'\')" class="dash-card-btn" title="수정">'+icon('pencil',15)+'</button>' : '')+
+            (canEditTrip ? '<button onclick="event.stopPropagation();openTripEdit(\''+trip.id+'\')" class="dash-card-btn" title="수정">'+icon('pencil',15)+'</button>' : '')+
             (isTripOwner ? '<button onclick="event.stopPropagation();archiveTrip(\''+trip.id+'\')" class="dash-card-btn" title="삭제">'+icon('trash',15)+'</button>' : '<button onclick="event.stopPropagation();leaveTrip(\''+trip.id+'\')" class="dash-card-btn" title="나가기">'+icon('trash',15)+'</button>')+
           '</div>'+
           '<div class="trip-card-name">'+(trip.emoji?trip.emoji+' ':'')+trip.name+'</div>'+
@@ -2358,20 +2422,21 @@
       try {
         var snap = await db.collection('trips').doc(tripId).get();
         if (!snap.exists) return;
-        var t = snap.data();
+        var td = snap.data();
         tripEditId = tripId;
         document.getElementById('tripCreateTitle').textContent = t('editTrip');
         document.getElementById('tcSubmitBtn').textContent = t('save');
-        document.getElementById('tcDeleteBtn').style.display = '';
-        document.getElementById('tcName').value = t.name || '';
+        var isEditOwner = td.access && currentUser && td.access[currentUser.uid] === 'owner';
+        document.getElementById('tcDeleteBtn').style.display = isEditOwner ? '' : 'none';
+        document.getElementById('tcName').value = td.name || '';
         // Restore city autocomplete state from saved metadata
         resetCityField();
-        if (t.city) {
-          tcCityData = { name: t.city, displayName: t.city, lat: t.cityLat || null, lng: t.cityLng || null, country: t.cityCountry || '', countryCode: t.cityCountryCode || '', timezone: t.timezone || '' };
+        if (td.city) {
+          tcCityData = { name: td.city, displayName: td.city, lat: td.cityLat || null, lng: td.cityLng || null, country: td.cityCountry || '', countryCode: td.cityCountryCode || '', timezone: td.timezone || '' };
           setCitySelectedDisplay(tcCityData);
         }
-        dpInitFromValues(t.startDate || '', t.endDate || '');
-        document.getElementById('tcTz').value = t.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+        dpInitFromValues(td.startDate || '', td.endDate || '');
+        document.getElementById('tcTz').value = td.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
         document.getElementById('tcInviteGroup').style.display = 'none';
         document.getElementById('tripCreateModal').classList.add('open');
         _updateTcSubmit();
@@ -2409,8 +2474,19 @@
       if (tripEditId) {
         try {
           var updatedMeta = Object.assign({ emoji, name, startDate: start, endDate: end, timezone: tz, coverColor: color }, cityFields);
+          var editRef = db.collection('trips').doc(tripEditId).collection('data').doc('main');
+          var existingDays, existingWishlist;
+          if (tripEditId === currentTripId) {
+            existingDays = DAYS;
+            existingWishlist = WISHLIST;
+          } else {
+            var editSnap = await editRef.get();
+            var editData = (editSnap.exists && editSnap.data()) || {};
+            existingDays = editData.days || [];
+            existingWishlist = editData.wishlist || [];
+          }
           await db.collection('trips').doc(tripEditId).update(updatedMeta);
-          // Reconcile DAYS if this is the currently open trip
+          // Reconcile DAYS for the edited trip
           if (tripEditId === currentTripId && currentTripMeta) {
             Object.assign(currentTripMeta, updatedMeta);
             if (reconcileDays(currentTripMeta)) {
@@ -2418,20 +2494,14 @@
               lsSaveTripData(currentTripId);
             }
           } else {
-            // Reconcile for a trip not currently open — load, fix, save
-            var editRef = db.collection('trips').doc(tripEditId).collection('data').doc('main');
-            var editSnap = await editRef.get();
-            if (editSnap.exists) {
-              var editData = editSnap.data();
-              var tmpDays = DAYS, tmpWl = WISHLIST;
-              DAYS = editData.days || [];
-              var editMeta = Object.assign({}, updatedMeta, { id: tripEditId });
-              if (reconcileDays(editMeta)) {
-                await editRef.set({ days: DAYS, wishlist: editData.wishlist || [] });
-                try { localStorage.setItem(lsKeyForTrip(tripEditId), JSON.stringify({ days: DAYS, wishlist: editData.wishlist || [] })); } catch(e2) {}
-              }
-              DAYS = tmpDays; WISHLIST = tmpWl;
+            var tmpDays = DAYS, tmpWl = WISHLIST;
+            DAYS = existingDays;
+            var editMeta = Object.assign({}, updatedMeta, { id: tripEditId });
+            if (reconcileDays(editMeta)) {
+              await editRef.set({ days: DAYS, wishlist: existingWishlist });
+              try { localStorage.setItem(lsKeyForTrip(tripEditId), JSON.stringify({ days: DAYS, wishlist: existingWishlist })); } catch(e2) {}
             }
+            DAYS = tmpDays; WISHLIST = tmpWl;
           }
           closeTripCreate();
           loadDashboard();
@@ -2499,30 +2569,41 @@
       var existingIsos = DAYS.map(function(d){ return d.isoDate; });
       // Check if already in sync
       if (expected.length === existingIsos.length && expected.every(function(iso, i){ return existingIsos[i] === iso; })) return false;
-      // Rebuild DAYS: reuse existing day objects, create new ones for added dates
-      // For unmatched existing days with events, stitch events into matching position by index
-      var unmatchedWithEvents = [];
-      DAYS.forEach(function(d, i){
-        if (!d.isoDate && d.events && d.events.length > 0) unmatchedWithEvents.push({ idx: i, day: d });
-        else if (d.isoDate && !existingByDate[d.isoDate]) { /* isoDate doesn't match any expected — but don't drop events */ }
+      // Rebuild DAYS: reuse existing day objects for matching isoDates, create new ones for added dates.
+      // CRITICAL: never drop events. Any event on a day whose isoDate falls outside the new range
+      // is stitched onto the nearest remaining day (with a note), so data loss is impossible.
+      var expectedSet = {};
+      expected.forEach(function(iso){ expectedSet[iso] = true; });
+      var orphanEvents = [];
+      DAYS.forEach(function(d){
+        if (!d.events || !d.events.length) return;
+        if (d.isoDate && expectedSet[d.isoDate]) return; // will be reused as-is
+        d.events.forEach(function(ev){
+          var tagged = Object.assign({}, ev);
+          if (d.isoDate) {
+            tagged.notes = '[원래 ' + d.isoDate + '] ' + (ev.notes || '');
+          }
+          orphanEvents.push(tagged);
+        });
       });
       var newDays = [];
       expected.forEach(function(iso, i) {
         if (existingByDate[iso]) {
           var day = existingByDate[iso];
-          day.isoDate = iso; // ensure isoDate is set
+          day.isoDate = iso;
           newDays.push(day);
         } else {
           var dt = new Date(iso + 'T00:00:00');
           var mm = dt.getMonth()+1, dd = dt.getDate();
-          // Try to carry over events from existing day at same index
-          var carryEvents = [];
-          if (DAYS[i] && DAYS[i].events && DAYS[i].events.length > 0 && !existingByDate[DAYS[i].isoDate]) {
-            carryEvents = DAYS[i].events;
-          }
-          newDays.push({ id:'d'+(i+1)+'_'+Date.now().toString(36)+i, date:mm+'/'+dd+' ('+dn[dt.getDay()]+')', dateShort:String(dd), dayName:dn[dt.getDay()], theme:'', color:color, isoDate:iso, events:carryEvents });
+          newDays.push({ id:'d'+(i+1)+'_'+Date.now().toString(36)+i, date:mm+'/'+dd+' ('+dn[dt.getDay()]+')', dateShort:String(dd), dayName:dn[dt.getDay()], theme:'', color:color, isoDate:iso, events:[] });
         }
       });
+      // Stitch orphan events onto the last day so they're never lost
+      if (orphanEvents.length > 0 && newDays.length > 0) {
+        var last = newDays[newDays.length - 1];
+        last.events = (last.events || []).concat(orphanEvents);
+        console.warn('[reconcileDays] stitched', orphanEvents.length, 'orphan events onto last day to prevent loss');
+      }
       DAYS = newDays;
       return true;
     }
@@ -2674,7 +2755,7 @@
       star: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M11.4806 3.4987C11.6728 3.03673 12.3272 3.03673 12.5193 3.4987L14.6453 8.61016C14.7263 8.80492 14.9095 8.93799 15.1197 8.95485L20.638 9.39724C21.1367 9.43722 21.339 10.0596 20.959 10.3851L16.7546 13.9866C16.5945 14.1238 16.5245 14.3391 16.5734 14.5443L17.8579 19.9292C17.974 20.4159 17.4446 20.8005 17.0176 20.5397L12.2932 17.6541C12.1132 17.5441 11.8868 17.5441 11.7068 17.6541L6.98238 20.5397C6.55539 20.8005 6.02594 20.4159 6.14203 19.9292L7.42652 14.5443C7.47546 14.3391 7.4055 14.1238 7.24531 13.9866L3.04099 10.3851C2.661 10.0596 2.86323 9.43722 3.36197 9.39724L8.88022 8.95485C9.09048 8.93799 9.27363 8.80492 9.35464 8.61016L11.4806 3.4987Z"/></svg>',
       pencil: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125"/></svg>',
       trash: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>',
-      food: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.871c1.355 0 2.697.056 4.024.166C17.155 8.51 18 9.473 18 10.608v2.513M15 8.25v-1.5m-6 1.5v-1.5m12 9.75l-1.5.75a3.354 3.354 0 01-3 0 3.354 3.354 0 00-3 0 3.354 3.354 0 01-3 0 3.354 3.354 0 00-3 0 3.354 3.354 0 01-3 0L3 16.5m15-3.379a48.474 48.474 0 00-6-.371c-2.032 0-4.034.126-6 .371m12 0c.39.049.777.102 1.163.16 1.07.16 1.837 1.094 1.837 2.175v5.169c0 .621-.504 1.125-1.125 1.125H4.125A1.125 1.125 0 013 20.625v-5.17c0-1.08.768-2.014 1.837-2.174A47.78 47.78 0 016 13.12M12.265 3.11a.375.375 0 11-.53 0L12 2.845l.265.265z"/></svg>',
+      food: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7 3v8a2 2 0 002 2v8M7 3h.01M5 3v5a2 2 0 002 2M9 3v5a2 2 0 01-2 2m10-7v18m0-18c-1.657 0-3 2.239-3 5s1.343 5 3 5"/></svg>',
       bar: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8 22h8M12 11v11M19 3l-7 8-7-8Z"/></svg>',
       culture: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z"/></svg>',
       hotel: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3H21m-3.75 3H21"/></svg>',
@@ -2689,6 +2770,8 @@
     function icon(name, size) { size=size||16; return ICONS[name].replace('<svg ','<svg width="'+size+'" height="'+size+'" '); }
 
     var saveTimer = null;
+    var _dataUnsub = null;
+    var _lastSaveTs = 0;
     function scheduleSave() {
       if (!canEdit()) return;
       clearTimeout(saveTimer);
@@ -2710,13 +2793,22 @@
     }
     async function doSave() {
       if (!DATA_REF || !canEdit()) return;
+      // SAFETY: refuse to overwrite with fully-empty state. Real trips always have >=1 day.
+      // This prevents accidental wipes from race conditions (e.g. navigating mid-load).
+      var hasAnyEvents = DAYS.some(function(d){ return d.events && d.events.length > 0; });
+      var hasWishlist = WISHLIST && WISHLIST.length > 0;
+      if ((!DAYS || DAYS.length === 0) && !hasWishlist) {
+        console.warn('[doSave] refusing to save empty DAYS+WISHLIST — likely race condition');
+        return;
+      }
       lsSaveTripData(currentTripId);
       try {
+        _lastSaveTs = Date.now();
         await DATA_REF.set({ days: DAYS, wishlist: WISHLIST });
         showSaveToast(t('saved'), '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--positive)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>');
       } catch(e) {
-        console.error('Firestore save failed:', e);
-        showSaveToast(t('saveFailed'), '!');
+        console.error('Firestore save failed:', e.code, e.message);
+        showSaveToast(t('saveFailed') + ' (' + (e.code||'unknown') + ')', '!');
       }
     }
 
@@ -2974,14 +3066,16 @@
     function renderMapMobSheet(){
       var el=document.getElementById('mapMobSheet');if(!el)return;
       if(mapFilter==='wishlist'){
-        var unassigned=WISHLIST.filter(function(w){return !w.calDayId&&w.lat!=null;});
+        var unassigned=WISHLIST.filter(function(w){return !w.calDayId;});
         var cards=unassigned.map(function(w){
           var ic=catIcon(w.category,16);
-          return '<div class="map-mob-card" onclick="focusWishMarker(\''+w.id+'\')">'+
+          var hasCoords=w.lat!=null&&w.lng!=null;
+          return '<div class="map-mob-card" '+(hasCoords?'onclick="focusWishMarker(\''+w.id+'\')"':'')+' style="'+(hasCoords?'':'opacity:0.55')+'">'+
             '<div class="map-mob-card-thumb" style="background:#8b5cf620">'+ic+'</div>'+
             '<div class="map-mob-card-info">'+
             '<div class="map-mob-card-name">'+w.name+'</div>'+
             (w.notes?'<div class="map-mob-card-time">'+w.notes+'</div>':'')+
+            (hasCoords?'':'<div class="map-mob-card-time" style="color:#f59e0b;font-size:0.7rem">위치 정보 없음</div>')+
             '</div></div>';
         }).join('');
         el.innerHTML='<div class="map-mob-handle"></div>'+
@@ -3031,13 +3125,14 @@
       var c=document.getElementById('mapEventList'),h='';
       var isHt=currentTripMeta&&currentTripMeta.type==='hometown';
       if(mapFilter==='wishlist'||(isHt&&mapFilter==='all')){
-        var unassigned=WISHLIST.filter(function(w){return !w.calDayId&&w.lat!=null;});
+        var unassigned=WISHLIST.filter(function(w){return !w.calDayId;});
         var groupLabel=isHt?t('places'):t('unassignedPlaces');
         h+='<div class="map-group"><div class="map-group-title" style="background:#8b5cf620;color:#8b5cf6;display:flex;align-items:center;justify-content:space-between"><span style="display:flex;align-items:center;gap:5px"><span style="width:7px;height:7px;border-radius:50%;background:#8b5cf6;display:inline-block;"></span>'+groupLabel+'</span></div>';
         if(!unassigned.length)h+='<div style="padding:14px;font-size:0.82rem;color:var(--text-secondary)">'+(isHt?t('noPlaces'):t('noUnassigned'))+'</div>';
         unassigned.forEach(function(w){
           var ic=catIcon(w.category,16);
-          h+='<div class="map-event-row" onclick="focusWishMarker(\''+w.id+'\')"><span style="font-size:14px;line-height:1;flex-shrink:0">'+ic+'</span><div style="flex:1;min-width:0"><div class="map-event-name">'+w.name+'</div>'+(w.notes?'<div class="map-event-time">'+w.notes+'</div>':'')+'</div></div>';
+          var hasCoords=w.lat!=null&&w.lng!=null;
+          h+='<div class="map-event-row'+(hasCoords?'':' no-coords')+'" '+(hasCoords?'onclick="focusWishMarker(\''+w.id+'\')"':'')+' style="'+(hasCoords?'':'opacity:0.55;cursor:default')+'"><span style="font-size:14px;line-height:1;flex-shrink:0">'+ic+'</span><div style="flex:1;min-width:0"><div class="map-event-name">'+w.name+'</div>'+(w.notes?'<div class="map-event-time">'+w.notes+'</div>':'')+(hasCoords?'':'<div class="map-event-time" style="color:#f59e0b;font-size:0.72rem">위치 정보 없음 — 구글맵 링크를 추가해 주세요</div>')+'</div></div>';
         });
         h+='</div>';
       } else {
@@ -3213,6 +3308,12 @@
       document.getElementById('editModalTitle').textContent = t('editEvent');
       document.getElementById('editDeleteBtn').style.display = '';
       document.getElementById('editSubmitBtn').textContent = t('save');
+      // Populate date picker, constrained to trip window
+      var dateInput=document.getElementById('editDate');
+      var curDay=getDay(dayId);
+      dateInput.value=(curDay&&curDay.isoDate)||'';
+      if(currentTripMeta&&currentTripMeta.startDate)dateInput.min=currentTripMeta.startDate;else dateInput.removeAttribute('min');
+      if(currentTripMeta&&currentTripMeta.endDate)dateInput.max=currentTripMeta.endDate;else dateInput.removeAttribute('max');
       document.getElementById('editTime').value=ev.time||'';document.getElementById('editEndTime').value=ev.endTime||'';
       document.getElementById('editTitle').value=ev.title||'';document.getElementById('editSubtitle').value=ev.subtitle||'';
       document.getElementById('editNotes').value=ev.notes||'';document.getElementById('editLink').value=ev.link||'';
@@ -3263,19 +3364,38 @@
       var cm=url.match(/@(-?\d+\.?\d*),(-?\d+\.?\d*)/)||url.match(/[?&]q=(-?\d+\.?\d*),(-?\d+\.?\d*)/);
       if(cm){mu.dataset.lat=cm[1];mu.dataset.lng=cm[2];}
     }
+    // Move an event from one day to another by isoDate. Returns the new dayId, or editingDayId unchanged.
+    // Never drops the event — if target day not found, stays on current day.
+    function _moveEventToDate(dayId, evId, newIsoDate) {
+      if (!newIsoDate) return dayId;
+      var curDay = getDay(dayId); if (!curDay) return dayId;
+      if (curDay.isoDate === newIsoDate) return dayId;
+      var targetDay = DAYS.find(function(d){return d.isoDate === newIsoDate;});
+      if (!targetDay) return dayId; // target out of range — keep on current day
+      var evIdx = curDay.events.findIndex(function(e){return e.id === evId;});
+      if (evIdx < 0) return dayId;
+      var ev = curDay.events.splice(evIdx, 1)[0];
+      targetDay.events.push(ev);
+      // Update wishlist link if present
+      var w = WISHLIST.find(function(x){return x.calEventId === evId;});
+      if (w) { w.calDayId = targetDay.id; w.dayLabel = targetDay.date; }
+      return targetDay.id;
+    }
     function saveEditEvent(e){
       e.preventDefault();
       var mu=document.getElementById('editMapsUrl');
       var form=document.getElementById('editForm');
       var isWishlist=form.classList.contains('mode-wishlist');
       var isPlace=form.classList.contains('mode-place');
+      var newDate=document.getElementById('editDate').value;
       if(isWishlist && editingEvId){
-        // Wishlist-linked: only update time and notes
+        // Wishlist-linked: update time, notes, and optionally move day
         var ev=getEv(editingDayId,editingEvId);if(!ev)return;
         ev.time=document.getElementById('editTime').value;
         ev.endTime=document.getElementById('editEndTime').value;
         ev.notes=document.getElementById('editNotes').value;
         ev.link=document.getElementById('editLink').value.trim()||null;
+        editingDayId=_moveEventToDate(editingDayId,editingEvId,newDate);
         closeEditModal();rerender();return;
       }
       var fields={
@@ -3304,6 +3424,7 @@
         if(!mu.value){ev.lat=null;ev.lng=null;}
         var w=WISHLIST.find(function(x){return x.calEventId===ev.id;});
         if(w){w.name=ev.title;w.category=ev.category;if(ev.lat!=null)w.lat=ev.lat;if(ev.lng!=null)w.lng=ev.lng;}
+        editingDayId=_moveEventToDate(editingDayId,editingEvId,newDate);
       }
       closeEditModal();rerender();
     }
@@ -3370,20 +3491,22 @@
       if(day)day.events=day.events.filter(function(e){return e.id!==w.calEventId;});
       w.calDayId=null;w.calEventId=null;w.visited=false;w.dayLabel='';rerender();
     }
-    var _lastParsedGmapsUrl='';
+    var _lastParsedGmapsUrl='', _wishUrlResolving=false;
     function parseGmapsUrl(url){
       url=(url||'').trim();if(!url)return;
       url=extractMapsUrl(url);
       if(url===_lastParsedGmapsUrl)return;_lastParsedGmapsUrl=url;
       if(/maps\.app\.goo\.gl|goo\.gl\/maps/.test(url)){
+        _wishUrlResolving=true;updateWishSaveBtn();
         var nf=document.getElementById('wishName');if(nf)nf.placeholder=t('loadingPlace');
         fetch('https://palo-travel-expand-url.jihoon8846.workers.dev/api/expand-url?url='+encodeURIComponent(url))
           .then(function(r){return r.json();})
           .then(function(d){
             var nf2=document.getElementById('wishName');if(nf2)nf2.placeholder='e.g. Contramar';
             applyGmapsInfo(d.url||url, d.name||'', d.address||'', d.lat||null, d.lng||null, d.category||'');
+            _wishUrlResolving=false;updateWishSaveBtn();
           })
-          .catch(function(){var nf2=document.getElementById('wishName');if(nf2)nf2.placeholder='e.g. Contramar';});
+          .catch(function(){var nf2=document.getElementById('wishName');if(nf2)nf2.placeholder='e.g. Contramar';_wishUrlResolving=false;updateWishSaveBtn();});
         return;
       }
       applyGmapsInfo(url,'','',null,null,'');
@@ -3423,13 +3546,16 @@
     function updateWishSaveBtn(){
       var hasName=!!(document.getElementById('wishName').value.trim());
       var hasUrl=!!(document.getElementById('wishMapsUrl').value.trim());
-      var enabled=hasName||hasUrl;
+      var enabled=(hasName||hasUrl)&&!_wishUrlResolving;
       var btn=document.getElementById('wishSaveBtn');
       btn.disabled=!enabled;btn.style.opacity=enabled?'':'0.4';btn.style.cursor=enabled?'':'not-allowed';
+      if(_wishUrlResolving) btn.textContent='로딩중...';
+      else if(editingWishId) btn.textContent=t('save');
+      else btn.textContent=t('add');
     }
     function openWishAdd(){
       if (!canEdit()) return;
-      editingWishId=null;
+      editingWishId=null;_wishUrlResolving=false;_lastParsedGmapsUrl='';
       var wuEl=document.getElementById('wishMapsUrl');wuEl.value='';delete wuEl.dataset.lat;delete wuEl.dataset.lng;
       document.getElementById('wishName').value='';
       document.getElementById('wishNotes').value='';document.getElementById('wishCategory').value='other';
@@ -3464,15 +3590,57 @@
       if(editingWishId){
         var w=WISHLIST.find(function(x){return x.id===editingWishId;});
         if(w){w.name=name;w.notes=notes;w.category=cat;w.mapsUrl=url;w.lat=lat||w.lat;w.lng=lng||w.lng;w.wishType='place';if(w.calEventId){var ev=getEv(w.calDayId,w.calEventId);if(ev){ev.title=name;ev.category=cat;ev.subtitle=notes;}}}
+        if(w&&!w.lat&&w.mapsUrl) _resolveWishCoords(w);
       } else {
         var addedBy = currentUser ? (currentUser.displayName || currentUser.email.split('@')[0]) : '';
         var addedByPhoto = currentUser && currentUser.photoURL ? currentUser.photoURL : '';
         var newW={id:'wl_'+genId(),name:name,notes:notes,category:cat,wishType:'place',mapsUrl:url,lat:lat,lng:lng,visited:false,fromItinerary:false,dayLabel:'',calDayId:null,calEventId:null,addedBy:addedBy,addedByPhoto:addedByPhoto};
         WISHLIST.push(newW);
         wishStatusFilter='all';
-        if(!lat&&name) geocodeWishItem(newW);
+        if(!lat&&url) _resolveWishCoords(newW);
+        else if(!lat&&name) geocodeWishItem(newW);
       }
       closeWishModal();rerender();
+    }
+    // Re-expand a Google Maps URL to get coordinates when they were missed during initial parse
+    function _onCoordsResolved() {
+      scheduleSave();
+      if(currentView==='map'&&leafletMap){ rebuildMarkers(); renderMapList(); renderMapMobSheet(); }
+    }
+    async function _resolveWishCoords(w) {
+      var url = w.mapsUrl;
+      console.log('[_resolveWishCoords]', w.name, 'url:', url);
+      if (!url) { console.log('[_resolveWishCoords] SKIP - no url'); return; }
+      try {
+        // Try regex on the URL itself first (cheapest)
+        var cm = url.match(/@(-?\d+\.?\d*),(-?\d+\.?\d*)/) || url.match(/!3d(-?\d+\.?\d+)!4d(-?\d+\.?\d+)/);
+        if (cm) {
+          w.lat = parseFloat(cm[1]); w.lng = parseFloat(cm[2]);
+          _onCoordsResolved(); return;
+        }
+        // Send any Google Maps URL to the worker for expansion + coord extraction
+        if (/maps\.app\.goo\.gl|goo\.gl\/maps|google\.com\/maps|maps\.google/.test(url)) {
+          var r = await fetch('https://palo-travel-expand-url.jihoon8846.workers.dev/api/expand-url?url='+encodeURIComponent(url));
+          var d = await r.json();
+          console.log('[_resolveWishCoords] worker response:', JSON.stringify(d));
+          if (d.lat != null && d.lng != null) {
+            w.lat = d.lat; w.lng = d.lng;
+            console.log('[_resolveWishCoords] GOT COORDS', w.name, d.lat, d.lng);
+            if(w.calEventId&&w.calDayId){var ev=getEv(w.calDayId,w.calEventId);if(ev){ev.lat=d.lat;ev.lng=d.lng;}}
+            _onCoordsResolved(); return;
+          }
+          // Worker expanded the URL but no coords — try regex on expanded URL
+          if (d.url && d.url !== url) {
+            var cm2 = d.url.match(/@(-?\d+\.?\d*),(-?\d+\.?\d*)/) || d.url.match(/!3d(-?\d+\.?\d+)!4d(-?\d+\.?\d+)/);
+            if (cm2) {
+              w.lat = parseFloat(cm2[1]); w.lng = parseFloat(cm2[2]);
+              _onCoordsResolved(); return;
+            }
+          }
+        }
+        // Fall back to geocoding by name
+        if (w.name) geocodeWishItem(w);
+      } catch(e) { if (w.name) geocodeWishItem(w); }
     }
 
     // ==================== TIME PICKER SEGMENTS ====================
@@ -3558,11 +3726,27 @@
       }
       closeCalAdd();rerender();
     }
-    function deleteWishItem(){
+    async function deleteWishItem(){
       if(!editingWishId)return;if(!confirm(t('confirmDeletePlace')))return;
       var w=WISHLIST.find(function(x){return x.id===editingWishId;});
       if(w&&w.calDayId&&w.calEventId){var day=DAYS.find(function(d){return d.id===w.calDayId;});if(day)day.events=day.events.filter(function(e){return e.id!==w.calEventId;});}
-      WISHLIST=WISHLIST.filter(function(x){return x.id!==editingWishId;});closeWishModal();rerender();
+      WISHLIST=WISHLIST.filter(function(x){return x.id!==editingWishId;});
+      closeWishModal();
+      // Save immediately instead of debounced
+      clearTimeout(saveTimer); saveTimer = null;
+      if(currentView==='wishlist')renderWishlist();
+      else if(currentView==='map'){renderMapUI();if(leafletMap)rebuildMarkers();}
+      if(DATA_REF){
+        lsSaveTripData(currentTripId);
+        try{
+          _lastSaveTs = Date.now();
+          await DATA_REF.set({ days: DAYS, wishlist: WISHLIST });
+          showSaveToast(t('saved'), '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--positive)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>');
+        }catch(e){
+          console.error('Delete save failed:', e);
+          showSaveToast(t('saveFailed'), '!');
+        }
+      }
     }
 
     // ==================== SCHEDULE MODAL ====================
@@ -3650,6 +3834,19 @@
       if(!w.lat&&w.name) geocodeWishItem(w);
     }
 
+    function _geocodeMissingWishCoords() {
+      // Debug: log ALL wishlist items status
+      console.log('[geo-debug] WISHLIST has', WISHLIST.length, 'items:');
+      WISHLIST.forEach(function(w){
+        console.log('[geo-debug]', w.name, '| lat:', w.lat, '| lng:', w.lng, '| mapsUrl:', (w.mapsUrl||'').slice(0,50), '| calDayId:', w.calDayId||'none');
+      });
+      var pending = WISHLIST.filter(function(w){ return !w.lat; });
+      if (pending.length) console.log('[geo-backfill] Resolving coords for', pending.length, 'items');
+      pending.forEach(function(w){
+        if(w.mapsUrl) _resolveWishCoords(w);
+        else if(w.name) geocodeWishItem(w);
+      });
+    }
     async function geocodeWishItem(w) {
       var city = currentTripMeta&&currentTripMeta.city ? currentTripMeta.city : '';
       var query = w.name + (city ? ', '+city : '');
@@ -3661,8 +3858,7 @@
         w.lat=lat; w.lng=lng;
         // Propagate to calendar event
         if(w.calEventId&&w.calDayId){var ev=getEv(w.calDayId,w.calEventId);if(ev){ev.lat=lat;ev.lng=lng;}}
-        scheduleSave();
-        if(currentView==='map'&&leafletMap) rebuildMarkers();
+        _onCoordsResolved();
       } catch(e){}
     }
     function removeFromCalendar(){
@@ -3885,6 +4081,46 @@
       var fname=(currentTripMeta?currentTripMeta.name.replace(/\s/g,'-'):'travel')+'-plan.png';
       try{var url=await htmlToImage.toPng(document.body,{quality:1,pixelRatio:2});var a=document.createElement('a');a.href=url;a.download=fname;a.click();}catch(err){console.error(err);}
       menu.style.display='';
+    }
+
+    // ==================== FEEDBACK ====================
+    var _fbType = 'bug';
+    function setFeedbackType(type) {
+      _fbType = type;
+      document.querySelectorAll('.fb-type-btn').forEach(function(b){ b.classList.toggle('active', b.dataset.type === type); });
+    }
+    function openFeedbackModal() {
+      _fbType = 'bug';
+      document.getElementById('feedbackMsg').value = '';
+      document.querySelectorAll('.fb-type-btn').forEach(function(b){ b.classList.toggle('active', b.dataset.type === 'bug'); });
+      document.getElementById('feedbackSubmitBtn').disabled = false;
+      document.getElementById('feedbackSubmitBtn').textContent = '보내기';
+      document.getElementById('feedbackModal').classList.add('open');
+      setTimeout(function(){ document.getElementById('feedbackMsg').focus(); }, 100);
+    }
+    function closeFeedbackModal() { document.getElementById('feedbackModal').classList.remove('open'); }
+    async function submitFeedback(e) {
+      e.preventDefault();
+      var msg = document.getElementById('feedbackMsg').value.trim();
+      if (!msg) return;
+      var btn = document.getElementById('feedbackSubmitBtn');
+      btn.disabled = true; btn.textContent = '보내는 중...';
+      try {
+        await db.collection('feedback').add({
+          type: _fbType,
+          message: msg,
+          user: currentUser ? { uid: currentUser.uid, email: currentUser.email, name: currentUser.displayName || '' } : null,
+          tripId: currentTripId || null,
+          createdAt: firebase.firestore.Timestamp.now(),
+          resolved: false
+        });
+        closeFeedbackModal();
+        alert(_fbType === 'bug' ? '버그 신고가 접수되었습니다. 감사합니다!' : '기능 제안이 접수되었습니다. 감사합니다!');
+      } catch(err) {
+        console.error('Failed to submit feedback:', err);
+        btn.disabled = false; btn.textContent = '보내기';
+        alert('전송에 실패했습니다. 다시 시도해 주세요.');
+      }
     }
 
     // ==================== INIT ====================
