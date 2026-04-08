@@ -61,6 +61,18 @@
     @media (prefers-reduced-motion:reduce) { *,*::before,*::after{animation:none!important;transition:none!important} .reveal{opacity:1;transform:none} }
     /* HEADER */
     .app-header { position:sticky; top:0; z-index:200; background:var(--bg); border-bottom:1px solid var(--border); padding:0 20px; height:56px; display:flex; align-items:center; gap:14px; backdrop-filter:blur(16px); }
+    body.on-dashboard .app-header { border-bottom-color:transparent; }
+    body.on-dashboard .viz-menu-toggle { display:none; }
+    .dash-header-actions { display:none; margin-left:auto; align-items:center; gap:8px; }
+    body.on-dashboard .dash-header-actions { display:flex; }
+    .dash-header-btn { width:36px; height:36px; border-radius:10px; border:1px solid var(--border); background:var(--surface); color:var(--text); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background var(--dur-small), border-color var(--dur-small); }
+    .dash-header-btn:hover { background:var(--surface-hover); border-color:var(--border-strong); }
+    .dash-account-pill { display:flex; align-items:center; gap:8px; padding:4px 12px 4px 4px; border-radius:999px; border:1px solid var(--border); background:var(--surface); color:var(--text); font-family:inherit; font-size:0.82rem; font-weight:600; cursor:pointer; transition:background var(--dur-small), border-color var(--dur-small); }
+    .dash-account-pill:hover { background:var(--surface-hover); border-color:var(--border-strong); }
+    .dash-account-avatar { width:28px; height:28px; border-radius:50%; background:var(--accent); color:var(--accent-fg); display:flex; align-items:center; justify-content:center; font-size:0.72rem; font-weight:700; overflow:hidden; }
+    .dash-account-avatar img { width:100%; height:100%; object-fit:cover; }
+    .dash-account-name { max-width:140px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    @media (max-width:520px) { .dash-account-name { display:none; } .dash-account-pill { padding:4px; } }
     .app-logo { display:flex; align-items:center; gap:6px; white-space:nowrap; }
     .app-logo-flag { font-size:1.5rem; line-height:1; }
     .app-logo-trip { font-size:0.82rem; font-weight:600; color:var(--text-secondary); }
@@ -375,8 +387,17 @@
     }
     @media (max-width:768px) { .app-header{padding:9px 12px;padding-right:58px;gap:10px} .view-tab{padding:4px 9px;font-size:0.78rem} .map-sidebar{width:240px} .tab-label{display:none} .app-header .view-tabs{position:static;transform:none;margin-left:auto} .viz-menu-toggle{width:34px;height:34px;border-radius:8px} .share-status-btn{display:none !important} }
     /* DASHBOARD */
-    .dash-view { max-width:900px; margin:0 auto; padding:32px 20px 120px; }
-    .dash-hero { display:flex; flex-direction:column; align-items:center; padding:8px 0 0; user-select:none; }
+    .dash-view { max-width:1200px; margin:0 auto; padding:32px 20px; }
+    .dash-layout { display:grid; grid-template-columns:minmax(320px,400px) 1fr; gap:40px; align-items:center; min-height:calc(100vh - 160px); }
+    @media (max-width:880px) { .dash-layout { grid-template-columns:1fr; gap:24px; align-items:start; min-height:0; } }
+    .dash-hero { display:flex; flex-direction:column; align-items:center; user-select:none; }
+    .dash-trips { max-height:calc(100vh - 120px); overflow-y:auto; padding:32px 32px 32px 12px; margin:-32px -32px -32px -12px; -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 32px,#000 calc(100% - 32px),transparent 100%); mask-image:linear-gradient(180deg,transparent 0,#000 32px,#000 calc(100% - 32px),transparent 100%); }
+    @media (max-width:880px) { .dash-trips { max-height:none; overflow:visible; padding:0; margin:0; -webkit-mask-image:none; mask-image:none; } }
+    .dash-trips::-webkit-scrollbar { width:8px; }
+    .dash-trips::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
+    .dash-trips::-webkit-scrollbar-thumb:hover { background:var(--border-strong); }
+    .dash-section + .dash-section { margin-top:28px; }
+    .dash-section-title { font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-secondary); margin-bottom:10px; padding-left:2px; }
     .globe-wrap { position:relative; width:480px; height:480px; flex-shrink:0; }
     #cobeCanvas { width:100%; height:100%; cursor:grab; display:block; }
     #cobeCanvas:active { cursor:grabbing; }
@@ -388,20 +409,12 @@
     .globe-chip-city { font-weight:600; color:var(--text); }
     .globe-chip-count { font-size:0.7rem; font-weight:700; color:var(--text-secondary); background:var(--surface-hover); border-radius:10px; padding:1px 6px; }
     @media (max-width:520px) { .globe-wrap { width:320px; height:320px; } .globe-flag { font-size:22px; } }
-    .dash-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px; margin-top:24px; }
-    .hometown-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:16px 20px; cursor:pointer; display:flex; align-items:center; gap:12px; transition:transform var(--dur-small) var(--ease-out), box-shadow var(--dur-small) var(--ease-out), border-color var(--dur-small); position:relative; }
-    @media (hover:hover) and (pointer:fine) { .hometown-card:hover { box-shadow:0 8px 28px rgba(0,0,0,0.12); transform:translateY(-2px) scale(1.01); border-color:var(--border-strong); } }
-    .hometown-card:active { transform:scale(0.97); transition-duration:var(--dur-micro); }
-    .hometown-card .ht-info { flex:1; min-width:0; }
-    .hometown-card .ht-label { font-size:0.7rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.04em; display:flex; align-items:center; gap:3px; }
-    .hometown-card .ht-city { font-size:1rem; font-weight:700; margin-top:1px; }
-    .hometown-card .ht-saved { display:flex; align-items:center; gap:4px; font-size:0.82rem; font-weight:600; color:var(--accent); background:var(--surface-hover); padding:4px 10px; border-radius:20px; white-space:nowrap; }
-    .hometown-card .ht-actions { display:flex; gap:2px; }
+    .dash-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:16px; }
     .dash-cta-btn { display:inline-flex; align-items:center; gap:6px; padding:8px 20px; border-radius:10px; border:1px solid var(--border); background:var(--surface); color:var(--text); font-family:inherit; font-size:0.82rem; font-weight:600; cursor:pointer; transition:transform var(--dur-small) var(--ease-out), box-shadow var(--dur-small), border-color var(--dur-small), background var(--dur-small); }
     @media (hover:hover) and (pointer:fine) { .dash-cta-btn:hover { background:var(--surface-hover); border-color:var(--border-strong); box-shadow:0 4px 14px rgba(0,0,0,0.1); transform:translateY(-1px); } }
     .dash-cta-btn:active { transform:scale(0.97); transition-duration:var(--dur-micro); }
     .trip-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:18px 20px; cursor:pointer; position:relative; transform:translateY(0) scale(1); transition:transform 110ms cubic-bezier(0.23,1,0.32,1), box-shadow 110ms cubic-bezier(0.23,1,0.32,1), border-color 80ms; box-shadow:0 0 0 rgba(0,0,0,0); }
-    .trip-card:hover { transform:translateY(-4px) scale(1.015); box-shadow:0 12px 32px rgba(0,0,0,0.18); border-color:var(--border-strong); }
+    .trip-card:hover { transform:translateY(-2px) scale(1.01); box-shadow:0 4px 12px rgba(0,0,0,0.1); border-color:var(--border-strong); }
     .trip-card:active { transform:scale(0.97); transition-duration:50ms; }
     .trip-card-name { font-size:1.05rem; font-weight:700; line-height:1.3; }
     .trip-card-city { font-size:0.82rem; color:var(--text-secondary); margin-top:3px; }
@@ -588,6 +601,15 @@
       </div>
       <div class="trip-dropdown" id="tripDropdown" style="display:none"></div>
     </div>
+    <div class="dash-header-actions" id="dashHeaderActions">
+      <button class="dash-header-btn" onclick="cycleTheme()" aria-label="테마 전환" title="테마 전환">
+        <span id="dashThemeIcon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z"/></svg></span>
+      </button>
+      <button class="dash-account-pill" id="dashAccountPill" onclick="event.stopPropagation();toggleMenu()" aria-label="계정">
+        <div class="dash-account-avatar" id="dashAccountAvatar"></div>
+        <span class="dash-account-name" id="dashAccountName"></span>
+      </button>
+    </div>
     <div class="view-tabs" id="viewTabs" role="tablist" style="display:none">
       <button class="view-tab active" onclick="switchView('calendar')" role="tab" aria-selected="true"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3V5.25M17.25 3V5.25M3 18.75V7.5C3 6.25736 4.00736 5.25 5.25 5.25H18.75C19.9926 5.25 21 6.25736 21 7.5V18.75M3 18.75C3 19.9926 4.00736 21 5.25 21H18.75C19.9926 21 21 19.9926 21 18.75M3 18.75V11.25C3 10.0074 4.00736 9 5.25 9H18.75C19.9926 9 21 10.0074 21 11.25V18.75M12 12.75H12.0075V12.7575H12V12.75ZM12 15H12.0075V15.0075H12V15ZM12 17.25H12.0075V17.2575H12V17.25ZM9.75 15H9.7575V15.0075H9.75V15ZM9.75 17.25H9.7575V17.2575H9.75V17.25ZM7.5 15H7.5075V15.0075H7.5V15ZM7.5 17.25H7.5075V17.2575H7.5V17.25ZM14.25 12.75H14.2575V12.7575H14.25V12.75ZM14.25 15H14.2575V15.0075H14.25V15ZM14.25 17.25H14.2575V17.2575H14.25V17.25ZM16.5 12.75H16.5075V12.7575H16.5V12.75ZM16.5 15H16.5075V15.0075H16.5V15"/></svg> <span class="tab-label">일정</span></button>
       <button class="view-tab" onclick="switchView('map')" role="tab" aria-selected="false"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75002V15M15 9.00002V17.25M15.5031 20.7485L20.3781 18.311C20.7592 18.1204 21 17.7309 21 17.3047V4.82031C21 3.98401 20.1199 3.44007 19.3719 3.81408L15.5031 5.74847C15.1864 5.90683 14.8136 5.90683 14.4969 5.74847L9.50312 3.25158C9.1864 3.09322 8.8136 3.09322 8.49688 3.25158L3.62188 5.68908C3.24075 5.87965 3 6.26919 3 6.69531V19.1797C3 20.016 3.8801 20.56 4.62811 20.186L8.49688 18.2516C8.8136 18.0932 9.1864 18.0932 9.50312 18.2516L14.4969 20.7485C14.8136 20.9068 15.1864 20.9068 15.5031 20.7485Z"/></svg> <span class="tab-label">지도</span></button>
@@ -620,15 +642,16 @@
     </section>
     <section id="view-dashboard" style="display:block">
       <div class="dash-view">
-        <div id="hometownCard" style="max-width:360px;margin:8px auto 0"></div>
-        <div class="dash-hero">
-          <div class="globe-wrap">
-            <canvas id="cobeCanvas"></canvas>
-            <div id="globeOverlay"></div>
+        <div class="dash-layout">
+          <div class="dash-hero">
+            <div class="globe-wrap">
+              <canvas id="cobeCanvas"></canvas>
+              <div id="globeOverlay"></div>
+            </div>
+            <div id="dashCtas" style="display:flex;justify-content:center;gap:8px;margin-top:14px"></div>
           </div>
-          <div id="dashCtas" style="display:flex;justify-content:center;gap:8px;margin-top:14px"></div>
+          <div class="dash-trips" id="dashTrips"></div>
         </div>
-        <div class="dash-grid" id="dashGrid"></div>
       </div>
     </section>
   </main>
@@ -738,25 +761,6 @@
         <div class="form-group"><label class="form-label" for="wishNotes">메모</label><input type="text" class="form-input" id="wishNotes" placeholder="가고 싶은 이유, 영업시간 등"></div>
         <div class="modal-actions"><button type="button" class="btn btn-danger" id="wishDeleteBtn" onclick="deleteWishItem()" style="display:none">삭제</button><button type="button" class="btn btn-secondary" onclick="closeWishModal()">취소</button><button type="submit" class="btn btn-primary" id="wishSaveBtn" disabled style="opacity:0.4;cursor:not-allowed">추가</button></div>
       </form>
-    </div>
-  </div>
-
-  <!-- HOMETOWN MODAL -->
-  <div class="modal-overlay" id="hometownModal" role="dialog" aria-modal="true">
-    <div class="modal" style="max-width:400px">
-      <div class="modal-head"><h2 style="display:flex;align-items:center;gap:6px"></h2><button class="modal-close" onclick="closeHometownModal()">✕</button></div>
-      <div class="form-group">
-        <label class="form-label">도시 검색</label>
-        <div class="city-autocomplete">
-          <input type="text" class="form-input" id="htCityInput" placeholder="도시 검색… (예: Seoul, Tokyo)" autocomplete="off" oninput="onHtCityInput(this.value)" onkeydown="onHtCityKeydown(event)">
-          <div class="city-dropdown" id="htCityDropdown" style="display:none"></div>
-          <div class="city-selected-row" id="htCitySelected" style="display:none">
-            <span class="city-selected-name" id="htCitySelectedName"></span>
-            <button type="button" class="city-clear" onclick="clearHtCity()" title="다시 선택">✕</button>
-          </div>
-        </div>
-      </div>
-      <div class="modal-actions"><button type="button" class="btn btn-secondary" onclick="closeHometownModal()">취소</button><button type="button" class="btn btn-primary" id="htSaveBtn" onclick="saveHometown()" disabled style="opacity:0.4;cursor:not-allowed">설정</button></div>
     </div>
   </div>
 
@@ -926,13 +930,13 @@
       signInFailed: { ko:'로그인 실패', en:'Sign-in failed' },
       // Nav
       trip: { ko:'여행', en:'Trip' },
-      myCity: { ko:'내 도시', en:'My City' },
       schedule: { ko:'일정', en:'Schedule' },
       mapLabel: { ko:'지도', en:'Map' },
       places: { ko:'장소', en:'Places' },
       // Dashboard
-      setMyCity: { ko:'내 도시 설정', en:'Set My City' },
       addNewTrip: { ko:'새 여행 추가', en:'Add New Trip' },
+      plannedTrips: { ko:'예정된 여행', en:'Planned Trips' },
+      pastTrips: { ko:'지난 여행', en:'Past Trips' },
       noTripsYet: { ko:'아직 여행이 없어요', en:'No trips yet' },
       noTripsHint: { ko:'새 여행 추가 버튼으로 시작하세요', en:'Start by adding a new trip' },
       nPlaces: { ko:'개 장소', en:' places' },
@@ -1137,9 +1141,6 @@
       // Edit modal static labels
       var editTimeLbl = document.getElementById('editTimeLbl');
       if (editTimeLbl) editTimeLbl.textContent = t('startTime');
-      // Hometown modal
-      var htLabel = document.querySelector('#hometownModal .form-label');
-      if (htLabel) htLabel.textContent = t('searchCity');
       // Lang toggle button
       var langBtn = document.getElementById('langToggleBtn');
       if (langBtn) langBtn.querySelector('span:last-child').textContent = t('langLabel');
@@ -1158,11 +1159,22 @@
         document.getElementById('accountAvatar').textContent = initials;
         document.getElementById('accountName').textContent = name;
         document.getElementById('accountEmail').textContent = user.email;
+        var dashAv = document.getElementById('dashAccountAvatar');
+        var dashNm = document.getElementById('dashAccountName');
+        if (dashAv) {
+          if (user.photoURL) dashAv.innerHTML = '<img src="'+user.photoURL+'" alt="">';
+          else { dashAv.innerHTML = ''; dashAv.textContent = initials; }
+        }
+        if (dashNm) dashNm.textContent = name;
+        var dashPill = document.getElementById('dashAccountPill');
+        if (dashPill) dashPill.style.display = '';
         loggedIn.style.display = '';
         loggedOut.style.display = 'none';
       } else {
         loggedIn.style.display = 'none';
         loggedOut.style.display = '';
+        var dashPill = document.getElementById('dashAccountPill');
+        if (dashPill) dashPill.style.display = 'none';
       }
     }
     function getTripRole() {
@@ -1795,18 +1807,17 @@
       updateShareBtnVisibility();
       var dashEl = document.getElementById('view-dashboard');
       dashEl.style.display = 'none';
+      document.body.classList.remove('on-dashboard');
       destroyCobe();
       document.querySelector('.fab').style.display = canEdit() ? '' : 'none';
-      calPage = 0; mapMobDay = 0; mapFilter = isHometown ? 'wishlist' : 'all';
-      var isHometown = currentTripMeta && currentTripMeta.type === 'hometown';
-      // Hide/show calendar tab based on trip type
+      calPage = 0; mapMobDay = 0; mapFilter = 'all';
       var calTab = document.querySelectorAll('.view-tab')[0];
-      if (calTab) calTab.style.display = isHometown ? 'none' : '';
+      if (calTab) calTab.style.display = '';
       // Slide in from right when entering a trip
       var mainEl = document.getElementById('main-content');
       if (mainEl) { mainEl.classList.remove('view-enter-right'); requestAnimationFrame(function(){ mainEl.classList.add('view-enter-right'); }); }
-      switchView(isHometown ? 'map' : 'calendar');
-      if (!isHometown) fetchWeather();
+      switchView('calendar');
+      fetchWeather();
     }
     function goToDashboard() {
       currentTripId = null; currentTripMeta = null;
@@ -1837,17 +1848,13 @@
         if (switcher) switcher.classList.remove('has-trip');
         document.title = 'PALO';
       } else {
-        var isHt = trip.type === 'hometown';
-        if (currBtn) currBtn.style.display = isHt ? 'none' : '';
-        if (flagEl) {
-          if (isHt) { flagEl.innerHTML = icon('home',18); }
-          else { flagEl.textContent = trip.emoji || '🌍'; }
-        }
+        if (currBtn) currBtn.style.display = '';
+        if (flagEl) flagEl.textContent = trip.emoji || '🌍';
         if (nameEl) { nameEl.childNodes[0].textContent = trip.name || trip.city || t('trip'); }
-        if (datesEl) datesEl.textContent = isHt ? t('myCity') : tripDateLabel(trip);
+        if (datesEl) datesEl.textContent = tripDateLabel(trip);
         if (tabsEl) tabsEl.style.display = '';
         if (switcher) switcher.classList.add('has-trip');
-        document.title = (isHt ? '🏠 ' : (trip.emoji||'🌍') + ' ') + (trip.name||t('trip'));
+        document.title = (trip.emoji||'🌍') + ' ' + (trip.name||t('trip'));
       }
     }
     function tripDateLabel(trip) {
@@ -1858,18 +1865,14 @@
     }
     function renderTripDropdown(trips) {
       var dd = document.getElementById('tripDropdown');
-      var htTrips = [], regTrips = [];
-      trips.forEach(function(t){ if(t.type==='hometown') htTrips.push(t); else regTrips.push(t); });
-      regTrips.sort(function(a,b){ return (b.startDate||'').localeCompare(a.startDate||''); });
-      trips = htTrips.concat(regTrips);
+      trips = trips.slice().sort(function(a,b){ return (b.startDate||'').localeCompare(a.startDate||''); });
       var html = '';
       trips.forEach(function(tr) {
         var isActive = tr.id === currentTripId;
-        var dates = tr.type==='hometown' ? '' : tripDateLabel(tr);
-        var emojiOrIcon = tr.type==='hometown' ? '<span style="display:flex;align-items:center;justify-content:center">'+icon('home',16)+'</span>' : (tr.emoji||icon('globe',18));
+        var dates = tripDateLabel(tr);
         html += '<div class="trip-dropdown-item'+(isActive?' active':'')+'" onclick="selectTripFromDropdown(\''+tr.id+'\')">' +
-          '<span class="tdi-emoji">'+emojiOrIcon+'</span>' +
-          '<div class="tdi-info"><span class="tdi-name">'+(tr.type==='hometown'?t('myCity')+' · ':'')+(tr.name||tr.city||'Trip')+'</span>' +
+          '<span class="tdi-emoji">'+(tr.emoji||icon('globe',18))+'</span>' +
+          '<div class="tdi-info"><span class="tdi-name">'+(tr.name||tr.city||'Trip')+'</span>' +
           (dates ? '<span class="tdi-dates">'+dates+'</span>' : '') +
           '</div></div>';
       });
@@ -2195,6 +2198,7 @@
       document.querySelector('.fab').style.display = 'none';
       var dashEl = document.getElementById('view-dashboard');
       dashEl.style.display = 'block';
+      document.body.classList.add('on-dashboard');
       dashEl.classList.remove('dash-enter');
       requestAnimationFrame(function(){ dashEl.classList.add('dash-enter'); });
       updateHeader(null);
@@ -2289,46 +2293,22 @@
       }
     }
     function renderDashboard(trips) {
-      var el = document.getElementById('dashGrid'); if(!el) return;
-      // Separate hometown from regular trips
-      var hometown = null, regularTrips = [];
-      trips.forEach(function(t){ if(t.type==='hometown') hometown=t; else regularTrips.push(t); });
+      var el = document.getElementById('dashTrips'); if(!el) return;
       // Render CTAs
       var ctaEl = document.getElementById('dashCtas');
       if (ctaEl) {
-        var ctaH = '';
-        if (!hometown) ctaH += '<button onclick="openHometownModal()" class="dash-cta-btn">'+icon('home',15)+' '+t('setMyCity')+'</button>';
-        ctaH += '<button onclick="openTripCreate()" class="dash-cta-btn"><span style="font-size:1.1rem;line-height:1">+</span> '+t('addNewTrip')+'</button>';
-        ctaEl.innerHTML = ctaH;
+        ctaEl.innerHTML = '<button onclick="openTripCreate()" class="dash-cta-btn"><span style="font-size:1.1rem;line-height:1">+</span> '+t('addNewTrip')+'</button>';
       }
-      // Render hometown card
-      var htEl = document.getElementById('hometownCard');
-      if (htEl) {
-        if (hometown) {
-          var htWl = lsLoadTripData(hometown.id);
-          var htWlCount = htWl && htWl.wishlist ? htWl.wishlist.length : 0;
-          htEl.innerHTML = '<div class="hometown-card" onclick="navigateTo(\'#trip/'+hometown.id+'\')">'+
-            '<div class="ht-info">'+
-              '<div class="ht-label">'+icon('home',12)+' '+t('myCity')+'</div>'+
-              '<div class="ht-city">'+(hometown.emoji?hometown.emoji+' ':'')+hometown.name+'</div>'+
-            '</div>'+
-            '<div class="ht-saved" id="wl-count-'+hometown.id+'">'+icon('star',13)+' '+(htWlCount||0)+'</div>'+
-            '<div class="ht-actions">'+
-              '<button onclick="event.stopPropagation();openHometownModal(\''+hometown.id+'\')" class="dash-card-btn" title="수정">'+icon('pencil',15)+'</button>'+
-            '</div>'+
-          '</div>';
-        } else {
-          htEl.innerHTML = '';
-        }
-      }
-      // Render trip cards — reverse chronological (furthest trip first)
-      regularTrips.sort(function(a,b){ return (b.startDate||'').localeCompare(a.startDate||''); });
-      trips = regularTrips;
-      var h = '';
-      if (trips.length === 0) {
-        h += '<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--text-secondary)"><div style="display:flex;justify-content:center;margin-bottom:12px">'+icon('globe',40)+'</div><div style="font-weight:600;margin-bottom:4px">'+t('noTripsYet')+'</div><div style="font-size:0.85rem">'+t('noTripsHint')+'</div></div>';
-      }
-      trips.forEach(function(trip) {
+      // Split into planned (upcoming/ongoing) vs past
+      var todayStr = new Date().toISOString().slice(0,10);
+      var planned = [], past = [];
+      trips.forEach(function(tr){
+        if (tr.endDate && tr.endDate < todayStr) past.push(tr);
+        else planned.push(tr);
+      });
+      planned.sort(function(a,b){ return (a.startDate||'').localeCompare(b.startDate||''); });
+      past.sort(function(a,b){ return (b.startDate||'').localeCompare(a.startDate||''); });
+      function renderCard(trip) {
         var days = 0;
         if (trip.startDate && trip.endDate) days = Math.round((new Date(trip.endDate)-new Date(trip.startDate))/86400000)+1;
         var dateStr = tripDateLabel(trip);
@@ -2338,7 +2318,7 @@
         var wlCount = cached && cached.wishlist ? cached.wishlist.length : -1;
         var isTripOwner = trip.access && currentUser && trip.access[currentUser.uid] === 'owner';
         var canEditTrip = trip.access && currentUser && (trip.access[currentUser.uid] === 'owner' || trip.access[currentUser.uid] === 'write');
-        h += '<div class="trip-card" onclick="navigateTo(\'#trip/'+trip.id+'\')">'+
+        return '<div class="trip-card" onclick="navigateTo(\'#trip/'+trip.id+'\')">'+
           '<div class="trip-card-actions">'+
             (canEditTrip ? '<button onclick="event.stopPropagation();openTripEdit(\''+trip.id+'\')" class="dash-card-btn" title="수정">'+icon('pencil',15)+'</button>' : '')+
             (isTripOwner ? '<button onclick="event.stopPropagation();archiveTrip(\''+trip.id+'\')" class="dash-card-btn" title="삭제">'+icon('trash',15)+'</button>' : '<button onclick="event.stopPropagation();leaveTrip(\''+trip.id+'\')" class="dash-card-btn" title="나가기">'+icon('trash',15)+'</button>')+
@@ -2352,11 +2332,22 @@
               '<span style="display:inline-flex;align-items:center;gap:3px"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>'+ac+'명</span>':''; })()+
           '</div>'+
         '</div>';
-      });
+      }
+      var h = '';
+      if (trips.length === 0) {
+        h = '<div style="text-align:center;padding:60px 20px;color:var(--text-secondary)"><div style="display:flex;justify-content:center;margin-bottom:12px">'+icon('globe',40)+'</div><div style="font-weight:600;margin-bottom:4px">'+t('noTripsYet')+'</div><div style="font-size:0.85rem">'+t('noTripsHint')+'</div></div>';
+      } else {
+        if (planned.length) {
+          h += '<div class="dash-section"><div class="dash-section-title">'+t('plannedTrips')+'</div><div class="dash-grid">'+planned.map(renderCard).join('')+'</div></div>';
+        }
+        if (past.length) {
+          h += '<div class="dash-section"><div class="dash-section-title">'+t('pastTrips')+'</div><div class="dash-grid">'+past.map(renderCard).join('')+'</div></div>';
+        }
+      }
       el.innerHTML = h;
-      setTimeout(function(){ initCobe(regularTrips.concat(hometown?[hometown]:[])); }, 50);
-      // Backfill wishlist counts from Firestore for all trips (including hometown)
-      regularTrips.concat(hometown?[hometown]:[]).forEach(function(trip) {
+      setTimeout(function(){ initCobe(trips); }, 50);
+      // Backfill wishlist counts from Firestore
+      trips.forEach(function(trip) {
         var cached = lsLoadTripData(trip.id);
         if (cached && cached.wishlist) return;
         db.collection('trips').doc(trip.id).collection('data').doc('main').get().then(function(snap) {
@@ -2365,8 +2356,7 @@
           var wl = d.wishlist || [];
           var el = document.getElementById('wl-count-'+trip.id);
           if (el && wl.length) {
-            if (trip.type==='hometown') el.innerHTML = icon('star',13)+' '+wl.length;
-            else el.innerHTML = icon('star',12)+' '+wl.length+t('nPlaces');
+            el.innerHTML = icon('star',12)+' '+wl.length+t('nPlaces');
           }
         }).catch(function(){});
       });
@@ -2639,115 +2629,6 @@
       } catch(e) { console.error('Failed to archive trip:', e); }
     }
 
-    // ==================== HOMETOWN ====================
-    var _htCityData = null, _htCityResults = [], _htCityTimer = null, _htCityIdx = -1, _htEditId = null;
-    function openHometownModal(editId) {
-      _htEditId = editId || null;
-      _htCityData = null; _htCityResults = []; _htCityIdx = -1;
-      document.getElementById('htCityInput').value = '';
-      document.getElementById('htCityInput').style.display = '';
-      document.getElementById('htCityDropdown').style.display = 'none';
-      document.getElementById('htCityDropdown').innerHTML = '';
-      document.getElementById('htCitySelected').style.display = 'none';
-      _updateHtSave();
-      document.getElementById('hometownModal').classList.add('open');
-      setTimeout(function(){ document.getElementById('htCityInput').focus(); },100);
-    }
-    function closeHometownModal() { document.getElementById('hometownModal').classList.remove('open'); }
-    function _updateHtSave() {
-      var btn = document.getElementById('htSaveBtn');
-      var ok = !!_htCityData;
-      btn.disabled = !ok; btn.style.opacity = ok?'':'0.4'; btn.style.cursor = ok?'':'not-allowed';
-    }
-    function onHtCityInput(val) {
-      clearTimeout(_htCityTimer);
-      if (val.length < 2) { document.getElementById('htCityDropdown').style.display='none'; return; }
-      _htCityTimer = setTimeout(function(){
-        fetch('https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(val)+'&format=json&limit=5&addressdetails=1',{headers:{'Accept-Language':'en'}})
-          .then(function(r){return r.json();}).then(function(data){
-            _htCityResults = data; _htCityIdx = -1;
-            var dd = document.getElementById('htCityDropdown');
-            if (!data.length) { dd.style.display='none'; return; }
-            dd.innerHTML = data.map(function(c,i){
-              var name = c.address.city||c.address.town||c.address.village||c.name;
-              var country = c.address.country||'';
-              return '<div class="city-dropdown-item" onmousedown="selectHtCity('+i+')">'+name+(country?', '+country:'')+'</div>';
-            }).join('');
-            dd.style.display='';
-          }).catch(function(){});
-      }, 300);
-    }
-    function onHtCityKeydown(e) {
-      var dd = document.getElementById('htCityDropdown');
-      if (dd.style.display==='none') return;
-      if (e.key==='ArrowDown') { e.preventDefault(); _htCityIdx = Math.min(_htCityIdx+1, _htCityResults.length-1); _highlightHtCity(); }
-      else if (e.key==='ArrowUp') { e.preventDefault(); _htCityIdx = Math.max(_htCityIdx-1, 0); _highlightHtCity(); }
-      else if (e.key==='Enter' && _htCityIdx>=0) { e.preventDefault(); selectHtCity(_htCityIdx); }
-      else if (e.key==='Escape') { dd.style.display='none'; }
-    }
-    function _highlightHtCity() {
-      document.querySelectorAll('#htCityDropdown .city-dropdown-item').forEach(function(el,i){
-        el.style.background = i===_htCityIdx?'var(--surface-hover)':'';
-      });
-    }
-    async function selectHtCity(idx) {
-      var c = _htCityResults[idx]; if (!c) return;
-      document.getElementById('htCityDropdown').style.display='none';
-      var cityName = c.address.city||c.address.town||c.address.village||c.address.suburb||c.name;
-      var country = c.address.country||'';
-      var cc = (c.address.country_code||'').toUpperCase();
-      var lat = parseFloat(c.lat), lng = parseFloat(c.lon);
-      var displayName = [cityName, country].filter(Boolean).join(', ');
-      var tz = await fetchCityTimezone(lat, lng);
-      _htCityData = { name:cityName, displayName:displayName, lat:lat, lng:lng, country:country, countryCode:cc, timezone:tz };
-      document.getElementById('htCityInput').style.display='none';
-      var flag = cc.length===2 ? Array.from(cc).map(function(ch){return String.fromCodePoint(0x1F1E6-65+ch.charCodeAt(0));}).join('') : '';
-      document.getElementById('htCitySelectedName').textContent = (flag?flag+' ':'')+displayName;
-      document.getElementById('htCitySelected').style.display='flex';
-      _updateHtSave();
-    }
-    function clearHtCity() {
-      _htCityData = null;
-      document.getElementById('htCityInput').value=''; document.getElementById('htCityInput').style.display='';
-      document.getElementById('htCitySelected').style.display='none';
-      _updateHtSave();
-      document.getElementById('htCityInput').focus();
-    }
-    async function saveHometown() {
-      if (!_htCityData) return;
-      var cc = _htCityData.countryCode;
-      var emoji = cc.length===2 ? Array.from(cc).map(function(ch){return String.fromCodePoint(0x1F1E6-65+ch.charCodeAt(0));}).join('') : '';
-      var data = {
-        name: _htCityData.name, city: _htCityData.name, cityDisplayName: _htCityData.displayName,
-        cityLat: _htCityData.lat, cityLng: _htCityData.lng, cityCountry: _htCityData.country,
-        cityCountryCode: cc, emoji: emoji, timezone: _htCityData.timezone||'UTC',
-        type: 'hometown', archived: false, coverColor: '#6366f1'
-      };
-      try {
-        if (_htEditId) {
-          await db.collection('trips').doc(_htEditId).update(data);
-        } else {
-          // Check if hometown already exists
-          var existing = (lsLoadTripList()||[]).find(function(t){return t.type==='hometown';});
-          if (existing) {
-            await db.collection('trips').doc(existing.id).update(data);
-          } else {
-            var id = 'hometown_'+Date.now().toString(36);
-            data.id = id; data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-            if (currentUser) {
-              data.ownerId = currentUser.uid;
-              data.ownerEmail = normalizeEmail(currentUser.email);
-              data.access = { [currentUser.uid]: 'owner' };
-              data.accessEmails = [normalizeEmail(currentUser.email)];
-            }
-            await db.collection('trips').doc(id).set(data);
-          }
-        }
-        closeHometownModal();
-        loadDashboard();
-      } catch(e) { console.error('Failed to save hometown:', e); }
-    }
-
     // ==================== ICONS (Heroicons v2 outline) ====================
     var ICONS = {
       calendar: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3V5.25M17.25 3V5.25M3 18.75V7.5C3 6.25736 4.00736 5.25 5.25 5.25H18.75C19.9926 5.25 21 6.25736 21 7.5V18.75M3 18.75C3 19.9926 4.00736 21 5.25 21H18.75C19.9926 21 21 19.9926 21 18.75M3 18.75V11.25C3 10.0074 4.00736 9 5.25 9H18.75C19.9926 9 21 10.0074 21 11.25V18.75M12 12.75H12.0075V12.7575H12V12.75ZM12 15H12.0075V15.0075H12V15ZM12 17.25H12.0075V17.2575H12V17.25ZM9.75 15H9.7575V15.0075H9.75V15ZM9.75 17.25H9.7575V17.2575H9.75V17.25ZM7.5 15H7.5075V15.0075H7.5V15ZM7.5 17.25H7.5075V17.2575H7.5V17.25ZM14.25 12.75H14.2575V12.7575H14.25V12.75ZM14.25 15H14.2575V15.0075H14.25V15ZM14.25 17.25H14.2575V17.2575H14.25V17.25ZM16.5 12.75H16.5075V12.7575H16.5V12.75ZM16.5 15H16.5075V15.0075H16.5V15"/></svg>',
@@ -2845,6 +2726,7 @@
     function switchView(v){
       currentView=v;
       var dash=document.getElementById('view-dashboard');if(dash)dash.style.display='none';
+      document.body.classList.remove('on-dashboard');
       document.querySelectorAll('.view').forEach(function(el){el.classList.remove('active','view-enter');el.style.display='';});
       document.querySelectorAll('.view-tab').forEach(function(t){t.classList.remove('active');t.setAttribute('aria-selected','false');});
       var el=document.getElementById('view-'+v);
@@ -2860,7 +2742,7 @@
     function updateFab(v){
       v=v||currentView;
       var fab=document.querySelector('.fab');
-      if(fab){fab.style.display=(!canEdit()||(v==='map'&&window.innerWidth<=768))?'none':'';}
+      if(fab){fab.style.display=(!currentTripId||!canEdit()||(v==='map'&&window.innerWidth<=768))?'none':'';}
     }
     function rerender(){
       if(currentView==='calendar')renderCal();

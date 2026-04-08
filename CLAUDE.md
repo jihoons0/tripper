@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Palo** — a multi-trip travel planning web app. Single-file static app (`index.html`) with a dashboard, per-trip calendar/map/wishlist views, and a special "hometown" trip type. Deployed via Vercel at **https://palo-travel.vercel.app**. Data persisted via **Firebase/Firestore** directly from the browser.
+**Palo** — a multi-trip travel planning web app. Single-file static app (`index.html`) with a dashboard and per-trip calendar/map/wishlist views. Deployed via Vercel at **https://palo-travel.vercel.app**. Data persisted via **Firebase/Firestore** directly from the browser.
 
 ## Local Development
 
