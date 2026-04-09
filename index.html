@@ -36,6 +36,8 @@
       --text:#EDEDED; --text-secondary:#888;
       --accent:#e8e8e8; --accent-fg:#0a0a0a; --accent-secondary:#8b5cf6;
       --positive:#10b981; --negative:#f43f5e; --warning:#f59e0b;
+      --page-bg:#000000; --canvas-bg:#171717;
+      --tab-active-bg:#000000; --tab-active-fg:#ffffff;
     }
     html.theme-light {
       --bg:#FAFAF9; --surface:#FFFFFF; --surface-hover:#F0EDE8;
@@ -43,6 +45,8 @@
       --text:#0f172a; --text-secondary:#64748b;
       --accent:#171717; --accent-fg:#ffffff; --accent-secondary:#7c3aed;
       --positive:#059669; --negative:#e11d48; --warning:#d97706;
+      --page-bg:#F3F3F3; --canvas-bg:#FFFFFF;
+      --tab-active-bg:#F3F3F3; --tab-active-fg:#0f172a;
     }
     body { font-family:'Noto Sans KR','Inter',-apple-system,BlinkMacSystemFont,sans-serif; background:var(--bg); color:var(--text); line-height:1.6; -webkit-font-smoothing:antialiased; transition:background 0.3s,color 0.3s; min-height:100vh; }
     h1 { font-weight:700; font-size:2.5rem; letter-spacing:-0.03em; }
@@ -93,6 +97,38 @@
     .view-tab.active { background:var(--accent); color:var(--accent-fg); }
     .view-tab:hover:not(.active) { background:var(--surface-hover); color:var(--text); }
     .view-tab:active { transform:scale(0.95); }
+    /* === Trip canvas chrome (design-update) === */
+    body.in-trip { background:var(--page-bg); overflow:hidden; }
+    body.in-trip .app-header { background:transparent; border-bottom:none; backdrop-filter:none; }
+    body.in-trip #main-content { margin:4px 20px 20px; background:var(--canvas-bg); border:1px solid var(--border); border-radius:24px; overflow:hidden; height:calc(100vh - 80px); height:calc(100dvh - 80px); }
+    body.in-trip .view.active { height:100%; overflow:auto; }
+    body.in-trip #view-map.active { overflow:hidden; }
+    body.in-trip .map-view { height:100%; }
+    body.in-trip .cal-header-scroll { top:0; background:var(--canvas-bg); }
+    body.in-trip .map-sidebar { background:var(--canvas-bg); }
+    body.in-trip .wishlist-view { max-width:none; margin:0; padding:24px 28px 80px; }
+    body.in-trip .view-tabs { background:var(--canvas-bg); border:1px solid var(--border); border-radius:16px; height:40px; padding:4px; gap:4px; width:380px; backdrop-filter:blur(2px); }
+    body.in-trip .view-tab { flex:1; height:32px; border-radius:12px; font-size:0.82rem; color:var(--text-secondary); justify-content:center; gap:6px; }
+    body.in-trip .view-tab.active { background:var(--tab-active-bg); color:var(--tab-active-fg); }
+    body.in-trip .view-tab:hover:not(.active) { background:var(--surface-hover); color:var(--text); }
+    body.in-trip .app-logo-flag { cursor:pointer; display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:50%; background:var(--canvas-bg); border:1px solid var(--border); transition:background var(--dur-small),border-color var(--dur-small); font-size:1.05rem; }
+    body.in-trip .app-logo-flag:hover { background:var(--surface-hover); border-color:var(--border-strong); }
+    body.in-trip .app-logo-flag .flag-home { display:none; color:var(--text); }
+    body.in-trip .app-logo-flag:hover .flag-emoji { display:none; }
+    body.in-trip .app-logo-flag:hover .flag-home { display:inline-flex; }
+    @media (max-width:768px) {
+      body.in-trip { background:var(--bg); overflow:visible; }
+      body.in-trip .app-header { background:var(--bg); border-bottom:1px solid var(--border); }
+      body.in-trip #main-content { margin:0; border:none; border-radius:0; background:var(--bg); height:auto; overflow:visible; }
+      body.in-trip .view.active { height:auto; overflow:visible; }
+      body.in-trip .map-view.active { height:calc(100vh - 57px); height:calc(100dvh - 57px); overflow:hidden; }
+      body.in-trip .cal-header-scroll { top:56px; background:var(--bg); }
+      body.in-trip .wishlist-view { max-width:860px; margin:0 auto; padding:28px 20px 120px; }
+      body.in-trip .view-tabs { width:auto; height:auto; padding:3px; gap:3px; border-radius:10px; background:var(--surface); border:1px solid var(--border); }
+      body.in-trip .view-tab { height:26px; border-radius:7px; flex:0 0 auto; font-size:0.78rem; }
+      body.in-trip .app-logo-flag { display:none !important; }
+      body.in-trip .app-logo-name[data-flag]::before { content:attr(data-flag) " "; margin-right:2px; }
+    }
     /* Loading overlay */
     .loading-screen { position:fixed; inset:0; background:var(--bg); z-index:9000; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:12px; }
     .loading-screen .spinner { width:32px; height:32px; border:3px solid var(--border-strong); border-top-color:var(--accent); border-radius:50%; animation:spin 0.8s linear infinite; }
@@ -203,7 +239,7 @@
     #editForm .fg-cat   { order:7; } #editForm .fg-opt { order:8; } #editForm .modal-actions { order:9; }
     #editForm.mode-place .fg-map { order:1; } #editForm.mode-place .fg-title { order:2; }
     #editForm.mode-place .fg-time { order:3; }
-    .edit-place-header { display:flex; align-items:center; gap:10px; padding:12px 14px; background:var(--surface-hover); border-radius:10px; margin-bottom:14px; order:0; }
+    .edit-place-header { display:flex; align-items:flex-start; gap:10px; padding:12px 14px; background:var(--surface-hover); border-radius:10px; margin-bottom:14px; order:0; }
     .edit-place-header .eph-icon { width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
     .edit-place-header .eph-info { flex:1; min-width:0; }
     .edit-place-header .eph-name { font-weight:700; font-size:0.92rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -262,9 +298,10 @@
     .cal-pick-cat { font-size:0.68rem; padding:2px 7px; border-radius:8px; flex-shrink:0; }
     /* VIZ MENU */
     .viz-menu { position:fixed; top:0; right:12px; z-index:9999; height:56px; display:flex; align-items:center; gap:8px; }
-    .share-status-btn { height:34px; padding:0 12px; border-radius:8px; border:1px solid var(--border); background:var(--surface); color:var(--text-secondary); font-size:0.75rem; font-weight:600; font-family:inherit; cursor:pointer; display:none; align-items:center; gap:5px; backdrop-filter:blur(12px); transition:background var(--dur-small), color var(--dur-small); white-space:nowrap; }
+    .share-status-btn { height:40px; padding:0 16px; border-radius:16px; border:1px solid var(--border); background:var(--canvas-bg,var(--surface)); color:var(--text-secondary); font-size:0.82rem; font-weight:500; font-family:inherit; cursor:pointer; display:none; align-items:center; gap:5px; backdrop-filter:blur(2px); transition:background var(--dur-small), color var(--dur-small); white-space:nowrap; }
     .share-status-btn:hover { background:var(--surface-hover); color:var(--text); }
-    .viz-menu-toggle { width:34px; height:34px; border-radius:10px; background:var(--surface); border:1px solid var(--border); color:var(--text); cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(12px); transition:background var(--dur-small); }
+    .viz-menu-toggle { width:36px; height:36px; border-radius:50%; background:var(--canvas-bg,var(--surface)); border:1px solid var(--border); color:var(--text); cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(12px); transition:background var(--dur-small),border-color var(--dur-small); }
+    .viz-menu-toggle:hover { background:var(--surface-hover); border-color:var(--border-strong); }
     .viz-menu-toggle:hover { background:var(--surface-hover); }
     .viz-menu-dropdown { position:absolute; top:42px; right:0; min-width:190px; background:var(--surface); border:1px solid var(--border); border-radius:11px; padding:6px; opacity:0; visibility:hidden; transform:translateY(-4px) scale(0.97); transition:opacity var(--dur-small) var(--ease-out), transform var(--dur-small) var(--ease-out), visibility var(--dur-small); transform-origin:top right; }
     .viz-menu-dropdown.open { opacity:1; visibility:visible; transform:translateY(0) scale(1); }
@@ -594,7 +631,7 @@
   <header class="app-header animate">
     <div class="app-logo trip-switcher" id="appLogo" style="display:flex;align-items:center;gap:8px">
 
-      <span class="app-logo-flag" id="appLogoFlag" onclick="toggleTripDropdown(event)"></span>
+      <span class="app-logo-flag" id="appLogoFlag" onclick="goToDashboard()" title="대시보드"><span class="flag-emoji"></span><span class="flag-home"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12 12 2.25 21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg></span></span>
       <div class="app-logo-text" onclick="toggleTripDropdown(event)">
         <div class="app-logo-name" id="appLogoName" style="display:flex;align-items:center;gap:3px">PALO<span class="trip-switcher-chevron" id="tripSwitcherChevron"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg></span></div>
         <div class="app-logo-dates" id="appLogoDates"></div>
@@ -611,9 +648,9 @@
       </button>
     </div>
     <div class="view-tabs" id="viewTabs" role="tablist" style="display:none">
-      <button class="view-tab active" onclick="switchView('calendar')" role="tab" aria-selected="true"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3V5.25M17.25 3V5.25M3 18.75V7.5C3 6.25736 4.00736 5.25 5.25 5.25H18.75C19.9926 5.25 21 6.25736 21 7.5V18.75M3 18.75C3 19.9926 4.00736 21 5.25 21H18.75C19.9926 21 21 19.9926 21 18.75M3 18.75V11.25C3 10.0074 4.00736 9 5.25 9H18.75C19.9926 9 21 10.0074 21 11.25V18.75M12 12.75H12.0075V12.7575H12V12.75ZM12 15H12.0075V15.0075H12V15ZM12 17.25H12.0075V17.2575H12V17.25ZM9.75 15H9.7575V15.0075H9.75V15ZM9.75 17.25H9.7575V17.2575H9.75V17.25ZM7.5 15H7.5075V15.0075H7.5V15ZM7.5 17.25H7.5075V17.2575H7.5V17.25ZM14.25 12.75H14.2575V12.7575H14.25V12.75ZM14.25 15H14.2575V15.0075H14.25V15ZM14.25 17.25H14.2575V17.2575H14.25V17.25ZM16.5 12.75H16.5075V12.7575H16.5V12.75ZM16.5 15H16.5075V15.0075H16.5V15"/></svg> <span class="tab-label">일정</span></button>
-      <button class="view-tab" onclick="switchView('map')" role="tab" aria-selected="false"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75002V15M15 9.00002V17.25M15.5031 20.7485L20.3781 18.311C20.7592 18.1204 21 17.7309 21 17.3047V4.82031C21 3.98401 20.1199 3.44007 19.3719 3.81408L15.5031 5.74847C15.1864 5.90683 14.8136 5.90683 14.4969 5.74847L9.50312 3.25158C9.1864 3.09322 8.8136 3.09322 8.49688 3.25158L3.62188 5.68908C3.24075 5.87965 3 6.26919 3 6.69531V19.1797C3 20.016 3.8801 20.56 4.62811 20.186L8.49688 18.2516C8.8136 18.0932 9.1864 18.0932 9.50312 18.2516L14.4969 20.7485C14.8136 20.9068 15.1864 20.9068 15.5031 20.7485Z"/></svg> <span class="tab-label">지도</span></button>
-      <button class="view-tab" onclick="switchView('wishlist')" role="tab" aria-selected="false"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M11.4806 3.4987C11.6728 3.03673 12.3272 3.03673 12.5193 3.4987L14.6453 8.61016C14.7263 8.80492 14.9095 8.93799 15.1197 8.95485L20.638 9.39724C21.1367 9.43722 21.339 10.0596 20.959 10.3851L16.7546 13.9866C16.5945 14.1238 16.5245 14.3391 16.5734 14.5443L17.8579 19.9292C17.974 20.4159 17.4446 20.8005 17.0176 20.5397L12.2932 17.6541C12.1132 17.5441 11.8868 17.5441 11.7068 17.6541L6.98238 20.5397C6.55539 20.8005 6.02594 20.4159 6.14203 19.9292L7.42652 14.5443C7.47546 14.3391 7.4055 14.1238 7.24531 13.9866L3.04099 10.3851C2.661 10.0596 2.86323 9.43722 3.36197 9.39724L8.88022 8.95485C9.09048 8.93799 9.27363 8.80492 9.35464 8.61016L11.4806 3.4987Z"/></svg> <span class="tab-label">장소</span></button>
+      <button class="view-tab active" onclick="switchView('calendar')" role="tab" aria-selected="true"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3V5.25M17.25 3V5.25M3 18.75V7.5C3 6.25736 4.00736 5.25 5.25 5.25H18.75C19.9926 5.25 21 6.25736 21 7.5V18.75M3 18.75C3 19.9926 4.00736 21 5.25 21H18.75C19.9926 21 21 19.9926 21 18.75M3 18.75V11.25C3 10.0074 4.00736 9 5.25 9H18.75C19.9926 9 21 10.0074 21 11.25V18.75M12 12.75H12.0075V12.7575H12V12.75ZM12 15H12.0075V15.0075H12V15ZM12 17.25H12.0075V17.2575H12V17.25ZM9.75 15H9.7575V15.0075H9.75V15ZM9.75 17.25H9.7575V17.2575H9.75V17.25ZM7.5 15H7.5075V15.0075H7.5V15ZM7.5 17.25H7.5075V17.2575H7.5V17.25ZM14.25 12.75H14.2575V12.7575H14.25V12.75ZM14.25 15H14.2575V15.0075H14.25V15ZM14.25 17.25H14.2575V17.2575H14.25V17.25ZM16.5 12.75H16.5075V12.7575H16.5V12.75ZM16.5 15H16.5075V15.0075H16.5V15"/></svg> <span class="tab-label">Calendar</span></button>
+      <button class="view-tab" onclick="switchView('map')" role="tab" aria-selected="false"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75002V15M15 9.00002V17.25M15.5031 20.7485L20.3781 18.311C20.7592 18.1204 21 17.7309 21 17.3047V4.82031C21 3.98401 20.1199 3.44007 19.3719 3.81408L15.5031 5.74847C15.1864 5.90683 14.8136 5.90683 14.4969 5.74847L9.50312 3.25158C9.1864 3.09322 8.8136 3.09322 8.49688 3.25158L3.62188 5.68908C3.24075 5.87965 3 6.26919 3 6.69531V19.1797C3 20.016 3.8801 20.56 4.62811 20.186L8.49688 18.2516C8.8136 18.0932 9.1864 18.0932 9.50312 18.2516L14.4969 20.7485C14.8136 20.9068 15.1864 20.9068 15.5031 20.7485Z"/></svg> <span class="tab-label">Map</span></button>
+      <button class="view-tab" onclick="switchView('wishlist')" role="tab" aria-selected="false"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M11.4806 3.4987C11.6728 3.03673 12.3272 3.03673 12.5193 3.4987L14.6453 8.61016C14.7263 8.80492 14.9095 8.93799 15.1197 8.95485L20.638 9.39724C21.1367 9.43722 21.339 10.0596 20.959 10.3851L16.7546 13.9866C16.5945 14.1238 16.5245 14.3391 16.5734 14.5443L17.8579 19.9292C17.974 20.4159 17.4446 20.8005 17.0176 20.5397L12.2932 17.6541C12.1132 17.5441 11.8868 17.5441 11.7068 17.6541L6.98238 20.5397C6.55539 20.8005 6.02594 20.4159 6.14203 19.9292L7.42652 14.5443C7.47546 14.3391 7.4055 14.1238 7.24531 13.9866L3.04099 10.3851C2.661 10.0596 2.86323 9.43722 3.36197 9.39724L8.88022 8.95485C9.09048 8.93799 9.27363 8.80492 9.35464 8.61016L11.4806 3.4987Z"/></svg> <span class="tab-label">Places</span></button>
     </div>
   </header>
   <main id="main-content">
@@ -1840,7 +1877,8 @@
       var switcher = document.getElementById('appLogo');
       closeTripDropdown();
       if (!trip) {
-        if (flagEl) flagEl.textContent = '';
+        if (flagEl) { var fe0=flagEl.querySelector('.flag-emoji'); if (fe0) fe0.textContent=''; }
+        if (nameEl) nameEl.removeAttribute('data-flag');
         if (nameEl) { nameEl.childNodes[0].textContent = 'PALO'; }
         if (datesEl) datesEl.textContent = '';
         if (tabsEl) tabsEl.style.display = 'none';
@@ -1849,7 +1887,8 @@
         document.title = 'PALO';
       } else {
         if (currBtn) currBtn.style.display = '';
-        if (flagEl) flagEl.textContent = trip.emoji || '🌍';
+        if (flagEl) { var fe1=flagEl.querySelector('.flag-emoji'); if (fe1) fe1.textContent = trip.emoji || '🌍'; }
+        if (nameEl) nameEl.setAttribute('data-flag', trip.emoji || '🌍');
         if (nameEl) { nameEl.childNodes[0].textContent = trip.name || trip.city || t('trip'); }
         if (datesEl) datesEl.textContent = tripDateLabel(trip);
         if (tabsEl) tabsEl.style.display = '';
@@ -2199,6 +2238,7 @@
       var dashEl = document.getElementById('view-dashboard');
       dashEl.style.display = 'block';
       document.body.classList.add('on-dashboard');
+      document.body.classList.remove('in-trip');
       dashEl.classList.remove('dash-enter');
       requestAnimationFrame(function(){ dashEl.classList.add('dash-enter'); });
       updateHeader(null);
@@ -2727,6 +2767,7 @@
       currentView=v;
       var dash=document.getElementById('view-dashboard');if(dash)dash.style.display='none';
       document.body.classList.remove('on-dashboard');
+      document.body.classList.add('in-trip');
       document.querySelectorAll('.view').forEach(function(el){el.classList.remove('active','view-enter');el.style.display='';});
       document.querySelectorAll('.view-tab').forEach(function(t){t.classList.remove('active');t.setAttribute('aria-selected','false');});
       var el=document.getElementById('view-'+v);
@@ -2784,7 +2825,7 @@
       el.style.setProperty('--day-count', DAYS.length||1);
       var h='<div class="cal-header-time"></div>';
       DAYS.forEach(function(day){
-        h+='<div class="cal-day-header" style="border-left-color:'+day.color+'40"><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><div class="cal-day-date" style="margin:0"><span class="cal-day-dot" style="background:'+day.color+'"></span><span>'+day.date+'</span></div>'+weatherChip(day)+'<div style="display:flex;gap:5px;margin-left:auto"><button class="cal-day-add" onclick="event.stopPropagation();openCalAdd(\''+day.id+'\',null)">+ 추가</button><button class="cal-day-add" onclick="event.stopPropagation();goToMapDay(\''+day.id+'\')" title="지도보기" style="padding:3px 7px">'+icon('map',12)+'</button></div></div></div>';
+        h+='<div class="cal-day-header" style="border-left-color:'+day.color+'40"><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><div class="cal-day-date" style="margin:0"><span class="cal-day-dot" style="background:'+day.color+'"></span><span>'+day.date+'</span></div>'+weatherChip(day)+'<div style="display:flex;gap:5px;margin-left:auto"><button class="cal-day-add" onclick="event.stopPropagation();goToMapDay(\''+day.id+'\')" title="지도보기" style="padding:3px 7px">'+icon('map',12)+'</button></div></div></div>';
       });
       el.innerHTML=h;
     }
@@ -2803,12 +2844,15 @@
         for(var i=0;i<TOTAL_HRS;i++)h+='<div class="hour-line" style="top:'+(i*HOUR_PX)+'px"></div>';
         sorted.forEach(function(ev){
           var top=evTop(ev.time),height=Math.max(evH(ev.time,ev.endTime),46);
-          var cat=CAT[ev.category]||CAT.other,cls='cal-event'+(ev.optional?' optional':'');
+          var isPlace=ev.id.indexOf('wl_ev_')===0;
+          var evBg=isPlace?'rgba(99,102,241,0.18)':'rgba(148,163,184,0.16)';
+          var evFg=isPlace?'#6366f1':'var(--text-secondary)';
+          var cls='cal-event'+(ev.optional?' optional':'');
           var lyt=layout[ev.id]||{col:0,total:1};
           var ps=lyt.total===1?'left:6px;right:6px;':'left:calc('+(lyt.col*100/lyt.total)+'% + 2px);width:calc('+(100/lyt.total)+'% - 4px);right:auto;';
-          h+='<div class="'+cls+'" style="top:'+top+'px;height:'+height+'px;background:'+cat.bg+';'+ps+'z-index:'+(lyt.col+2)+'" onclick="event.stopPropagation();openEdit(\''+day.id+'\',\''+ev.id+'\')" title="'+ev.title+'">';
-          h+='<div class="cal-event-time">'+fmtTime(ev.time)+(ev.endTime?'–'+fmtTime(ev.endTime):'')+'</div>';
-          h+='<div class="cal-event-title" style="color:'+cat.color+';overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+ev.title+(ev.notes?' <span style="opacity:0.55;font-style:italic;font-weight:400"> · '+ev.notes+'</span>':'')+'</div>';
+          h+='<div class="'+cls+'" style="top:'+top+'px;height:'+height+'px;background:'+evBg+';'+ps+'z-index:'+(lyt.col+2)+'" onclick="event.stopPropagation();openEdit(\''+day.id+'\',\''+ev.id+'\')" title="'+ev.title+'">';
+          h+='<div class="cal-event-time" style="color:'+evFg+'">'+fmtTime(ev.time)+(ev.endTime?'–'+fmtTime(ev.endTime):'')+'</div>';
+          h+='<div class="cal-event-title" style="color:'+evFg+';overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+ev.title+(ev.notes?' <span style="opacity:0.55;font-style:italic;font-weight:400"> · '+ev.notes+'</span>':'')+'</div>';
           if(height>58&&ev.subtitle)h+='<div class="cal-event-sub">'+ev.subtitle+'</div>';
           if(ev.optional)h+='<span class="cal-badge">optional</span>';
           if(ev.link)h+='<span class="cal-badge" style="background:rgba(59,130,246,0.2);color:#3b82f6;cursor:pointer" onclick="event.stopPropagation();window.open(\''+ev.link.replace(/'/g,"\\'")+'\',\'_blank\')">'+icon('link',10)+' 링크</span>';
@@ -3129,7 +3173,7 @@
               +'</div>',
             className:'',iconSize:[36,41],iconAnchor:[18,41]
           });
-          var popup='<div style="font-family:Noto Sans KR,Inter,sans-serif;min-width:160px"><div style="font-weight:700;font-size:13px;margin-bottom:3px">'+ev.title+'</div><div style="font-size:11px;color:#888">'+fmtTime(ev.time)+(ev.endTime?' – '+fmtTime(ev.endTime):'')+'</div>'+(ev.subtitle?'<div style="font-size:11px;margin-top:4px">'+ev.subtitle+'</div>':'')+(ev.notes?'<div style="font-size:11px;color:#f59e0b;margin-top:4px;display:flex;align-items:start;gap:3px">'+icon('pin',11)+' '+ev.notes+'</div>':'')+'</div>';
+          var popup='<div style="font-family:Noto Sans KR,Inter,sans-serif;min-width:160px"><div style="font-weight:700;font-size:13px;margin-bottom:3px">'+ev.title+'</div><div style="font-size:11px;color:#888">'+fmtTime(ev.time)+(ev.endTime?' – '+fmtTime(ev.endTime):'')+'</div>'+(ev.subtitle?'<div style="font-size:11px;margin-top:4px">'+ev.subtitle+'</div>':'')+(ev.notes?'<div style="font-size:11px;color:#f59e0b;margin-top:4px;display:flex;align-items:start;gap:3px">'+icon('pin',11)+' '+ev.notes+'</div>':'')+(canEdit()?'<button type="button" onclick="openEdit(\''+day.id+'\',\''+ev.id+'\')" style="margin-top:8px;width:100%;padding:6px 10px;font-size:11px;font-weight:600;border-radius:6px;border:none;background:var(--accent);color:var(--accent-fg);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:5px;font-family:inherit">'+icon('pencil',11)+' 편집</button>':'')+'</div>';
           var m=L.marker([ev.lat,ev.lng],{icon:mIcon}).addTo(leafletMap).bindPopup(popup);
           m._evData={dayId:day.id,evId:ev.id};mapMarkers.push(m);n++;
         });
@@ -3188,7 +3232,7 @@
       var ev=getEv(dayId,evId);if(!ev)return;
       editingDayId=dayId;editingEvId=evId;
       document.getElementById('editModalTitle').textContent = t('editEvent');
-      document.getElementById('editDeleteBtn').style.display = '';
+      var _db=document.getElementById('editDeleteBtn'); _db.style.display=''; _db.textContent='삭제';
       document.getElementById('editSubmitBtn').textContent = t('save');
       // Populate date picker, constrained to trip window
       var dateInput=document.getElementById('editDate');
@@ -3209,10 +3253,17 @@
         var day=getDay(dayId);
         var catC=CAT[ev.category]||CAT.other;
         var ph=document.getElementById('editPlaceHeader');
+        var gmapsUrl=ev.mapsUrl||wl.mapsUrl||((ev.lat!=null&&ev.lng!=null)?('https://www.google.com/maps/search/?api=1&query='+ev.lat+','+ev.lng):'');
+        var actBtns='<div class="eph-actions" style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">'+
+          '<button type="button" class="btn btn-primary" style="padding:7px 12px;font-size:0.8rem;display:inline-flex;align-items:center;gap:6px" onclick="closeEditModal();goToMapDay(\''+dayId+'\')">'+icon('pin',14)+' 지도 보기</button>'+
+          (gmapsUrl?'<a href="'+gmapsUrl.replace(/"/g,'&quot;')+'" target="_blank" rel="noopener" class="btn btn-secondary" style="padding:7px 12px;font-size:0.8rem;text-decoration:none;display:inline-flex;align-items:center;gap:6px">Google Maps <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg></a>':'')+
+          '</div>';
         ph.innerHTML='<div class="eph-icon" style="background:'+catC.bg+';color:'+catC.color+'">'+catIcon(ev.category||'other',18)+'</div>'+
-          '<div class="eph-info"><div class="eph-name">'+(ev.title||wl.name||'')+'</div>'+
-          (ev.subtitle?'<div class="eph-sub">'+ev.subtitle+'</div>':wl.notes?'<div class="eph-sub">'+wl.notes+'</div>':'')+'</div>';
+          '<div class="eph-info" style="flex:1"><div class="eph-name">'+(ev.title||wl.name||'')+'</div>'+
+          (ev.subtitle?'<div class="eph-sub">'+ev.subtitle+'</div>':wl.notes?'<div class="eph-sub">'+wl.notes+'</div>':'')+
+          actBtns+'</div>';
         ph.style.display='';
+        var dBtn=document.getElementById('editDeleteBtn'); if(dBtn) dBtn.textContent='시간 해제';
         document.getElementById('editTypeSeg').style.display='none';
         document.getElementById('editModalTitle').textContent=t('editTime');
         var form=document.getElementById('editForm');
