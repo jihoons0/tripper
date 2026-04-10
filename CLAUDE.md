@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Palo** — a multi-trip travel planning web app. Single-file static app (`index.html`) with a dashboard and per-trip calendar/map/wishlist views. Deployed via Vercel at **https://palo-travel.vercel.app**. Data persisted via **Firebase/Firestore** directly from the browser.
+**Palo** — a multi-trip travel planning web app. Single-file static app (`index.html`) with a dashboard and per-trip Calendar / Map / Places views. Deployed via Vercel at **https://palo-travel.vercel.app**. Data persisted via **Firebase/Firestore** directly from the browser.
 
 ## Local Development
 
@@ -39,7 +39,7 @@ npm start     # starts Express server without watch
 
 ## File Structure
 
-- `index.html` (~3950 lines) — the entire app: HTML, CSS, and JS in one file. Use offset/limit when reading.
+- `index.html` (~4070 lines) — the entire app: HTML, CSS, and JS in one file. Use offset/limit when reading.
 - `server.js` — Express dev server; serves static files + `/api/expand-url` for local Google Maps URL expansion
 - `api/expand-url.js` — Vercel serverless function (same expand-url logic, but bypassed in prod due to Vercel auth)
 - `worker.js` + `wrangler.toml` — Cloudflare Worker for Google Maps URL expansion (used in production)
@@ -62,9 +62,9 @@ Per-trip data stored at `db.collection('trips').doc(tripId).collection('data').d
 
 Trip list stored at `db.collection('trips').doc(tripId)` (metadata: `name`, `emoji`, `color`, `startDate`, `endDate`, `cityName`, `cityLat`, `cityLng`, `cityCountryCode`, `timezone`).
 
-**Hometown** is a special trip with `type: 'hometown'`, no `startDate`/`endDate`. Only one allowed. Has only Map and Wishlist views (no Calendar). Stored in the same `trips` collection.
+`DAYS` and `WISHLIST` are loaded via `loadTripData(tripId)`. Each day has `id`, `date`, `dateShort`, `theme`, `color`, `isoDate`, `events[]`. Each event has `id`, `time`, `endTime`, `title`, `subtitle`, `notes`, `category`, `optional`, `lat`, `lng`, optional `mapsUrl`/`link`.
 
-`DAYS` and `WISHLIST` are loaded via `loadTripData(tripId)`. Each day has `id`, `date`, `dateShort`, `theme`, `color`, `isoDate`, `events[]`. Each event has `id`, `time`, `endTime`, `title`, `subtitle`, `notes`, `category`, `optional`, `lat`, `lng`.
+**Event id prefix is the source of truth for "is this a place vs. a time block":** events created from a wishlist place use id `wl_ev_*`; standalone time blocks use `ev_*`. There is no `type` field. The reliable check is `WISHLIST.some(w => w.calEventId === ev.id)`; the cheap heuristic is `ev.id.indexOf('wl_ev_') === 0`. Calendar rendering uses this to color events (see Theme/Calendar sections).
 
 Changes auto-saved via `scheduleSave()` → `doSave()` (debounced 1s) → writes to localStorage + Firestore.
 
@@ -78,23 +78,35 @@ Hash-based: `navigateTo('#dashboard')`, `navigateTo('#trip/<tripId>')`. `DOMCont
 
 ### Views
 
-- **Dashboard** (`#view-dashboard`) — hometown card + globe (cobe.js) + CTA buttons + trip cards grid. `renderDashboard(trips)` / `loadDashboard()`.
-- **Calendar** (`#view-calendar`) — time-grid, 8AM–midnight, 64px/hr (`HOUR_PX`). `renderCal()`. Hidden for hometown trips.
+- **Dashboard** (`#view-dashboard`) — globe (cobe.js) + "새 여행 추가" CTA + trip cards grid. `renderDashboard(trips)` / `loadDashboard()`. Uses original page bg (no inset chrome).
+- **Calendar** (`#view-calendar`) — time-grid, 8AM–midnight, 64px/hr (`HOUR_PX`). `renderCal()`.
 - **Map** (`#view-map`) — Leaflet map + sidebar (desktop) / fullscreen + overlay (mobile). `initMap()` / `rebuildMarkers()`.
-- **Wishlist** (`#view-wishlist`) — card grid with category/status filters. `renderWishlist()`.
+- **Places** (`#view-wishlist`) — card grid with category/status filters. `renderWishlist()`. Tab is labeled "Places" in the UI; the underlying view id and `WISHLIST` array still use the legacy "wishlist" name.
 
-Three in-trip views toggled via `switchView(v)`. Tab order: Calendar → Map → Wishlist. Hometown trips default to Map and hide Calendar tab.
+Three in-trip views toggled via `switchView(v)`. Tab labels: **Calendar / Map / Places** (English). `body.in-trip` class is added/removed by `switchView()` and the dashboard route to drive the chrome (see Trip Canvas Chrome below).
 
-### Trip Switcher Dropdown
+### Trip Canvas Chrome (design-update)
 
-Header shows current trip name with a chevron. Clicking the trip name or flag emoji opens a dropdown listing all trips for quick switching. `toggleTripDropdown(event)` / `closeTripDropdown()`. Hometown appears first with a home icon, then regular trips in reverse chronological order.
+When `body.in-trip` is set, the trip views render inside an inset rounded "canvas card" pinned to the viewport (height = `100vh - 80px`). Content scrolls inside the card; body scroll is suppressed. Mobile (≤768px) reverts everything to a flat full-width layout with normal body scroll.
+
+CSS variables driving the chrome (defined in both `html.theme-dark` / `html.theme-light`):
+- `--page-bg` — outside the card. Dark `#000`, light `#F3F3F3`.
+- `--canvas-bg` — inside the card, also the floating tablist bg. Dark `#171717`, light `#FFFFFF`.
+- `--tab-active-bg` / `--tab-active-fg` — selected tab in the floating pill. Dark `#000`/`#fff`, light `#F3F3F3`/`#0f172a`.
+
+Header chrome under `body.in-trip`:
+- **Floating tablist** (`.view-tabs`) — 380×40 pill, 16px radius, centered absolutely above the card. Each tab fills width.
+- **Flag button** (`.app-logo-flag`) — 36px circle on the left. **Click navigates to dashboard** (`goToDashboard()`); on hover, the flag emoji swaps to a home icon (CSS `:hover` on `.flag-emoji` / `.flag-home`).
+- **Trip name + chevron** — chevron next to the name still triggers `toggleTripDropdown(event)`.
+- **Share button** (`.share-status-btn`) — restyled to match the tablist (40h / 16r).
+- **Hamburger** (`.viz-menu-toggle`) — 36px circle to mirror the flag.
+- **Mobile (≤768px)**: flag button hidden, trip emoji prepended to the name via `.app-logo-name[data-flag]::before`. `data-flag` attribute is set in `updateHeader()`.
 
 ### Dashboard
 
-- **Hometown card** — pinned above the globe, max-width 360px centered. Shows home icon + "내 도시" label, city name, wishlist count, always-visible edit button.
 - **Cobe globe** — 3D interactive globe with flag emoji overlays positioned via `projectGlobe()`. Uses `createGlobe()` + `globe.update({ phi })` + `requestAnimationFrame` loop. Markers show trip locations.
-- **CTA buttons** — "내 도시 설정" (if no hometown) and "새 여행 추가", using `.dash-cta-btn` class with hover states.
-- **Trip cards** — simplified: emoji + name, city, date range, always-visible edit/delete actions. Sorted reverse chronological (furthest trip first).
+- **CTA buttons** — "새 여행 추가", using `.dash-cta-btn` class.
+- **Trip cards** — emoji + name, city, date range, always-visible edit/delete actions. Sorted reverse chronological.
 
 ### Mobile-Specific UI
 
@@ -137,8 +149,8 @@ All views render via innerHTML string concatenation. `rerender()` refreshes curr
 - `openAdd(dayId)` / `saveNewEvent()` — add event modal
 - `openWishAdd()` / `saveWishItem()` / `deleteWishItem()` — wishlist modal
 - `openTripCreate()` / `openTripEdit(tripId)` / `saveTripCreate(e)` — trip create/edit modal
-- `openHometownModal()` / `saveHometown()` — hometown city picker modal
 - `archiveTrip(tripId)` — delete trip
+- `goToDashboard()` — clears trip state and routes to dashboard (also wired to flag-button click)
 - `fetchWeather()` — Open-Meteo weather → `weatherData`. Uses forecast API for near-future dates, archive API for past dates, last-year-same-dates fallback for dates beyond forecast range (~16 days). Geocodes city name as fallback if `cityLat`/`cityLng` missing. Weather chips shown inline in calendar headers and map day tabs.
 - `parseGmapsUrl(url)` / `parseEditMapsUrl(url)` — Google Maps URL parsing (calls CF Worker). Triggered via `oninput`, `onpaste`, and `onchange` for mobile compatibility. `extractMapsUrl(s)` extracts the actual URL from pasted text that may include place name + URL (common on mobile share).
 - `geocodeWishItem(w)` — Nominatim geocode for wishlist items without coordinates
@@ -154,20 +166,29 @@ Field order: City → Trip name → Date range. Emoji auto-derived from country 
 - `autoDetectTimezone(city)` — geocodes via Nominatim, resolves IANA timezone silently
 - `tcCityData` — holds `{ name, countryCode, lat, lng }` from city search
 
-### Hometown Modal (`#hometownModal`)
-
-Simple city-search-only modal. No date fields, no trip name input. City auto-derived as name. Saves with `type: 'hometown'`. Only one hometown allowed — setting a new one replaces the old.
-
-- `_htCityData` — holds selected city data
-- `openHometownModal(editId)` — opens modal, optionally pre-fills for editing existing hometown
-
 ### Map Markers & Routes
 
-Rounded-square emoji badges (day color bg, white border), category SVG icon centered, number badge top-right, triangle pointer. OSRM walking routes in day color (`opacity:0.55`); dashed fallback on error.
+Rounded-square emoji badges (day color bg, white border), category SVG icon centered, number badge top-right, triangle pointer. OSRM walking routes in day color (`opacity:0.55`); dashed fallback on error. **Map popovers for assigned places include a primary 편집 button** that calls `openEdit(dayId, evId)` (gated by `canEdit()`).
+
+### Calendar Event Colors
+
+Calendar grid events use **two colors only** — category colors are no longer applied here:
+- **Time-assigned places** (id starts with `wl_ev_`) — indigo fill `rgba(99,102,241,0.18)` with `#6366f1` text.
+- **Time blocks** (id starts with `ev_`) — neutral gray `rgba(148,163,184,0.16)` with `var(--text-secondary)` text.
+
+The `CAT` color map is still used elsewhere (map markers, wishlist filters, edit modal place header).
+
+### Edit Event Modal — Place Mode
+
+When `openEdit(dayId, evId)` finds a wishlist link (`WISHLIST.find(w => w.calEventId === evId)`), `#editForm` gets the `mode-wishlist` class which hides title/sub/category/map fields and only shows time + notes. The `#editPlaceHeader` is populated dynamically with:
+- Top-aligned category icon (`align-items:flex-start` on `.edit-place-header`)
+- Place name + subtitle
+- **Action row**: primary "지도 보기" button (closes modal, calls `goToMapDay(dayId)`) and secondary "Google Maps ↗" link (opens `ev.mapsUrl` / `wl.mapsUrl` / `lat,lng` query in new tab)
+- The shared `#editDeleteBtn` is relabeled **"시간 해제"** in this mode — `deleteCurrentEvent()` already preserves the wishlist item and only clears `calDayId`/`calEventId`/`visited`/`dayLabel`. Reset to "삭제" for non-place events.
 
 ### Theme
 
-`--accent` is monochrome: `#e8e8e8` (dark mode) / `#171717` (light mode). `--accent-fg` for text on accent backgrounds: `#0a0a0a` / `#ffffff`. Day/marker colors remain per-trip colored. `cycleTheme()` toggles; persisted in localStorage.
+`--accent` is monochrome: `#e8e8e8` (dark mode) / `#171717` (light mode). `--accent-fg` for text on accent backgrounds: `#0a0a0a` / `#ffffff`. Day/marker colors remain per-trip colored. `cycleTheme()` toggles; persisted in localStorage. See **Trip Canvas Chrome** for the additional `--page-bg` / `--canvas-bg` / `--tab-active-bg` / `--tab-active-fg` vars introduced for the inset shell.
 
 ### Calendar Add Modal (`#calAddModal`)
 

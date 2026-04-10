@@ -16,18 +16,18 @@ Palo is a collaborative travel planning app. Plan trips with a time-grid calenda
 - User profile (`users/{uid}`) written on each sign-in
 
 ### Dashboard
-- Hometown card pinned above globe
 - Animated globe (cobe.js) showing trip cities with flag emoji overlays
 - Trip card grid: emoji, name, city, date range, edit/delete actions
 - Trip emoji auto-derived from country flag
-- CTA buttons: "내 도시 설정" / "새 여행 추가"
+- "새 여행 추가" CTA
 
 ### Trip Views
-Three tabs per trip: **Calendar → Map → Wishlist**
+Three tabs per trip: **Calendar → Map → Places**. On desktop the views render inside an inset rounded canvas card; mobile uses a flat full-width layout.
 
 **Calendar**
 - Time-grid (8AM–midnight, 64px/hr)
-- Drag-to-schedule wishlist items onto time slots
+- Two-color event scheme: indigo for time-assigned places, gray for free time blocks (no category-based coloring in the grid)
+- Tapping a time-assigned place opens a place-card modal with primary "지도 보기" button, "Google Maps ↗" external link, and "시간 해제" to unschedule (keeps the place in Places)
 - Per-event edit / delete modal with **date picker** (locked to trip date window) for moving events between days
 - Weather forecast per day (Open-Meteo)
 - Mobile: single-day view with swipe nav
@@ -36,22 +36,17 @@ Three tabs per trip: **Calendar → Map → Wishlist**
 - Leaflet.js interactive map with emoji-badge markers
 - OSRM walking routes per day
 - Day filter pills; mobile bottom sheet with event cards
-- Fly-to on event tap
+- Fly-to on event tap; popovers for assigned places include an 편집 button
 
-**Wishlist**
+**Places** (formerly Wishlist)
 - Place cards with category + visited/unvisited filters
 - Paste Google Maps URL → auto-fill name, coords, category (via Cloudflare Worker + Nominatim)
-- Schedule directly to calendar from wishlist card
+- Schedule directly to calendar from a place card
 
 ### Trip Creation
 - City search → auto-detects country flag, timezone
 - Name + date range required to enable create
 - Per-trip day colors auto-assigned
-
-### Hometown
-- Special trip type (`type: 'hometown'`), only one allowed
-- Map + Wishlist views only (no Calendar)
-- Set via "내 도시 설정" CTA or hometown card edit button
 
 ### Trip Sharing (Collaboration)
 - Owner-only share modal: invite by email
@@ -61,8 +56,9 @@ Three tabs per trip: **Calendar → Map → Wishlist**
 - Wishlist items show author avatar/initials
 
 ### Trip Switcher
-- Header trip name + flag are clickable → dropdown lists all trips
-- Hometown first, then regular trips reverse-chronological
+- Flag button (top-left) navigates to the dashboard; on hover, the flag emoji swaps to a home icon
+- Trip name + chevron next to it open the trip dropdown listing all trips reverse-chronological
+- Mobile: flag button hidden, trip emoji prepended inline before the trip name
 - "모든 여행 보기" link to dashboard
 
 ### Other
@@ -82,7 +78,6 @@ users/{uid}
 trips/{tripId}
   id, name, emoji, color, startDate, endDate
   cityName, cityLat, cityLng, cityCountryCode, timezone
-  type: 'hometown' (optional — no dates, map+wishlist only)
   access: { [uid]: 'owner'|'write', [pending_email]: 'write' }
   accessEmails: [email]  (for Firestore query indexing)
   createdAt, archived
@@ -93,6 +88,8 @@ trips/{tripId}/data/main
 ```
 
 **Event fields:** `id, time, endTime, title, subtitle, notes, category, optional, lat, lng, link, mapsUrl`
+
+**Event types:** distinguished by id prefix — `wl_ev_*` = time-assigned place (linked to a wishlist entry via `calEventId`), `ev_*` = standalone time block. No explicit `type` field. Calendar grid renders the two with different colors.
 
 **Firestore rules:** per-trip access enforced — only users whose email is in `accessEmails` can read/write a trip. Owner-only for metadata edits, invites, and deletion. `users/{uid}` world-readable for email→UID lookup.
 

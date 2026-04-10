@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ko" class="theme-dark">
+<html lang="en" class="theme-dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>🇲🇽 멕시코시티 여행 계획 3/17~3/21</title>
+  <title>PALO - Travel Planner</title>
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -48,7 +48,7 @@
       --page-bg:#F3F3F3; --canvas-bg:#FFFFFF;
       --tab-active-bg:#F3F3F3; --tab-active-fg:#0f172a;
     }
-    body { font-family:'Noto Sans KR','Inter',-apple-system,BlinkMacSystemFont,sans-serif; background:var(--bg); color:var(--text); line-height:1.6; -webkit-font-smoothing:antialiased; transition:background 0.3s,color 0.3s; min-height:100vh; }
+    body { font-family:'Inter','Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif; background:var(--bg); color:var(--text); line-height:1.6; -webkit-font-smoothing:antialiased; transition:background 0.3s,color 0.3s; min-height:100vh; }
     h1 { font-weight:700; font-size:2.5rem; letter-spacing:-0.03em; }
     @keyframes fadeInUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
     @keyframes viewEnter { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
@@ -91,7 +91,8 @@
     .curr-rate-info { font-size:0.68rem; color:var(--text-secondary); }
     .curr-refresh { padding:4px 10px; border-radius:6px; border:1px solid var(--border); background:transparent; color:var(--text-secondary); font-family:inherit; font-size:0.72rem; cursor:pointer; transition:border-color var(--dur-small), color var(--dur-small); }
     .curr-refresh:hover { border-color:var(--accent); color:var(--accent); }
-    .app-header .view-tabs { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); }
+    .app-header .nav-tabs-group { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); display:flex; align-items:center; gap:8px; }
+    .app-header .view-tabs { position:static; transform:none; }
     .view-tabs { display:flex; gap:3px; background:var(--surface); padding:3px; border-radius:10px; border:1px solid var(--border); height:34px; align-items:center; }
     .view-tab { padding:0 13px; height:26px; display:inline-flex; align-items:center; border-radius:7px; border:none; background:transparent; color:var(--text-secondary); font-family:inherit; font-size:0.82rem; font-weight:500; cursor:pointer; transition:background var(--dur-small) var(--ease-out), color var(--dur-small), transform var(--dur-micro) var(--ease-out); white-space:nowrap; }
     .view-tab.active { background:var(--accent); color:var(--accent-fg); }
@@ -105,6 +106,7 @@
     body.in-trip #view-map.active { overflow:hidden; }
     body.in-trip .map-view { height:100%; }
     body.in-trip .cal-header-scroll { top:0; background:var(--canvas-bg); }
+    body.in-trip .cal-paged .cal-header-scroll { top:47px; }
     body.in-trip .map-sidebar { background:var(--canvas-bg); }
     body.in-trip .wishlist-view { max-width:none; margin:0; padding:24px 28px 80px; }
     body.in-trip .view-tabs { background:var(--canvas-bg); border:1px solid var(--border); border-radius:16px; height:40px; padding:4px; gap:4px; width:380px; backdrop-filter:blur(2px); }
@@ -116,6 +118,15 @@
     body.in-trip .app-logo-flag .flag-home { display:none; color:var(--text); }
     body.in-trip .app-logo-flag:hover .flag-emoji { display:none; }
     body.in-trip .app-logo-flag:hover .flag-home { display:inline-flex; }
+    .nav-add-btn { height:40px; padding:0 18px; border-radius:16px; border:none; background:var(--text); color:var(--bg); font-family:inherit; font-size:0.82rem; font-weight:600; cursor:pointer; white-space:nowrap; transition:opacity var(--dur-small), transform var(--dur-micro) var(--ease-out); }
+    .nav-add-btn:hover { opacity:0.85; }
+    .nav-add-btn:active { transform:scale(0.96); }
+    .wl-quick-add { display:flex; gap:8px; margin-bottom:18px; }
+    .wl-quick-input { flex:1; padding:10px 14px; border-radius:12px; border:1px solid var(--border); background:var(--surface); color:var(--text); font-family:inherit; font-size:0.85rem; outline:none; transition:border-color var(--dur-small); }
+    .wl-quick-input:focus { border-color:var(--accent); }
+    .wl-quick-input::placeholder { color:var(--text-secondary); }
+    .wl-quick-btn { padding:10px 18px; border-radius:12px; border:none; background:var(--text); color:var(--bg); font-family:inherit; font-size:0.85rem; font-weight:600; cursor:pointer; white-space:nowrap; transition:opacity var(--dur-small); }
+    .wl-quick-btn:hover { opacity:0.85; }
     @media (max-width:768px) {
       body.in-trip { background:var(--bg); overflow:visible; }
       body.in-trip .app-header { background:var(--bg); border-bottom:1px solid var(--border); }
@@ -128,6 +139,7 @@
       body.in-trip .view-tab { height:26px; border-radius:7px; flex:0 0 auto; font-size:0.78rem; }
       body.in-trip .app-logo-flag { display:none !important; }
       body.in-trip .app-logo-name[data-flag]::before { content:attr(data-flag) " "; margin-right:2px; }
+      body.in-trip .nav-add-btn { display:none !important; }
     }
     /* Loading overlay */
     .loading-screen { position:fixed; inset:0; background:var(--bg); z-index:9000; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:12px; }
@@ -139,8 +151,18 @@
     .view.active { display:block; }
     #view-map.active { display:flex; }
     /* CALENDAR */
+    .cal-page-nav { display:none; }
+    .cal-page-nav.visible { display:flex; align-items:center; justify-content:center; gap:8px; padding:8px 16px; position:sticky; top:0; z-index:101; background:var(--bg); border-bottom:1px solid var(--border); }
+    body.in-trip .cal-page-nav.visible { background:var(--canvas-bg); }
+    .cal-page-btn { width:30px; height:30px; border-radius:8px; border:1px solid var(--border); background:transparent; color:var(--text); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:border-color var(--dur-small), color var(--dur-small), opacity var(--dur-small); flex-shrink:0; }
+    .cal-page-btn:disabled { opacity:0.25; cursor:default; }
+    .cal-page-btn:not(:disabled):hover { border-color:var(--accent); color:var(--accent); }
+    .cal-page-dots { display:flex; gap:4px; align-items:center; }
+    .cal-page-dot { width:7px; height:7px; border-radius:50%; background:var(--border-strong); cursor:pointer; transition:background var(--dur-small), transform var(--dur-small); }
+    .cal-page-dot.active { width:18px; border-radius:4px; }
+    .cal-page-label { font-size:0.78rem; font-weight:600; color:var(--text-secondary); min-width:80px; text-align:center; }
     .cal-scroll-outer { overflow-x:auto; -webkit-overflow-scrolling:touch; }
-    .cal-wrap { min-width:1100px; }
+    .cal-wrap { min-width:0; }
     .cal-header-scroll { overflow-x:hidden; position:sticky; top:56px; z-index:100; background:var(--bg); }
     .cal-header-row { display:grid; grid-template-columns:58px repeat(var(--day-count,5),1fr); border-bottom:1px solid var(--border); }
     .cal-header-time { padding:10px 0; }
@@ -330,7 +352,7 @@
     .map-main { flex:1; position:relative; min-height:0; min-width:0; }
     #leaflet-map { position:absolute; top:0; left:0; right:0; bottom:0; width:100%; height:100%; }
     .leaflet-popup-content-wrapper { border-radius:10px!important; }
-    .leaflet-popup-content { font-family:'Noto Sans KR',sans-serif!important; margin:10px 14px!important; }
+    .leaflet-popup-content { font-family:'Inter','Noto Sans KR',sans-serif!important; margin:10px 14px!important; }
     html.theme-dark .leaflet-popup-content-wrapper { background:#1e1e1e!important; color:#ededed!important; border:1px solid rgba(255,255,255,0.1)!important; }
     html.theme-dark .leaflet-popup-tip { background:#1e1e1e!important; }
     .map-filter-row { display:flex; flex-wrap:wrap; gap:4px; margin-bottom:14px; }
@@ -422,7 +444,7 @@
       .map-mob-card-time { font-size:0.65rem; color:var(--text-secondary); font-weight:600; margin-bottom:2px; }
       .map-mob-card-name { font-size:0.8rem; font-weight:700; line-height:1.25; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     }
-    @media (max-width:768px) { .app-header{padding:9px 12px;padding-right:58px;gap:10px} .view-tab{padding:4px 9px;font-size:0.78rem} .map-sidebar{width:240px} .tab-label{display:none} .app-header .view-tabs{position:static;transform:none;margin-left:auto} .viz-menu-toggle{width:34px;height:34px;border-radius:8px} .share-status-btn{display:none !important} }
+    @media (max-width:768px) { .app-header{padding:9px 12px;padding-right:58px;gap:10px} .view-tab{padding:4px 9px;font-size:0.78rem} .map-sidebar{width:240px} .tab-label{display:none} .app-header .nav-tabs-group{position:static;transform:none;margin-left:auto} .viz-menu-toggle{width:34px;height:34px;border-radius:8px} .share-status-btn{display:none !important} }
     /* DASHBOARD */
     .dash-view { max-width:1200px; margin:0 auto; padding:32px 20px; }
     .dash-layout { display:grid; grid-template-columns:minmax(320px,400px) 1fr; gap:40px; align-items:center; min-height:calc(100vh - 160px); }
@@ -580,6 +602,7 @@
       }
       .cal-nav-btn:disabled { opacity:0.3; cursor:default; }
       .cal-nav-btn:not(:disabled):hover { border-color:var(--accent); color:var(--accent); }
+      .cal-page-nav { display:none !important; }
       .cal-header-scroll { display:none; }
       .cal-scroll-outer { overflow-x:hidden; }
       .cal-wrap { min-width:0; }
@@ -594,22 +617,23 @@
   <!-- Loading screen shown while Firebase data loads -->
   <div class="loading-screen" id="loadingScreen">
     <div class="spinner"></div>
-    <p>데이터 불러오는 중…</p>
+    <p>Loading data…</p>
   </div>
 
   <a href="#main-content" style="position:absolute;left:-9999px;top:auto;z-index:10000;padding:8px 14px;background:var(--accent);color:var(--accent-fg);text-decoration:none;border-radius:5px;" onfocus="this.style.left='14px';this.style.top='14px';" onblur="this.style.left='-9999px';">Skip to content</a>
   <div class="viz-menu" role="navigation" aria-label="Settings">
     <button class="share-status-btn" id="shareStatusBtn" onclick="openShareModal()"></button>
-    <button class="viz-menu-toggle" onclick="toggleMenu()" aria-label="메뉴">
+    <button class="viz-menu-toggle" onclick="toggleMenu()" aria-label="Menu">
       <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
         <line x1="3" y1="5" x2="17" y2="5"/><line x1="3" y1="10" x2="17" y2="10"/><line x1="3" y1="15" x2="17" y2="15"/>
       </svg>
     </button>
     <div class="viz-menu-dropdown" id="vizMenuDropdown">
-      <button id="shareMenuBtn" onclick="openShareModal()" style="display:none"><span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.935-2.186 2.25 2.25 0 0 0-3.935 2.186Z"/></svg></span><span>공유 설정</span></button>
-      <button id="currMenuBtn" onclick="openCurrConverter()"><span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z"/></svg></span><span>환율 계산기</span></button>
-      <button onclick="cycleTheme()"><span id="themeIcon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z"/></svg></span><span id="themeLabel">다크 모드</span></button>
-      <button onclick="openFeedbackModal()"><span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 0 1 1.037-.443 48.282 48.282 0 0 0 5.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"/></svg></span><span>피드백 보내기</span></button>
+      <button id="shareMenuBtn" onclick="openShareModal()" style="display:none"><span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.935-2.186 2.25 2.25 0 0 0-3.935 2.186Z"/></svg></span><span>Share Settings</span></button>
+      <button id="currMenuBtn" onclick="openCurrConverter()"><span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z"/></svg></span><span>Currency Converter</span></button>
+      <button onclick="cycleTheme()"><span id="themeIcon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z"/></svg></span><span id="themeLabel">Dark mode</span></button>
+      <button onclick="openFeedbackModal()"><span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 0 1 1.037-.443 48.282 48.282 0 0 0 5.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"/></svg></span><span>Send Feedback</span></button>
+      <button id="langToggleBtn" onclick="setLang(currentLang==='ko'?'en':'ko')"><span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 21l5.25-11.25L21 21m-9-3h7.5M3 5.621a48.474 48.474 0 016-.371m0 0c1.12 0 2.233.038 3.334.114M9 5.25V3m3.334 2.364C11.176 10.658 7.69 15.08 3 17.502m9.334-12.138c.896.061 1.785.147 2.666.257m-4.589 8.495a18.023 18.023 0 01-3.827-5.802"/></svg></span><span>한국어</span></button>
       <div class="viz-menu-divider"></div>
       <div id="accountSection">
         <div id="accountLoggedIn" style="display:none">
@@ -620,10 +644,10 @@
               <div class="viz-menu-user-email" id="accountEmail"></div>
             </div>
           </div>
-          <button onclick="doSignOut()"><span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/></svg></span><span>로그아웃</span></button>
+          <button onclick="doSignOut()"><span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/></svg></span><span>Sign out</span></button>
         </div>
         <div id="accountLoggedOut">
-          <button onclick="doSignIn()"><span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg></span><span>로그인</span></button>
+          <button onclick="doSignIn()"><span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg></span><span>Sign in</span></button>
         </div>
       </div>
     </div>
@@ -631,7 +655,7 @@
   <header class="app-header animate">
     <div class="app-logo trip-switcher" id="appLogo" style="display:flex;align-items:center;gap:8px">
 
-      <span class="app-logo-flag" id="appLogoFlag" onclick="goToDashboard()" title="대시보드"><span class="flag-emoji"></span><span class="flag-home"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12 12 2.25 21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg></span></span>
+      <span class="app-logo-flag" id="appLogoFlag" onclick="goToDashboard()" title="Dashboard"><span class="flag-emoji"></span><span class="flag-home"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12 12 2.25 21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg></span></span>
       <div class="app-logo-text" onclick="toggleTripDropdown(event)">
         <div class="app-logo-name" id="appLogoName" style="display:flex;align-items:center;gap:3px">PALO<span class="trip-switcher-chevron" id="tripSwitcherChevron"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg></span></div>
         <div class="app-logo-dates" id="appLogoDates"></div>
@@ -639,22 +663,26 @@
       <div class="trip-dropdown" id="tripDropdown" style="display:none"></div>
     </div>
     <div class="dash-header-actions" id="dashHeaderActions">
-      <button class="dash-header-btn" onclick="cycleTheme()" aria-label="테마 전환" title="테마 전환">
+      <button class="dash-header-btn" onclick="cycleTheme()" aria-label="Toggle theme" title="Toggle theme">
         <span id="dashThemeIcon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z"/></svg></span>
       </button>
-      <button class="dash-account-pill" id="dashAccountPill" onclick="event.stopPropagation();toggleMenu()" aria-label="계정">
+      <button class="dash-account-pill" id="dashAccountPill" onclick="event.stopPropagation();toggleMenu()" aria-label="Account">
         <div class="dash-account-avatar" id="dashAccountAvatar"></div>
         <span class="dash-account-name" id="dashAccountName"></span>
       </button>
     </div>
-    <div class="view-tabs" id="viewTabs" role="tablist" style="display:none">
-      <button class="view-tab active" onclick="switchView('calendar')" role="tab" aria-selected="true"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3V5.25M17.25 3V5.25M3 18.75V7.5C3 6.25736 4.00736 5.25 5.25 5.25H18.75C19.9926 5.25 21 6.25736 21 7.5V18.75M3 18.75C3 19.9926 4.00736 21 5.25 21H18.75C19.9926 21 21 19.9926 21 18.75M3 18.75V11.25C3 10.0074 4.00736 9 5.25 9H18.75C19.9926 9 21 10.0074 21 11.25V18.75M12 12.75H12.0075V12.7575H12V12.75ZM12 15H12.0075V15.0075H12V15ZM12 17.25H12.0075V17.2575H12V17.25ZM9.75 15H9.7575V15.0075H9.75V15ZM9.75 17.25H9.7575V17.2575H9.75V17.25ZM7.5 15H7.5075V15.0075H7.5V15ZM7.5 17.25H7.5075V17.2575H7.5V17.25ZM14.25 12.75H14.2575V12.7575H14.25V12.75ZM14.25 15H14.2575V15.0075H14.25V15ZM14.25 17.25H14.2575V17.2575H14.25V17.25ZM16.5 12.75H16.5075V12.7575H16.5V12.75ZM16.5 15H16.5075V15.0075H16.5V15"/></svg> <span class="tab-label">Calendar</span></button>
-      <button class="view-tab" onclick="switchView('map')" role="tab" aria-selected="false"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75002V15M15 9.00002V17.25M15.5031 20.7485L20.3781 18.311C20.7592 18.1204 21 17.7309 21 17.3047V4.82031C21 3.98401 20.1199 3.44007 19.3719 3.81408L15.5031 5.74847C15.1864 5.90683 14.8136 5.90683 14.4969 5.74847L9.50312 3.25158C9.1864 3.09322 8.8136 3.09322 8.49688 3.25158L3.62188 5.68908C3.24075 5.87965 3 6.26919 3 6.69531V19.1797C3 20.016 3.8801 20.56 4.62811 20.186L8.49688 18.2516C8.8136 18.0932 9.1864 18.0932 9.50312 18.2516L14.4969 20.7485C14.8136 20.9068 15.1864 20.9068 15.5031 20.7485Z"/></svg> <span class="tab-label">Map</span></button>
-      <button class="view-tab" onclick="switchView('wishlist')" role="tab" aria-selected="false"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M11.4806 3.4987C11.6728 3.03673 12.3272 3.03673 12.5193 3.4987L14.6453 8.61016C14.7263 8.80492 14.9095 8.93799 15.1197 8.95485L20.638 9.39724C21.1367 9.43722 21.339 10.0596 20.959 10.3851L16.7546 13.9866C16.5945 14.1238 16.5245 14.3391 16.5734 14.5443L17.8579 19.9292C17.974 20.4159 17.4446 20.8005 17.0176 20.5397L12.2932 17.6541C12.1132 17.5441 11.8868 17.5441 11.7068 17.6541L6.98238 20.5397C6.55539 20.8005 6.02594 20.4159 6.14203 19.9292L7.42652 14.5443C7.47546 14.3391 7.4055 14.1238 7.24531 13.9866L3.04099 10.3851C2.661 10.0596 2.86323 9.43722 3.36197 9.39724L8.88022 8.95485C9.09048 8.93799 9.27363 8.80492 9.35464 8.61016L11.4806 3.4987Z"/></svg> <span class="tab-label">Places</span></button>
+    <div class="nav-tabs-group" id="navTabsGroup" style="display:none">
+      <div class="view-tabs" id="viewTabs" role="tablist">
+        <button class="view-tab active" onclick="switchView('calendar')" role="tab" aria-selected="true"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3V5.25M17.25 3V5.25M3 18.75V7.5C3 6.25736 4.00736 5.25 5.25 5.25H18.75C19.9926 5.25 21 6.25736 21 7.5V18.75M3 18.75C3 19.9926 4.00736 21 5.25 21H18.75C19.9926 21 21 19.9926 21 18.75M3 18.75V11.25C3 10.0074 4.00736 9 5.25 9H18.75C19.9926 9 21 10.0074 21 11.25V18.75M12 12.75H12.0075V12.7575H12V12.75ZM12 15H12.0075V15.0075H12V15ZM12 17.25H12.0075V17.2575H12V17.25ZM9.75 15H9.7575V15.0075H9.75V15ZM9.75 17.25H9.7575V17.2575H9.75V17.25ZM7.5 15H7.5075V15.0075H7.5V15ZM7.5 17.25H7.5075V17.2575H7.5V17.25ZM14.25 12.75H14.2575V12.7575H14.25V12.75ZM14.25 15H14.2575V15.0075H14.25V15ZM14.25 17.25H14.2575V17.2575H14.25V17.25ZM16.5 12.75H16.5075V12.7575H16.5V12.75ZM16.5 15H16.5075V15.0075H16.5V15"/></svg> <span class="tab-label">Calendar</span></button>
+        <button class="view-tab" onclick="switchView('map')" role="tab" aria-selected="false"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75002V15M15 9.00002V17.25M15.5031 20.7485L20.3781 18.311C20.7592 18.1204 21 17.7309 21 17.3047V4.82031C21 3.98401 20.1199 3.44007 19.3719 3.81408L15.5031 5.74847C15.1864 5.90683 14.8136 5.90683 14.4969 5.74847L9.50312 3.25158C9.1864 3.09322 8.8136 3.09322 8.49688 3.25158L3.62188 5.68908C3.24075 5.87965 3 6.26919 3 6.69531V19.1797C3 20.016 3.8801 20.56 4.62811 20.186L8.49688 18.2516C8.8136 18.0932 9.1864 18.0932 9.50312 18.2516L14.4969 20.7485C14.8136 20.9068 15.1864 20.9068 15.5031 20.7485Z"/></svg> <span class="tab-label">Map</span></button>
+        <button class="view-tab" onclick="switchView('wishlist')" role="tab" aria-selected="false"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M11.4806 3.4987C11.6728 3.03673 12.3272 3.03673 12.5193 3.4987L14.6453 8.61016C14.7263 8.80492 14.9095 8.93799 15.1197 8.95485L20.638 9.39724C21.1367 9.43722 21.339 10.0596 20.959 10.3851L16.7546 13.9866C16.5945 14.1238 16.5245 14.3391 16.5734 14.5443L17.8579 19.9292C17.974 20.4159 17.4446 20.8005 17.0176 20.5397L12.2932 17.6541C12.1132 17.5441 11.8868 17.5441 11.7068 17.6541L6.98238 20.5397C6.55539 20.8005 6.02594 20.4159 6.14203 19.9292L7.42652 14.5443C7.47546 14.3391 7.4055 14.1238 7.24531 13.9866L3.04099 10.3851C2.661 10.0596 2.86323 9.43722 3.36197 9.39724L8.88022 8.95485C9.09048 8.93799 9.27363 8.80492 9.35464 8.61016L11.4806 3.4987Z"/></svg> <span class="tab-label">Places</span></button>
+      </div>
+      <button class="nav-add-btn" id="navAddBtn" onclick="openWishAdd()" style="display:none">+ Add</button>
     </div>
   </header>
   <main id="main-content">
     <section id="view-calendar" class="view" role="tabpanel">
+      <div class="cal-page-nav" id="calPageNav"></div>
       <div class="cal-day-nav" id="calDayNav"></div>
       <div class="cal-header-scroll" id="calHeaderScroll"><div class="cal-wrap">
         <div class="cal-header-row" id="calHeaderRow"></div>
@@ -692,45 +720,45 @@
       </div>
     </section>
   </main>
-  <button class="fab fab-text" onclick="openWishAdd()" aria-label="장소 추가" style="display:none">
+  <button class="fab fab-text" onclick="openWishAdd()" aria-label="Add Place" style="display:none">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-    <span>장소 추가하기</span>
+    <span>Add Place</span>
   </button>
-  <span class="fab-label">장소 추가</span>
+  <span class="fab-label">Add Place</span>
 
   <!-- TRIP CREATE / EDIT MODAL -->
   <div class="modal-overlay" id="tripCreateModal" onclick="if(event.target===this)closeTripCreate()">
     <div class="modal" style="max-width:500px">
-      <div class="modal-head"><h2 id="tripCreateTitle">새 여행 만들기</h2><button class="modal-close" onclick="closeTripCreate()">✕</button></div>
+      <div class="modal-head"><h2 id="tripCreateTitle">Create New Trip</h2><button class="modal-close" onclick="closeTripCreate()">✕</button></div>
       <form id="tripCreateForm" onsubmit="saveTripCreate(event)">
         <div class="form-group">
-          <label class="form-label">도시 <span style="color:var(--negative)">*</span></label>
+          <label class="form-label" id="tcCityLabel">City <span style="color:var(--negative)">*</span></label>
           <div class="city-autocomplete" id="cityAutocomplete">
-            <input type="text" class="form-input" id="tcCityInput" placeholder="도시 검색… (예: Tokyo, New York, 서울)" autocomplete="off" oninput="onCityInput(this.value)" onkeydown="onCityKeydown(event)">
+            <input type="text" class="form-input" id="tcCityInput" placeholder="Search city… (e.g. Tokyo, New York, Seoul)" autocomplete="off" oninput="onCityInput(this.value)" onkeydown="onCityKeydown(event)">
             <div class="city-dropdown" id="cityDropdown" style="display:none"></div>
             <div class="city-selected-row" id="citySelected" style="display:none">
               <span class="city-selected-name" id="citySelectedName"></span>
               <span class="city-selected-tz" id="citySelectedTz"></span>
-              <button type="button" class="city-clear" onclick="clearCitySelection()" title="다시 선택">✕</button>
+              <button type="button" class="city-clear" onclick="clearCitySelection()" title="Reselect">✕</button>
             </div>
-            <div class="city-error" id="cityError">실제 도시를 선택해 주세요</div>
+            <div class="city-error" id="cityError">Please select a city</div>
           </div>
         </div>
         <div class="form-group">
-          <label class="form-label">여행 이름 <span style="color:var(--negative)">*</span></label>
-          <input type="text" class="form-input" id="tcName" placeholder="예: 도쿄 여행" oninput="_updateTcSubmit()">
+          <label class="form-label" id="tcNameLabel">Trip Name <span style="color:var(--negative)">*</span></label>
+          <input type="text" class="form-input" id="tcName" placeholder="e.g. Tokyo Trip" oninput="_updateTcSubmit()">
         </div>
         <div class="form-group">
-          <label class="form-label">여행 기간 <span style="color:var(--negative)">*</span></label>
+          <label class="form-label" id="tcDatesLabel">Trip Dates <span style="color:var(--negative)">*</span></label>
           <div class="dp-trigger" id="dpTrigger" onclick="dpOpen()">
             <div class="dp-field">
-              <div class="dp-field-label">시작일</div>
-              <div class="dp-field-val empty" id="dpStartVal">날짜 선택</div>
+              <div class="dp-field-label" id="dpStartLabel">Start</div>
+              <div class="dp-field-val empty" id="dpStartVal">Select date</div>
             </div>
             <div class="dp-sep">→</div>
             <div class="dp-field">
-              <div class="dp-field-label">종료일</div>
-              <div class="dp-field-val empty" id="dpEndVal">날짜 선택</div>
+              <div class="dp-field-label" id="dpEndLabel">End</div>
+              <div class="dp-field-val empty" id="dpEndVal">Select date</div>
             </div>
           </div>
           <div class="dp-popover" id="dpPopover" style="display:none" onclick="event.stopPropagation()">
@@ -739,7 +767,7 @@
               <span class="dp-ph-title" id="dpMonthTitle"></span>
               <button type="button" class="dp-ph-btn" onclick="event.stopPropagation();dpNav(1)">&#8250;</button>
             </div>
-            <div class="dp-wdays"><span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span></div>
+            <div class="dp-wdays" id="dpWdays"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div>
             <div class="dp-grid" id="dpGrid"></div>
             <div class="dp-foot" id="dpFoot"></div>
           </div>
@@ -749,17 +777,17 @@
         <input type="hidden" id="tcTz">
         <span id="tcTzStatus" style="display:none"></span>
         <div class="form-group" id="tcInviteGroup">
-          <label class="form-label">함께하는 사람 <span style="font-weight:400;color:var(--text-secondary);font-size:0.8em">(선택)</span></label>
+          <label class="form-label" id="tcInviteLabel">Travel with <span style="font-weight:400;color:var(--text-secondary);font-size:0.8em">(Optional)</span></label>
           <div id="tcInviteList" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px"></div>
           <div style="display:flex;gap:8px">
-            <input type="email" class="form-input" id="tcInviteEmail" placeholder="이메일 주소" style="flex:1" onkeydown="if(event.key==='Enter'){event.preventDefault();addTcInvite()}">
-            <button type="button" class="btn btn-secondary" onclick="addTcInvite()" style="flex-shrink:0;padding:8px 14px;font-size:0.82rem">추가</button>
+            <input type="email" class="form-input" id="tcInviteEmail" placeholder="Email address" style="flex:1" onkeydown="if(event.key==='Enter'){event.preventDefault();addTcInvite()}">
+            <button type="button" class="btn btn-secondary" id="tcInviteAddBtn" onclick="addTcInvite()" style="flex-shrink:0;padding:8px 14px;font-size:0.82rem">Add</button>
           </div>
         </div>
         <div class="modal-actions">
-          <button type="button" class="btn btn-danger" id="tcDeleteBtn" style="display:none" onclick="deleteTripFromModal()">삭제</button>
-          <button type="button" class="btn btn-secondary" onclick="closeTripCreate()">취소</button>
-          <button type="submit" class="btn btn-primary" id="tcSubmitBtn" disabled style="opacity:0.4;cursor:not-allowed">만들기</button>
+          <button type="button" class="btn btn-danger" id="tcDeleteBtn" style="display:none" onclick="deleteTripFromModal()">Delete</button>
+          <button type="button" class="btn btn-secondary" id="tcCancelBtn" onclick="closeTripCreate()">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="tcSubmitBtn" disabled style="opacity:0.4;cursor:not-allowed">Create</button>
         </div>
       </form>
     </div>
@@ -768,7 +796,7 @@
   <!-- CURRENCY CONVERTER MODAL -->
   <div class="modal-overlay" id="currModal" onclick="if(event.target===this)closeCurrConverter()" role="dialog" aria-modal="true">
     <div class="modal" style="max-width:320px">
-      <div class="modal-head"><h2>환율 계산기</h2><button class="modal-close" onclick="closeCurrConverter()">✕</button></div>
+      <div class="modal-head"><h2 id="currModalTitle">Currency Converter</h2><button class="modal-close" onclick="closeCurrConverter()">✕</button></div>
       <div class="curr-fields">
         <div class="curr-field">
           <span class="curr-field-label" id="currLocalLabel">MXN</span>
@@ -781,8 +809,8 @@
         </div>
       </div>
       <div class="curr-footer">
-        <span class="curr-rate-info" id="currRateInfo">환율 불러오는 중…</span>
-        <button class="curr-refresh" onclick="refreshCurrRates()">↻ 새로고침</button>
+        <span class="curr-rate-info" id="currRateInfo">Loading rates…</span>
+        <button class="curr-refresh" id="currRefreshBtn" onclick="refreshCurrRates()">↻ Refresh</button>
       </div>
     </div>
   </div>
@@ -790,13 +818,13 @@
   <!-- WISHLIST MODAL -->
   <div class="modal-overlay" id="wishModal" role="dialog" aria-modal="true">
     <div class="modal">
-      <div class="modal-head"><h2 id="wishModalTitle">추가</h2><button class="modal-close" onclick="closeWishModal()">✕</button></div>
+      <div class="modal-head"><h2 id="wishModalTitle">Add</h2><button class="modal-close" onclick="closeWishModal()">✕</button></div>
       <form id="wishForm" onsubmit="saveWishItem(event)">
-        <div class="form-group"><label class="form-label" for="wishMapsUrl">구글맵 링크</label><input type="text" class="form-input" id="wishMapsUrl" placeholder="https://maps.app.goo.gl/..." oninput="parseGmapsUrl(this.value);updateWishSaveBtn()" onpaste="setTimeout(function(){parseGmapsUrl(document.getElementById('wishMapsUrl').value);updateWishSaveBtn()},150)" onchange="parseGmapsUrl(this.value);updateWishSaveBtn()" onblur="parseGmapsUrl(this.value);updateWishSaveBtn()" ondrop="setTimeout(function(){parseGmapsUrl(document.getElementById('wishMapsUrl').value);updateWishSaveBtn()},150)"><div style="font-size:0.74rem;color:var(--text-secondary);margin-top:4px">구글맵에서 공유 → 링크 복사 후 붙여넣으면 이름·위치가 자동으로 채워집니다</div></div>
-        <div class="form-group"><label class="form-label" for="wishName">장소 이름</label><input type="text" class="form-input" id="wishName" placeholder="예: Contramar" oninput="updateWishSaveBtn()"></div>
-        <div class="form-group"><label class="form-label" for="wishCategory">카테고리</label><select class="form-input" id="wishCategory"><option value="food">🍽️ 음식</option><option value="bar">🍹 바/음료</option><option value="culture">🏛️ 문화/관광</option><option value="hotel">🏨 호텔</option><option value="conference">💼 비즈니스</option><option value="transport">✈️ 교통</option><option value="other">📍 기타</option></select></div>
-        <div class="form-group"><label class="form-label" for="wishNotes">메모</label><input type="text" class="form-input" id="wishNotes" placeholder="가고 싶은 이유, 영업시간 등"></div>
-        <div class="modal-actions"><button type="button" class="btn btn-danger" id="wishDeleteBtn" onclick="deleteWishItem()" style="display:none">삭제</button><button type="button" class="btn btn-secondary" onclick="closeWishModal()">취소</button><button type="submit" class="btn btn-primary" id="wishSaveBtn" disabled style="opacity:0.4;cursor:not-allowed">추가</button></div>
+        <div class="form-group"><label class="form-label" for="wishMapsUrl" id="wishMapsLabel">Google Maps Link</label><input type="text" class="form-input" id="wishMapsUrl" placeholder="https://maps.app.goo.gl/..." oninput="parseGmapsUrl(this.value);updateWishSaveBtn()" onpaste="setTimeout(function(){parseGmapsUrl(document.getElementById('wishMapsUrl').value);updateWishSaveBtn()},150)" onchange="parseGmapsUrl(this.value);updateWishSaveBtn()" onblur="parseGmapsUrl(this.value);updateWishSaveBtn()" ondrop="setTimeout(function(){parseGmapsUrl(document.getElementById('wishMapsUrl').value);updateWishSaveBtn()},150)"><div style="font-size:0.74rem;color:var(--text-secondary);margin-top:4px" id="wishMapsHint">Share from Google Maps → paste the link to auto-fill name and location</div></div>
+        <div class="form-group"><label class="form-label" for="wishName" id="wishNameLabel">Place Name</label><input type="text" class="form-input" id="wishName" placeholder="e.g. Contramar" oninput="updateWishSaveBtn()"></div>
+        <div class="form-group"><label class="form-label" for="wishCategory" id="wishCatLabel">Category</label><select class="form-input" id="wishCategory"><option value="food">🍽️ Food</option><option value="bar">🍹 Bar/Drinks</option><option value="culture">🏛️ Culture</option><option value="hotel">🏨 Hotel</option><option value="conference">💼 Business</option><option value="transport">✈️ Transport</option><option value="other">📍 Other</option></select></div>
+        <div class="form-group"><label class="form-label" for="wishNotes" id="wishNotesLabel">Notes</label><input type="text" class="form-input" id="wishNotes" placeholder="Why you want to go, hours, etc."></div>
+        <div class="modal-actions"><button type="button" class="btn btn-danger" id="wishDeleteBtn" onclick="deleteWishItem()" style="display:none">Delete</button><button type="button" class="btn btn-secondary" id="wishCancelBtn" onclick="closeWishModal()">Cancel</button><button type="submit" class="btn btn-primary" id="wishSaveBtn" disabled style="opacity:0.4;cursor:not-allowed">Add</button></div>
       </form>
     </div>
   </div>
@@ -810,56 +838,56 @@
   <div class="modal-overlay" id="calAddModal" role="dialog" aria-modal="true" onclick="closeCalAdd()">
     <div class="modal" onclick="event.stopPropagation()">
       <div class="modal-head">
-        <div><h2>일정 추가</h2><div id="calAddDateLabel" style="font-size:0.78rem;color:var(--text-secondary);margin-top:1px"></div></div>
+        <div><h2 id="calAddTitle">Add to Schedule</h2><div id="calAddDateLabel" style="font-size:0.78rem;color:var(--text-secondary);margin-top:1px"></div></div>
         <button class="modal-close" onclick="closeCalAdd()">✕</button>
       </div>
       <div class="edit-type-seg" style="margin-bottom:12px">
-        <button type="button" class="edit-type-btn active" id="calAddModePlace" onclick="setCalAddMode('place')" style="display:inline-flex;align-items:center;gap:4px"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg> 장소 배정</button>
-        <button type="button" class="edit-type-btn" id="calAddModeBlock" onclick="setCalAddMode('block')">📝 시간 블록</button>
+        <button type="button" class="edit-type-btn active" id="calAddModePlace" onclick="setCalAddMode('place')" style="display:inline-flex;align-items:center;gap:4px"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg> Assign Place</button>
+        <button type="button" class="edit-type-btn" id="calAddModeBlock" onclick="setCalAddMode('block')">📝 Time Block</button>
       </div>
       <!-- Time + Duration (shared) -->
       <div class="cal-add-time-row">
         <div class="cal-add-time-field">
-          <label class="form-label">시작</label>
+          <label class="form-label" id="calAddStartLabel">Start</label>
           <input type="time" class="form-input" id="calAddStartTime" style="font-size:0.95rem;padding:6px 10px" onchange="calAddStartMin=toMin(this.value);updateCalAddEndTime()">
         </div>
         <div class="cal-add-arrow">→</div>
         <div class="cal-add-end-field">
-          <label class="form-label">종료</label>
+          <label class="form-label" id="calAddEndLbl">End</label>
           <div id="calAddEndLabel" style="font-size:0.9rem;font-weight:600;color:var(--text);padding:7px 0"></div>
         </div>
       </div>
       <div class="cal-add-dur-row">
         <div class="cal-add-dur-header">
-          <span class="form-label">소요 시간</span>
-          <span id="calAddDurLabel" style="font-size:0.85rem;font-weight:700;color:var(--accent)">1시간</span>
+          <span class="form-label" id="calAddDurTitle">Duration</span>
+          <span id="calAddDurLabel" style="font-size:0.85rem;font-weight:700;color:var(--accent)">1hr</span>
         </div>
         <input type="range" id="calAddDurSlider" class="cal-add-slider" min="0" max="7" step="1" value="1" oninput="updateCalAddEndTime()">
-        <div class="cal-add-dur-ticks"><span>30분</span><span>1h</span><span>1.5h</span><span>2h</span><span>2.5h</span><span>3h</span><span>3.5h</span><span>4h</span></div>
+        <div class="cal-add-dur-ticks"><span>30min</span><span>1h</span><span>1.5h</span><span>2h</span><span>2.5h</span><span>3h</span><span>3.5h</span><span>4h</span></div>
       </div>
       <!-- Place mode: wishlist picker -->
       <div id="calAddPlaceFields">
-        <div class="form-label" style="margin-bottom:6px">위시리스트에서 선택</div>
+        <div class="form-label" style="margin-bottom:6px" id="calAddWishLabel">Select from wishlist</div>
         <div class="cal-add-wish-list" id="calAddWishList"></div>
         <div class="form-group" style="margin-top:10px">
-          <label class="form-label">메모</label>
-          <input type="text" class="form-input" id="calAddPlaceNotes" placeholder="예약 여부, 주의사항 등">
+          <label class="form-label" id="calAddPlaceNotesLabel">Notes</label>
+          <input type="text" class="form-input" id="calAddPlaceNotes" placeholder="Reservations, notes, etc.">
         </div>
       </div>
       <!-- Block mode: title -->
       <div id="calAddBlockFields" style="display:none">
         <div class="form-group" style="margin-top:4px">
-          <label class="form-label">제목 *</label>
-          <input type="text" class="form-input" id="calAddBlockTitle" placeholder="예: 자유 시간, 숙소 체크인…">
+          <label class="form-label" id="calAddBlockTitleLabel">Title *</label>
+          <input type="text" class="form-input" id="calAddBlockTitle" placeholder="e.g. Free time, Hotel check-in…">
         </div>
         <div class="form-group">
-          <label class="form-label">메모</label>
-          <input type="text" class="form-input" id="calAddBlockNotes" placeholder="추가 메모">
+          <label class="form-label" id="calAddBlockNotesLabel">Notes</label>
+          <input type="text" class="form-input" id="calAddBlockNotes" placeholder="Additional notes">
         </div>
       </div>
       <div class="modal-actions" style="margin-top:8px">
-        <button type="button" class="btn btn-secondary" onclick="closeCalAdd()">취소</button>
-        <button type="button" class="btn btn-primary" onclick="saveCalAdd()">저장</button>
+        <button type="button" class="btn btn-secondary" id="calAddCancelBtn" onclick="closeCalAdd()">Cancel</button>
+        <button type="button" class="btn btn-primary" id="calAddSaveBtn" onclick="saveCalAdd()">Save</button>
       </div>
     </div>
   </div>
@@ -867,16 +895,16 @@
   <!-- EDIT MODAL -->
   <div class="modal-overlay" id="shareModal" role="dialog" aria-modal="true">
     <div class="modal" style="max-width:420px">
-      <div class="modal-head"><h2>공유 설정</h2><button class="modal-close" onclick="closeShareModal()">✕</button></div>
+      <div class="modal-head"><h2 id="shareModalTitle">Share Settings</h2><button class="modal-close" onclick="closeShareModal()">✕</button></div>
       <div id="shareContent" style="padding:16px"></div>
       <div id="shareInviteSection" style="padding:0 16px 16px">
-        <div style="font-size:0.8rem;font-weight:600;margin-bottom:8px;color:var(--text-secondary)">사용자 초대</div>
+        <div style="font-size:0.8rem;font-weight:600;margin-bottom:8px;color:var(--text-secondary)" id="shareInviteLabel">Invite User</div>
         <form onsubmit="addShareUser(event)" style="display:flex;gap:8px">
-          <input id="shareEmail" type="email" placeholder="이메일 주소" required style="flex:1;padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:0.85rem">
-          <button type="submit" style="padding:8px 16px;border-radius:8px;border:none;background:var(--accent);color:var(--accent-fg);font-size:0.85rem;font-weight:600;cursor:pointer">초대</button>
+          <input id="shareEmail" type="email" placeholder="Email address" required style="flex:1;padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:0.85rem">
+          <button type="submit" id="shareInviteBtn" style="padding:8px 16px;border-radius:8px;border:none;background:var(--accent);color:var(--accent-fg);font-size:0.85rem;font-weight:600;cursor:pointer">Invite</button>
         </form>
         <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
-          <button type="button" onclick="copyTripLink()" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text-secondary);font-size:0.8rem;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:background var(--dur-small)" id="copyLinkBtn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"/></svg> 초대 링크 복사</button>
+          <button type="button" onclick="copyTripLink()" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text-secondary);font-size:0.8rem;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:background var(--dur-small)" id="copyLinkBtn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"/></svg> Copy invite link</button>
         </div>
       </div>
     </div>
@@ -884,23 +912,23 @@
 
   <div class="modal-overlay" id="editModal" role="dialog" aria-modal="true">
     <div class="modal">
-      <div class="modal-head"><h2 id="editModalTitle">일정 수정</h2><button class="modal-close" onclick="closeEditModal()">✕</button></div>
+      <div class="modal-head"><h2 id="editModalTitle">Edit Event</h2><button class="modal-close" onclick="closeEditModal()">✕</button></div>
       <form id="editForm" onsubmit="saveEditEvent(event)">
         <div class="edit-place-header" id="editPlaceHeader" style="display:none"></div>
         <div class="edit-type-seg" id="editTypeSeg">
-          <button type="button" class="edit-type-btn active" data-type="event" onclick="setEditMode('event')" style="display:inline-flex;align-items:center;gap:4px"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3V5.25M17.25 3V5.25M3 18.75V7.5C3 6.25736 4.00736 5.25 5.25 5.25H18.75C19.9926 5.25 21 6.25736 21 7.5V18.75M3 18.75C3 19.9926 4.00736 21 5.25 21H18.75C19.9926 21 21 19.9926 21 18.75M3 18.75V11.25C3 10.0074 4.00736 9 5.25 9H18.75C19.9926 9 21 10.0074 21 11.25V18.75"/></svg> 시간 일정</button>
-          <button type="button" class="edit-type-btn" data-type="place" onclick="setEditMode('place')" style="display:inline-flex;align-items:center;gap:4px"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg> 장소</button>
+          <button type="button" class="edit-type-btn active" data-type="event" onclick="setEditMode('event')" style="display:inline-flex;align-items:center;gap:4px"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3V5.25M17.25 3V5.25M3 18.75V7.5C3 6.25736 4.00736 5.25 5.25 5.25H18.75C19.9926 5.25 21 6.25736 21 7.5V18.75M3 18.75C3 19.9926 4.00736 21 5.25 21H18.75C19.9926 21 21 19.9926 21 18.75M3 18.75V11.25C3 10.0074 4.00736 9 5.25 9H18.75C19.9926 9 21 10.0074 21 11.25V18.75"/></svg> <span id="editTypeEventLabel">Time Event</span></button>
+          <button type="button" class="edit-type-btn" data-type="place" onclick="setEditMode('place')" style="display:inline-flex;align-items:center;gap:4px"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg> <span id="editTypePlaceLabel">Place</span></button>
         </div>
-        <div class="form-group fg-date"><label class="form-label">날짜</label><input type="date" class="form-input" id="editDate"></div>
-        <div class="form-row fg-time"><div class="form-group"><label class="form-label" id="editTimeLbl">시작 시간</label><input type="time" class="form-input" id="editTime" required></div><div class="form-group"><label class="form-label">종료 시간</label><input type="time" class="form-input" id="editEndTime"></div></div>
-        <div class="form-group fg-title"><label class="form-label">이벤트 이름</label><input type="text" class="form-input" id="editTitle" required placeholder="장소 또는 이벤트명"></div>
-        <div class="form-group fg-sub"><label class="form-label">설명</label><input type="text" class="form-input" id="editSubtitle" placeholder="장소 설명"></div>
-        <div class="form-group fg-map"><label class="form-label" id="editMapLbl">구글맵 링크 <span style="color:var(--text-secondary);font-weight:400">(지도 표시용)</span></label><input type="text" class="form-input" id="editMapsUrl" placeholder="https://maps.app.goo.gl/..." oninput="parseEditMapsUrl(this.value)" onpaste="setTimeout(function(){parseEditMapsUrl(document.getElementById('editMapsUrl').value)},150)" onchange="parseEditMapsUrl(this.value)" onblur="parseEditMapsUrl(this.value)" ondrop="setTimeout(function(){parseEditMapsUrl(document.getElementById('editMapsUrl').value)},150)"></div>
-        <div class="form-group fg-notes"><label class="form-label">메모</label><input type="text" class="form-input" id="editNotes" placeholder="예약 여부, 주의사항 등"></div>
-        <div class="form-group fg-link"><label class="form-label">링크 <span style="color:var(--text-secondary);font-weight:400">(선택)</span></label><input type="url" class="form-input" id="editLink" placeholder="https://..."></div>
-        <div class="form-group fg-cat"><label class="form-label">카테고리</label><select class="form-input" id="editCategory"><option value="food">🍽️ 음식</option><option value="bar">🍹 바/음료</option><option value="culture">🏛️ 문화/관광</option><option value="hotel">🏨 호텔</option><option value="conference">💼 비즈니스</option><option value="transport">✈️ 교통</option><option value="other">📍 기타</option></select></div>
-        <div class="form-group fg-opt"><div class="form-checkbox-row"><input type="checkbox" id="editOptional"><label for="editOptional">선택 일정 (optional)</label></div></div>
-        <div class="modal-actions"><button type="button" class="btn btn-danger" id="editDeleteBtn" onclick="deleteCurrentEvent()">삭제</button><button type="button" class="btn btn-secondary" onclick="closeEditModal()">취소</button><button type="submit" class="btn btn-primary" id="editSubmitBtn">저장</button></div>
+        <div class="form-group fg-date"><label class="form-label" id="editDateLabel">Date</label><input type="date" class="form-input" id="editDate"></div>
+        <div class="form-row fg-time"><div class="form-group"><label class="form-label" id="editTimeLbl">Start Time</label><input type="time" class="form-input" id="editTime" required></div><div class="form-group"><label class="form-label" id="editEndTimeLbl">End Time</label><input type="time" class="form-input" id="editEndTime"></div></div>
+        <div class="form-group fg-title"><label class="form-label" id="editTitleLabel">Event Name</label><input type="text" class="form-input" id="editTitle" required placeholder="Place or event name"></div>
+        <div class="form-group fg-sub"><label class="form-label" id="editSubLabel">Description</label><input type="text" class="form-input" id="editSubtitle" placeholder="Place description"></div>
+        <div class="form-group fg-map"><label class="form-label" id="editMapLbl">Google Maps Link <span style="color:var(--text-secondary);font-weight:400">(for map display)</span></label><input type="text" class="form-input" id="editMapsUrl" placeholder="https://maps.app.goo.gl/..." oninput="parseEditMapsUrl(this.value)" onpaste="setTimeout(function(){parseEditMapsUrl(document.getElementById('editMapsUrl').value)},150)" onchange="parseEditMapsUrl(this.value)" onblur="parseEditMapsUrl(this.value)" ondrop="setTimeout(function(){parseEditMapsUrl(document.getElementById('editMapsUrl').value)},150)"></div>
+        <div class="form-group fg-notes"><label class="form-label" id="editNotesLabel">Notes</label><input type="text" class="form-input" id="editNotes" placeholder="Reservations, notes, etc."></div>
+        <div class="form-group fg-link"><label class="form-label" id="editLinkLabel">Link <span style="color:var(--text-secondary);font-weight:400">(Optional)</span></label><input type="url" class="form-input" id="editLink" placeholder="https://..."></div>
+        <div class="form-group fg-cat"><label class="form-label" id="editCatLabel">Category</label><select class="form-input" id="editCategory"><option value="food">🍽️ Food</option><option value="bar">🍹 Bar/Drinks</option><option value="culture">🏛️ Culture</option><option value="hotel">🏨 Hotel</option><option value="conference">💼 Business</option><option value="transport">✈️ Transport</option><option value="other">📍 Other</option></select></div>
+        <div class="form-group fg-opt"><div class="form-checkbox-row"><input type="checkbox" id="editOptional"><label for="editOptional" id="editOptLabel">Optional event</label></div></div>
+        <div class="modal-actions"><button type="button" class="btn btn-danger" id="editDeleteBtn" onclick="deleteCurrentEvent()">Delete</button><button type="button" class="btn btn-secondary" id="editCancelBtn" onclick="closeEditModal()">Cancel</button><button type="submit" class="btn btn-primary" id="editSubmitBtn">Save</button></div>
       </form>
     </div>
   </div>
@@ -908,24 +936,24 @@
   <!-- CAL PICK MODAL -->
   <div class="modal-overlay" id="calPickModal" onclick="closeCalPickModal()">
     <div class="modal" onclick="event.stopPropagation()" style="max-width:420px">
-      <div class="modal-head"><h2 id="calPickTitle" style="font-size:0.95rem">일정 추가</h2><button class="modal-close" onclick="closeCalPickModal()">✕</button></div>
+      <div class="modal-head"><h2 id="calPickTitle" style="font-size:0.95rem">Add to Schedule</h2><button class="modal-close" onclick="closeCalPickModal()">✕</button></div>
       <div id="calPickContent"></div>
     </div>
   </div>
 
   <div class="modal-overlay" id="feedbackModal" onclick="if(event.target===this)closeFeedbackModal()">
     <div class="modal" style="max-width:420px">
-      <div class="modal-head"><h2 style="font-size:0.95rem">피드백 보내기</h2><button class="modal-close" onclick="closeFeedbackModal()">✕</button></div>
+      <div class="modal-head"><h2 id="feedbackTitle" style="font-size:0.95rem">Send Feedback</h2><button class="modal-close" onclick="closeFeedbackModal()">✕</button></div>
       <form id="feedbackForm" onsubmit="submitFeedback(event)">
         <div class="form-group">
-          <label class="form-label">유형</label>
+          <label class="form-label" id="feedbackTypeLabel">Type</label>
           <div style="display:flex;gap:8px">
-            <button type="button" class="fb-type-btn active" data-type="bug" onclick="setFeedbackType('bug')">🐛 버그 신고</button>
-            <button type="button" class="fb-type-btn" data-type="feature" onclick="setFeedbackType('feature')">💡 기능 제안</button>
+            <button type="button" class="fb-type-btn active" data-type="bug" onclick="setFeedbackType('bug')" id="fbBugBtn">🐛 Bug Report</button>
+            <button type="button" class="fb-type-btn" data-type="feature" onclick="setFeedbackType('feature')" id="fbFeatureBtn">💡 Feature Request</button>
           </div>
         </div>
-        <div class="form-group"><label class="form-label" for="feedbackMsg">내용</label><textarea class="form-input" id="feedbackMsg" rows="4" placeholder="어떤 문제가 있나요? 또는 어떤 기능을 원하시나요?" required style="resize:vertical"></textarea></div>
-        <div class="modal-actions"><button type="button" class="btn btn-secondary" onclick="closeFeedbackModal()">취소</button><button type="submit" class="btn btn-primary" id="feedbackSubmitBtn">보내기</button></div>
+        <div class="form-group"><label class="form-label" for="feedbackMsg" id="feedbackMsgLabel">Message</label><textarea class="form-input" id="feedbackMsg" rows="4" placeholder="What issue did you find, or what feature would you like?" required style="resize:vertical"></textarea></div>
+        <div class="modal-actions"><button type="button" class="btn btn-secondary" id="feedbackCancelBtn" onclick="closeFeedbackModal()">Cancel</button><button type="submit" class="btn btn-primary" id="feedbackSubmitBtn">Submit</button></div>
       </form>
     </div>
   </div>
@@ -948,7 +976,12 @@
     var currentUser = null;
 
     // ==================== I18N ====================
-    var currentLang = localStorage.getItem('palo-lang') || 'ko';
+    // One-time migration: reset to English default for users who had Korean set before i18n overhaul
+    if (!localStorage.getItem('palo-lang-v2')) {
+      localStorage.setItem('palo-lang', 'en');
+      localStorage.setItem('palo-lang-v2', '1');
+    }
+    var currentLang = localStorage.getItem('palo-lang') || 'en';
     var STRINGS = {
       // General
       loading: { ko:'데이터 불러오는 중…', en:'Loading data…' },
@@ -1128,56 +1161,222 @@
       catOptOther: { ko:'📍 기타', en:'📍 Other' },
       // No places in cal add
       noPlacesInCal: { ko:'추가된 장소가 없습니다.', en:'No places added yet.' },
+      // Theme
+      darkMode: { ko:'다크모드', en:'Dark mode' },
+      lightMode: { ko:'라이트모드', en:'Light mode' },
+      // Feedback
+      sendFeedback: { ko:'피드백 보내기', en:'Send Feedback' },
+      feedbackType: { ko:'유형', en:'Type' },
+      feedbackBug: { ko:'🐛 버그 신고', en:'🐛 Bug Report' },
+      feedbackFeature: { ko:'💡 기능 제안', en:'💡 Feature Request' },
+      feedbackPlaceholder: { ko:'어떤 문제가 있나요? 또는 어떤 기능을 원하시나요?', en:'What issue did you find, or what feature would you like?' },
+      feedbackMsg: { ko:'내용', en:'Message' },
+      feedbackSubmit: { ko:'보내기', en:'Submit' },
+      feedbackSending: { ko:'보내는 중...', en:'Sending...' },
+      feedbackBugSuccess: { ko:'버그 신고가 접수되었습니다. 감사합니다!', en:'Bug report submitted. Thank you!' },
+      feedbackFeatureSuccess: { ko:'기능 제안이 접수되었습니다. 감사합니다!', en:'Feature request submitted. Thank you!' },
+      feedbackFailed: { ko:'전송에 실패했습니다. 다시 시도해 주세요.', en:'Failed to send. Please try again.' },
+      // Edit/modal extras
+      assignPlace: { ko:'장소 배정', en:'Assign Place' },
+      timeEvent: { ko:'시간 일정', en:'Time Event' },
+      placeMode: { ko:'장소', en:'Place' },
+      dateLabel: { ko:'날짜', en:'Date' },
+      removeFromSchedule: { ko:'시간 해제', en:'Remove from schedule' },
+      viewOnMap: { ko:'지도 보기', en:'View on map' },
+      originalDate: { ko:'원래', en:'Originally' },
+      noLocation: { ko:'위치 정보 없음', en:'No location' },
+      noLocationHint: { ko:'위치 정보 없음 — 구글맵 링크를 추가해 주세요', en:'No location — add a Google Maps link' },
+      gmapsHint: { ko:'구글맵에서 공유 → 링크 복사 후 붙여넣으면 이름·위치가 자동으로 채워집니다', en:'Share from Google Maps → paste the link to auto-fill name and location' },
+      editBtn: { ko:'편집', en:'Edit' },
+      leaveTrip: { ko:'나가기', en:'Leave' },
+      allTrips: { ko:'모든 여행 보기', en:'All Trips' },
+      // Day prefix (map sidebar, mobile tabs)
+      dayN: { ko:function(n){return n+'일차';}, en:function(n){return 'Day '+n;} },
       // Language
       langLabel: { ko:'English', en:'한국어' },
+      // Quick add
+      quickAddPlaceholder: { ko:'구글맵 링크를 붙여넣어 장소 추가...', en:'Paste Google Maps link to add a place...' },
+      navAdd: { ko:'+ 추가', en:'+ Add' },
     };
     function t(key) {
       var s = STRINGS[key];
       if (!s) return key;
-      return s[currentLang] || s.ko || key;
+      var v = s[currentLang];
+      return v != null ? v : (s.ko != null ? s.ko : key);
     }
     function setLang(lang) {
       currentLang = lang;
       localStorage.setItem('palo-lang', lang);
+      document.documentElement.lang = lang;
       applyLangToStaticHTML();
+      refreshDayLabels();
       if (typeof rerender === 'function') rerender();
+      if (typeof currentTripMeta !== 'undefined' && currentTripMeta) updateHeader(currentTripMeta);
       if (document.getElementById('view-dashboard').style.display !== 'none') loadDashboard();
       updateShareBtnVisibility();
     }
+    function refreshDayLabels() {
+      if (typeof DAYS === 'undefined' || !DAYS) return;
+      var dn = STRINGS.dpDow[currentLang];
+      DAYS.forEach(function(day) {
+        if (!day.isoDate) return;
+        var dt = new Date(day.isoDate + 'T00:00:00');
+        var mm = dt.getMonth()+1, dd = dt.getDate();
+        day.date = mm+'/'+dd+' ('+dn[dt.getDay()]+')';
+        day.dayName = dn[dt.getDay()];
+      });
+    }
     function applyLangToStaticHTML() {
-      // Update static HTML elements with current language
+      function _t(id,key){ var el=document.getElementById(id); if(el) el.textContent=t(key); }
+      function _p(id,key){ var el=document.getElementById(id); if(el) el.placeholder=t(key); }
+      function _a(sel,attr,key){ var el=document.querySelector(sel); if(el) el.setAttribute(attr,t(key)); }
+      // Loading screen
       var ls = document.getElementById('loadingScreen');
       if (ls && ls.querySelector('p')) ls.querySelector('p').textContent = t('loading');
       // FAB
       var fabSpan = document.querySelector('.fab > span:last-child');
       if (fabSpan) fabSpan.textContent = t('addPlaceAction');
-      // Hamburger menu buttons
+      var fabLabel = document.querySelector('.fab-label');
+      if (fabLabel) fabLabel.textContent = t('addPlace');
+      document.querySelector('.fab')&&document.querySelector('.fab').setAttribute('aria-label',t('addPlace'));
+      // Hamburger menu
+      _a('.viz-menu-toggle','aria-label','menu');
       var shareMenuBtn = document.getElementById('shareMenuBtn');
       if (shareMenuBtn) shareMenuBtn.querySelector('span:last-child').textContent = t('shareSettings');
       var currMenuBtn = document.getElementById('currMenuBtn');
       if (currMenuBtn) currMenuBtn.querySelector('span:last-child').textContent = t('currConverter');
+      _t('themeLabel', currentTheme==='dark'?'darkMode':'lightMode');
+      var fbMenuBtn = document.querySelector('button[onclick="openFeedbackModal()"]');
+      if (fbMenuBtn) { var s=fbMenuBtn.querySelector('span:last-child'); if(s) s.textContent=t('sendFeedback'); }
       // Auth buttons
       var signOutBtn = document.querySelector('#accountLoggedIn button[onclick="doSignOut()"] span:last-child');
       if (signOutBtn) signOutBtn.textContent = t('signOut');
       var signInBtn = document.querySelector('#accountLoggedOut button[onclick="doSignIn()"] span:last-child');
       if (signInBtn) signInBtn.textContent = t('signIn');
+      // Dashboard header
+      var dashThemeBtn = document.querySelector('.dash-header-btn[onclick="cycleTheme()"]');
+      if (dashThemeBtn) { var thLabel=currentTheme==='dark'?t('darkMode'):t('lightMode'); dashThemeBtn.setAttribute('aria-label',thLabel); dashThemeBtn.setAttribute('title',thLabel); }
+      var dap=document.getElementById('dashAccountPill'); if(dap) dap.setAttribute('aria-label',currentLang==='ko'?'계정':'Account');
+      var flagBtn = document.getElementById('appLogoFlag');
+      if (flagBtn) flagBtn.setAttribute('title','Dashboard');
       // Tab labels
       var tabs = document.querySelectorAll('.tab-label');
       if (tabs.length >= 3) { tabs[0].textContent = t('schedule'); tabs[1].textContent = t('mapLabel'); tabs[2].textContent = t('places'); }
+      // Nav add button
+      var navBtn = document.getElementById('navAddBtn');
+      if (navBtn) navBtn.textContent = t('navAdd');
+      // Quick add placeholder
+      var wlQuickUrl = document.getElementById('wlQuickUrl');
+      if (wlQuickUrl) wlQuickUrl.placeholder = t('quickAddPlaceholder');
       // Category selects
       var catSelects = [document.getElementById('editCategory'), document.getElementById('wishCategory')];
+      var catKeys = ['catOptFood','catOptBar','catOptCulture','catOptHotel','catOptConference','catOptTransport','catOptOther'];
       catSelects.forEach(function(sel) {
         if (!sel) return;
         var opts = sel.querySelectorAll('option');
-        var keys = ['catOptFood','catOptBar','catOptCulture','catOptHotel','catOptConference','catOptTransport','catOptOther'];
-        opts.forEach(function(o,i){ if(keys[i]) o.textContent = t(keys[i]); });
+        opts.forEach(function(o,i){ if(catKeys[i]) o.textContent = t(catKeys[i]); });
       });
+      // Trip create modal
+      _t('tripCreateTitle', 'createTrip');
+      var tcCityLabel = document.getElementById('tcCityLabel');
+      if (tcCityLabel) tcCityLabel.innerHTML = t('city')+' <span style="color:var(--negative)">*</span>';
+      _p('tcCityInput', 'cityPlaceholder');
+      _t('cityError', 'cityError');
+      var tcNameLabel = document.getElementById('tcNameLabel');
+      if (tcNameLabel) tcNameLabel.innerHTML = t('tripName')+' <span style="color:var(--negative)">*</span>';
+      _p('tcName', 'tripNamePlaceholder');
+      var tcDatesLabel = document.getElementById('tcDatesLabel');
+      if (tcDatesLabel) tcDatesLabel.innerHTML = t('tripDates')+' <span style="color:var(--negative)">*</span>';
+      _t('dpStartLabel', 'startDate');
+      _t('dpEndLabel', 'endDate');
+      var dpSV = document.getElementById('dpStartVal');
+      if (dpSV && dpSV.classList.contains('empty')) dpSV.textContent = t('selectDate');
+      var dpEV = document.getElementById('dpEndVal');
+      if (dpEV && dpEV.classList.contains('empty')) dpEV.textContent = t('selectDate');
+      var cityClear = document.querySelector('.city-clear');
+      if (cityClear) cityClear.setAttribute('title', t('reselect'));
+      // Date picker weekdays
+      var dpWdays = document.getElementById('dpWdays');
+      if (dpWdays) { var spans = dpWdays.querySelectorAll('span'); var dow = STRINGS.dpDow[currentLang]; spans.forEach(function(s,i){ if(dow[i]) s.textContent=dow[i]; }); }
+      // Trip create invite section
+      var tcInviteLabel = document.getElementById('tcInviteLabel');
+      if (tcInviteLabel) tcInviteLabel.innerHTML = t('travelWith')+' <span style="font-weight:400;color:var(--text-secondary);font-size:0.8em">('+t('optional')+')</span>';
+      _p('tcInviteEmail', 'emailPlaceholder');
+      _t('tcInviteAddBtn', 'add');
+      _t('tcDeleteBtn', 'delete_');
+      _t('tcCancelBtn', 'cancel');
+      var tcSubmit = document.getElementById('tcSubmitBtn');
+      if (tcSubmit) tcSubmit.textContent = tcSubmit.textContent === 'Create' || tcSubmit.textContent === t('create') ? t('create') : t('save');
+      // Currency modal
+      _t('currModalTitle', 'currConverter');
+      var currRefreshBtn = document.getElementById('currRefreshBtn');
+      if (currRefreshBtn) currRefreshBtn.textContent = '↻ ' + t('currRefresh');
+      // Wish modal
+      _t('wishMapsLabel', 'gmapsLink');
+      var wishHint = document.getElementById('wishMapsHint');
+      if (wishHint) wishHint.textContent = t('gmapsHint');
+      _t('wishNameLabel', 'placeName');
+      _t('wishCatLabel', 'category');
+      _t('wishNotesLabel', 'notes');
+      _p('wishNotes', 'wishNotesPlaceholder');
+      _t('wishDeleteBtn', 'delete_');
+      _t('wishCancelBtn', 'cancel');
+      // Cal add modal
+      _t('calAddTitle', 'addToSchedule');
+      var calAddPlaceBtn = document.getElementById('calAddModePlace');
+      if (calAddPlaceBtn) { var svg=calAddPlaceBtn.querySelector('svg'); calAddPlaceBtn.innerHTML=''; if(svg)calAddPlaceBtn.appendChild(svg); calAddPlaceBtn.appendChild(document.createTextNode(' '+t('assignPlace'))); }
+      var calAddBlockBtn = document.getElementById('calAddModeBlock');
+      if (calAddBlockBtn) calAddBlockBtn.textContent = '📝 ' + t('timeBlock');
+      _t('calAddStartLabel', 'start');
+      _t('calAddEndLbl', 'end');
+      _t('calAddDurTitle', 'duration');
+      _t('calAddWishLabel', 'selectFromWishlist');
+      _t('calAddPlaceNotesLabel', 'notes');
+      _p('calAddPlaceNotes', 'notesPlaceholder');
+      _t('calAddBlockTitleLabel', 'titleRequired');
+      _p('calAddBlockTitle', 'blockTitlePlaceholder');
+      _t('calAddBlockNotesLabel', 'notes');
+      _p('calAddBlockNotes', 'additionalNotes');
+      _t('calAddCancelBtn', 'cancel');
+      _t('calAddSaveBtn', 'save');
       // Share modal
-      var shareTitle = document.querySelector('#shareModal .modal-head h2');
-      if (shareTitle) shareTitle.textContent = t('shareSettings');
-      // Edit modal static labels
-      var editTimeLbl = document.getElementById('editTimeLbl');
-      if (editTimeLbl) editTimeLbl.textContent = t('startTime');
+      _t('shareModalTitle', 'shareSettings');
+      _t('shareInviteLabel', 'inviteUser');
+      _p('shareEmail', 'emailPlaceholder');
+      _t('shareInviteBtn', 'invite');
+      var copyLinkBtn = document.getElementById('copyLinkBtn');
+      if (copyLinkBtn) { var svg=copyLinkBtn.querySelector('svg'); var txt=copyLinkBtn.childNodes; copyLinkBtn.innerHTML=''; if(svg){copyLinkBtn.appendChild(svg);copyLinkBtn.appendChild(document.createTextNode(' '));} copyLinkBtn.appendChild(document.createTextNode(t('copyLink'))); }
+      // Edit modal
+      _t('editModalTitle', 'editEvent');
+      _t('editTypeEventLabel', 'timeEvent');
+      _t('editTypePlaceLabel', 'placeMode');
+      _t('editDateLabel', 'dateLabel');
+      _t('editTimeLbl', 'startTime');
+      _t('editEndTimeLbl', 'endTime');
+      _t('editTitleLabel', 'eventName');
+      _p('editTitle', 'eventNamePlaceholder');
+      _t('editSubLabel', 'description');
+      _p('editSubtitle', 'descPlaceholder');
+      var editMapLbl = document.getElementById('editMapLbl');
+      if (editMapLbl) editMapLbl.innerHTML = t('gmapsLink')+' <span style="color:var(--text-secondary);font-weight:400">('+t('gmapsForMap')+')</span>';
+      _t('editNotesLabel', 'notes');
+      _p('editNotes', 'notesPlaceholder');
+      var editLinkLabel = document.getElementById('editLinkLabel');
+      if (editLinkLabel) editLinkLabel.innerHTML = t('linkOptional')+' <span style="color:var(--text-secondary);font-weight:400">('+t('optional')+')</span>';
+      _t('editCatLabel', 'category');
+      _t('editOptLabel', 'optionalEvent');
+      _t('editDeleteBtn', 'delete_');
+      _t('editCancelBtn', 'cancel');
+      _t('editSubmitBtn', 'save');
+      // Feedback modal
+      _t('feedbackTitle', 'sendFeedback');
+      _t('feedbackTypeLabel', 'feedbackType');
+      _t('fbBugBtn', 'feedbackBug');
+      _t('fbFeatureBtn', 'feedbackFeature');
+      _t('feedbackMsgLabel', 'feedbackMsg');
+      _p('feedbackMsg', 'feedbackPlaceholder');
+      _t('feedbackCancelBtn', 'cancel');
+      _t('feedbackSubmitBtn', 'feedbackSubmit');
       // Lang toggle button
       var langBtn = document.getElementById('langToggleBtn');
       if (langBtn) langBtn.querySelector('span:last-child').textContent = t('langLabel');
@@ -1397,7 +1596,7 @@
         var avatarHtml = info.photo ? '<img src="'+info.photo+'" class="share-avatar" referrerpolicy="no-referrer" style="object-fit:cover">' : '<div class="share-avatar">' + info.name.slice(0,2).toUpperCase() + '</div>';
         h += '<li class="share-item"><div class="share-user-info">'+avatarHtml+'<div><div class="share-user-name">' + displayName + '</div>' + (info.email && info.email !== info.name ? '<div class="share-user-email">' + info.email + '</div>' : '') + '</div></div><div style="display:flex;align-items:center;gap:8px"><span class="share-role-badge' + (role === 'owner' ? ' owner' : '') + '">' + roleLabel + '</span>';
         if (role !== 'owner') {
-          h += '<button class="share-remove-btn" onclick="removeShareUser(\'' + key + '\')" title="삭제">' + icon('trash', 14) + '</button>';
+          h += '<button class="share-remove-btn" onclick="removeShareUser(\'' + key + '\')" title="'+t('delete_')+'">' + icon('trash', 14) + '</button>';
         }
         h += '</div></li>';
       });
@@ -1480,7 +1679,7 @@
         btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></svg> '+t('private_');
       } else if (memberCount > 1) {
         btn.style.display = 'inline-flex';
-        btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg> ' + memberCount + '명';
+        btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg> ' + memberCount + t('nPeople');
       } else {
         btn.style.display = 'none';
       }
@@ -1650,7 +1849,8 @@
     var currentView='calendar',editingDayId=null,editingEvId=null,addingDayId=null;
     var mapFilter='all',leafletMap=null,mapMarkers=[],tileLayer=null,mapRoutes=[],_routeBuildId=0;
     var mapMobDay=0; // mobile map: index of currently selected day
-    var calPage=0; // mobile calendar: index of visible day
+    var calPage=0; // calendar page index (mobile: single day, desktop: group of days)
+    var CAL_COL_MIN=160; // minimum column width in px for desktop calendar
     var wishCatFilter='all',wishStatusFilter='all',editingWishId=null;
     var calPickDayId=null,calPickTime=null;
 
@@ -1744,6 +1944,7 @@
         if (JSON.stringify(DAYS) === JSON.stringify(newDays) && JSON.stringify(WISHLIST) === JSON.stringify(newWishlist)) return;
         DAYS = newDays;
         WISHLIST = newWishlist;
+        refreshDayLabels();
         lsSaveTripData(tripId);
         rerender();
       }, function(err) {
@@ -1804,7 +2005,7 @@
       if (!_routerInited) {
         _routerInited = true;
         window.addEventListener('hashchange', handleRoute);
-        window.addEventListener('resize', function(){updateFab();});
+        window.addEventListener('resize', function(){updateFab();if(currentView==='calendar'){calPage=0;renderCal();}});
       }
       handleRoute();
     }
@@ -1838,6 +2039,8 @@
       if (reconcileDays(currentTripMeta)) {
         scheduleSave();
       }
+      // Refresh day labels AFTER reconcile so all days (including reused ones) match currentLang
+      refreshDayLabels();
       document.getElementById('loadingScreen').style.display = 'none';
       backfillEventCoords();
       updateHeader(currentTripMeta);
@@ -1872,7 +2075,7 @@
       var flagEl = document.getElementById('appLogoFlag');
       var nameEl = document.getElementById('appLogoName');
       var datesEl = document.getElementById('appLogoDates');
-      var tabsEl = document.getElementById('viewTabs');
+      var tabsEl = document.getElementById('navTabsGroup');
       var currBtn = document.getElementById('currMenuBtn');
       var switcher = document.getElementById('appLogo');
       closeTripDropdown();
@@ -1916,7 +2119,7 @@
           '</div></div>';
       });
       html += '<div class="trip-dropdown-divider"></div>';
-      html += '<div class="trip-dropdown-item trip-dropdown-dash" onclick="goToDashboard();closeTripDropdown()"><span class="tdi-emoji" style="display:flex;align-items:center;justify-content:center"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg></span><span>모든 여행 보기</span></div>';
+      html += '<div class="trip-dropdown-item trip-dropdown-dash" onclick="goToDashboard();closeTripDropdown()"><span class="tdi-emoji" style="display:flex;align-items:center;justify-content:center"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg></span><span>'+t('allTrips')+'</span></div>';
       dd.innerHTML = html;
       dd.style.display = '';
     }
@@ -1978,7 +2181,7 @@
       var dd = document.getElementById('cityDropdown');
       try {
         var params = new URLSearchParams({ q: query, format: 'json', limit: '10', addressdetails: '1' });
-        var r = await fetch('https://nominatim.openstreetmap.org/search?' + params, { headers: { 'Accept-Language': 'ko,en' } });
+        var r = await fetch('https://nominatim.openstreetmap.org/search?' + params, { headers: { 'Accept-Language': 'en' } });
         var raw = await r.json();
         // Accept cities, towns, boroughs, districts and administrative boundaries
         var placeTypes = ['city','town','village','municipality','suburb','quarter','borough','district','county','state_district'];
@@ -2327,6 +2530,32 @@
             localStorage.setItem(_daysFixKey, '1');
           })();
         }
+        // One-time fix: translate Korean city names to English
+        var _cityEnKey = 'city-en-v1';
+        if (!localStorage.getItem(_cityEnKey)) {
+          (async function() {
+            var changed = false;
+            for (var i = 0; i < trips.length; i++) {
+              var trip = trips[i];
+              if (!trip.city || !trip.cityLat || !trip.cityLng) continue;
+              if (!/[\uAC00-\uD7AF]/.test(trip.city)) continue; // skip if already non-Korean
+              try {
+                if (i > 0) await new Promise(function(r){ setTimeout(r, 1100); });
+                var rv = await fetch('https://nominatim.openstreetmap.org/reverse?lat='+trip.cityLat+'&lon='+trip.cityLng+'&format=json&addressdetails=1',{headers:{'Accept-Language':'en'}});
+                var rd = await rv.json();
+                if (!rd || !rd.address) continue;
+                var enCity = rd.address.city || rd.address.town || rd.address.state || rd.address.village || rd.address.suburb || '';
+                if (!enCity) continue;
+                console.log('[city-en]', trip.city, '→', enCity);
+                trip.city = enCity;
+                changed = true;
+                await db.collection('trips').doc(trip.id).update({ city: enCity });
+              } catch(e) { console.error('[city-en] failed for', trip.city, e); }
+            }
+            localStorage.setItem(_cityEnKey, '1');
+            if (changed) { lsSaveTripList(trips); renderDashboard(trips); }
+          })();
+        }
       } catch(e) {
         var cached = lsLoadTripList();
         renderDashboard(cached || []);
@@ -2360,8 +2589,8 @@
         var canEditTrip = trip.access && currentUser && (trip.access[currentUser.uid] === 'owner' || trip.access[currentUser.uid] === 'write');
         return '<div class="trip-card" onclick="navigateTo(\'#trip/'+trip.id+'\')">'+
           '<div class="trip-card-actions">'+
-            (canEditTrip ? '<button onclick="event.stopPropagation();openTripEdit(\''+trip.id+'\')" class="dash-card-btn" title="수정">'+icon('pencil',15)+'</button>' : '')+
-            (isTripOwner ? '<button onclick="event.stopPropagation();archiveTrip(\''+trip.id+'\')" class="dash-card-btn" title="삭제">'+icon('trash',15)+'</button>' : '<button onclick="event.stopPropagation();leaveTrip(\''+trip.id+'\')" class="dash-card-btn" title="나가기">'+icon('trash',15)+'</button>')+
+            (canEditTrip ? '<button onclick="event.stopPropagation();openTripEdit(\''+trip.id+'\')" class="dash-card-btn" title="'+t('edit')+'">'+icon('pencil',15)+'</button>' : '')+
+            (isTripOwner ? '<button onclick="event.stopPropagation();archiveTrip(\''+trip.id+'\')" class="dash-card-btn" title="'+t('delete_')+'">'+icon('trash',15)+'</button>' : '<button onclick="event.stopPropagation();leaveTrip(\''+trip.id+'\')" class="dash-card-btn" title="'+t('leaveTrip')+'">'+icon('trash',15)+'</button>')+
           '</div>'+
           '<div class="trip-card-name">'+(trip.emoji?trip.emoji+' ':'')+trip.name+'</div>'+
           (trip.city ? '<div class="trip-card-city">'+trip.city+'</div>' : '')+
@@ -2369,7 +2598,7 @@
           '<div class="trip-card-dates trip-card-wl" id="wl-count-'+trip.id+'" style="margin-top:2px;display:flex;align-items:center;gap:4px">'+
             (wlCount>0?icon('star',12)+' '+wlCount+t('nPlaces'):'')+
             (function(){ var ac=trip.access?Object.keys(trip.access).length:0; return ac>1?(wlCount>0?'<span style="margin:0 2px;color:var(--border-strong)">·</span>':'')+
-              '<span style="display:inline-flex;align-items:center;gap:3px"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>'+ac+'명</span>':''; })()+
+              '<span style="display:inline-flex;align-items:center;gap:3px"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>'+ac+t('nPeople')+'</span>':''; })()+
           '</div>'+
         '</div>';
       }
@@ -2611,7 +2840,7 @@
         d.events.forEach(function(ev){
           var tagged = Object.assign({}, ev);
           if (d.isoDate) {
-            tagged.notes = '[원래 ' + d.isoDate + '] ' + (ev.notes || '');
+            tagged.notes = '[' + t('originalDate') + ' ' + d.isoDate + '] ' + (ev.notes || '');
           }
           orphanEvents.push(tagged);
         });
@@ -2783,7 +3012,11 @@
     function updateFab(v){
       v=v||currentView;
       var fab=document.querySelector('.fab');
-      if(fab){fab.style.display=(!currentTripId||!canEdit()||(v==='map'&&window.innerWidth<=768))?'none':'';}
+      var navBtn=document.getElementById('navAddBtn');
+      var isDesktop=window.innerWidth>768;
+      var showAdd=currentTripId&&canEdit();
+      if(fab){fab.style.display=(!showAdd||(v==='map'&&!isDesktop)||isDesktop)?'none':'';}
+      if(navBtn){navBtn.style.display=(showAdd&&isDesktop)?'':'none';navBtn.textContent=t('navAdd');}
     }
     function rerender(){
       if(currentView==='calendar')renderCal();
@@ -2793,13 +3026,58 @@
     }
 
     // ==================== CALENDAR ====================
-    function renderCal(){renderCalDayNav();renderCalHeader();renderCalBody();}
+    function calDaysPerPage(){
+      var isMob=window.innerWidth<=768;
+      if(isMob)return 1;
+      var avail=window.innerWidth-100; // approx available width (minus time col + margins)
+      return Math.max(1,Math.floor(avail/CAL_COL_MIN));
+    }
+    function calTotalPages(){
+      var pp=calDaysPerPage();
+      return pp>=DAYS.length?1:Math.ceil(DAYS.length/pp);
+    }
+    function calPageDays(){
+      var isMob=window.innerWidth<=768;
+      if(isMob)return DAYS[calPage]?[DAYS[calPage]]:[];
+      var pp=calDaysPerPage();
+      if(pp>=DAYS.length)return DAYS;
+      var start=calPage*pp;
+      return DAYS.slice(start,start+pp);
+    }
+    function renderCal(){renderCalPageNav();renderCalDayNav();renderCalHeader();renderCalBody();}
+    function renderCalPageNav(){
+      var el=document.getElementById('calPageNav');if(!el)return;
+      var isMob=window.innerWidth<=768;
+      var tp=calTotalPages();
+      var calSec=document.getElementById('view-calendar');
+      if(isMob||tp<=1){el.className='cal-page-nav';el.innerHTML='';if(calSec)calSec.classList.remove('cal-paged');return;}
+      if(calSec)calSec.classList.add('cal-paged');
+      el.className='cal-page-nav visible';
+      var pp=calDaysPerPage();
+      var startIdx=calPage*pp, endIdx=Math.min(startIdx+pp,DAYS.length);
+      var startDay=DAYS[startIdx], endDay=DAYS[endIdx-1];
+      var label=startDay.date.split(' ')[0]+' – '+endDay.date.split(' ')[0];
+      var dots='';
+      for(var p=0;p<tp;p++){
+        var c=DAYS[p*pp]?DAYS[p*pp].color:'var(--border-strong)';
+        dots+='<div class="cal-page-dot'+(p===calPage?' active':'')+'" style="'+(p===calPage?'background:'+c:'')+';" onclick="setCalPage('+p+')"></div>';
+      }
+      el.innerHTML=
+        '<button class="cal-page-btn" onclick="setCalPage('+(calPage-1)+')"'+(calPage===0?' disabled':'')+'>'+
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>'+
+        '</button>'+
+        '<div class="cal-page-dots">'+dots+'</div>'+
+        '<div class="cal-page-label">'+label+'</div>'+
+        '<button class="cal-page-btn" onclick="setCalPage('+(calPage+1)+')"'+(calPage>=tp-1?' disabled':'')+'>'+
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>'+
+        '</button>';
+    }
     function renderCalDayNav(){
       var el=document.getElementById('calDayNav');if(!el)return;
       if(!DAYS.length){el.innerHTML='';return;}
       var day=DAYS[calPage];if(!day)return;
       var dots=DAYS.map(function(d,i){
-        return '<div class="cal-day-nav-dot'+(i===calPage?' active':'')+'" style="'+(i===calPage?'background:'+day.color+';':'')+'" onclick="setCalPage('+i+')" title="Day '+(i+1)+'"></div>';
+        return '<div class="cal-day-nav-dot'+(i===calPage?' active':'')+'" style="'+(i===calPage?'background:'+day.color+';':'')+'" onclick="setCalPage('+i+')" title="'+STRINGS.dayN[currentLang](i+1)+'"></div>';
       }).join('');
       el.innerHTML=
         '<button class="cal-nav-btn" onclick="setCalPage('+(calPage-1)+')"'+(calPage===0?' disabled':'')+'>'+
@@ -2810,34 +3088,40 @@
           (weatherChip(day)?'<div class="cal-day-nav-theme">'+weatherChip(day)+'</div>':'')+
         '</div>'+
         '<div class="cal-day-nav-dots">'+dots+'</div>'+
-        '<button class="cal-nav-btn" onclick="goToMapDay(\''+day.id+'\')" title="지도보기">'+icon('map',14)+'</button>'+
+        '<button class="cal-nav-btn" onclick="goToMapDay(\''+day.id+'\')" title="'+t('viewMap')+'">'+icon('map',14)+'</button>'+
         '<button class="cal-nav-btn" onclick="setCalPage('+(calPage+1)+')"'+(calPage===DAYS.length-1?' disabled':'')+'>'+
           '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>'+
         '</button>';
     }
     function setCalPage(idx){
-      calPage=Math.max(0,Math.min(DAYS.length-1,idx));
-      renderCalDayNav();renderCalBody();
-      // scrollCalToFirstEvent and renderCalNowLine are called inside renderCalBody via setTimeout
+      var isMob=window.innerWidth<=768;
+      if(isMob){
+        calPage=Math.max(0,Math.min(DAYS.length-1,idx));
+        renderCalDayNav();renderCalBody();
+      } else {
+        var tp=calTotalPages();
+        calPage=Math.max(0,Math.min(tp-1,idx));
+        renderCalPageNav();renderCalHeader();renderCalBody();
+      }
     }
     function renderCalHeader(){
       var el=document.getElementById('calHeaderRow');
-      el.style.setProperty('--day-count', DAYS.length||1);
+      var days=calPageDays();
+      el.style.setProperty('--day-count', days.length||1);
       var h='<div class="cal-header-time"></div>';
-      DAYS.forEach(function(day){
-        h+='<div class="cal-day-header" style="border-left-color:'+day.color+'40"><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><div class="cal-day-date" style="margin:0"><span class="cal-day-dot" style="background:'+day.color+'"></span><span>'+day.date+'</span></div>'+weatherChip(day)+'<div style="display:flex;gap:5px;margin-left:auto"><button class="cal-day-add" onclick="event.stopPropagation();goToMapDay(\''+day.id+'\')" title="지도보기" style="padding:3px 7px">'+icon('map',12)+'</button></div></div></div>';
+      days.forEach(function(day){
+        h+='<div class="cal-day-header" style="border-left-color:'+day.color+'40"><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><div class="cal-day-date" style="margin:0"><span class="cal-day-dot" style="background:'+day.color+'"></span><span>'+day.date+'</span></div>'+weatherChip(day)+'<div style="display:flex;gap:5px;margin-left:auto"><button class="cal-day-add" onclick="event.stopPropagation();goToMapDay(\''+day.id+'\')" title="'+t('viewMap')+'" style="padding:3px 7px">'+icon('map',12)+'</button></div></div></div>';
       });
       el.innerHTML=h;
     }
     function renderCalBody(){
       var el=document.getElementById('calBodyRow');
-      el.style.setProperty('--day-count', DAYS.length||1);
+      var days=calPageDays();
+      el.style.setProperty('--day-count', days.length||1);
       var h='<div class="cal-time-col">';
       for(var hr=START_HR;hr<END_HR;hr++){var lbl=hr===12?'12PM':hr>12?(hr-12)+'PM':hr+'AM';h+='<div class="cal-time-slot">'+lbl+'</div>';}
       h+='</div>';
-      var isMob=window.innerWidth<=768;
-      var daysToRender=isMob?(DAYS[calPage]?[DAYS[calPage]]:[]):DAYS;
-      daysToRender.forEach(function(day){
+      days.forEach(function(day){
         var sorted=sortEvs(day.events),layout=computeEventLayout(day.events);
         h+='<div class="cal-day-col" data-dayid="'+day.id+'" style="border-left-color:'+day.color+'25" onclick="onCalColClick(event,\''+day.id+'\')" onmousemove="onCalColHover(event)" onmouseleave="onCalColLeave(event)">';
         h+='<div class="cal-ghost-slot"><span></span></div>';
@@ -2855,7 +3139,7 @@
           h+='<div class="cal-event-title" style="color:'+evFg+';overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+ev.title+(ev.notes?' <span style="opacity:0.55;font-style:italic;font-weight:400"> · '+ev.notes+'</span>':'')+'</div>';
           if(height>58&&ev.subtitle)h+='<div class="cal-event-sub">'+ev.subtitle+'</div>';
           if(ev.optional)h+='<span class="cal-badge">optional</span>';
-          if(ev.link)h+='<span class="cal-badge" style="background:rgba(59,130,246,0.2);color:#3b82f6;cursor:pointer" onclick="event.stopPropagation();window.open(\''+ev.link.replace(/'/g,"\\'")+'\',\'_blank\')">'+icon('link',10)+' 링크</span>';
+          if(ev.link)h+='<span class="cal-badge" style="background:rgba(59,130,246,0.2);color:#3b82f6;cursor:pointer" onclick="event.stopPropagation();window.open(\''+ev.link.replace(/'/g,"\\'")+'\',\'_blank\')">'+icon('link',10)+' '+t('link')+'</span>';
           h+='</div>';
         });
         h+='</div>';
@@ -2864,8 +3148,7 @@
       setTimeout(function(){ scrollCalToFirstEvent(); renderCalNowLine(); }, 0);
     }
     function scrollCalToFirstEvent(){
-      var isMob=window.innerWidth<=768;
-      var days=isMob?(DAYS[calPage]?[DAYS[calPage]]:[]):DAYS;
+      var days=calPageDays();
       var mins=[];
       days.forEach(function(d){d.events.forEach(function(e){if(e.time)mins.push(toMin(e.time));});});
       if(!mins.length)return;
@@ -2907,7 +3190,7 @@
       var topPx=((snapped-START_HR*60)/60)*HOUR_PX;
       ghost.style.top=topPx+'px';
       var h=Math.floor(snapped/60),m=snapped%60;
-      ghost.querySelector('span').textContent=fmtTime(minToStr(snapped))+' 시간 배정';
+      ghost.querySelector('span').textContent=fmtTime(minToStr(snapped))+' '+t('assignTime');
     }
     function onCalColLeave(e){
       var ghost=e.currentTarget.querySelector('.cal-ghost-slot');
@@ -2918,13 +3201,13 @@
     function openCalPickModal(dayId,time){
       calPickDayId=dayId;calPickTime=time;
       var day=getDay(dayId),tl=time?' · '+fmtTime(time):'';
-      document.getElementById('calPickTitle').textContent=(day?day.date:'')+tl+' 일정 추가';
+      document.getElementById('calPickTitle').textContent=(day?day.date:'')+tl+' '+t('addToSchedule');
       var multiCat={hotel:1,transport:1};
       var unscheduled=WISHLIST.filter(function(w){return!w.calEventId||multiCat[w.category];}),h='';
       if(unscheduled.length===0){
-        h='<div style="text-align:center;padding:32px 16px;color:var(--text-secondary)"><div style="margin-bottom:8px;display:flex;justify-content:center">'+icon('star',28)+'</div><div style="font-weight:600;margin-bottom:4px">추가 가능한 항목 없음</div><div style="font-size:0.82rem">하단 + 버튼으로 새 장소를 추가하세요</div></div>';
+        h='<div style="text-align:center;padding:32px 16px;color:var(--text-secondary)"><div style="margin-bottom:8px;display:flex;justify-content:center">'+icon('star',28)+'</div><div style="font-weight:600;margin-bottom:4px">'+t('noWishItems')+'</div><div style="font-size:0.82rem">'+t('noWishItemsHint')+'</div></div>';
       } else {
-        h='<div style="font-size:0.78rem;color:var(--text-secondary)">추가할 장소 선택:</div><div class="cal-pick-list">';
+        h='<div style="font-size:0.78rem;color:var(--text-secondary)">'+t('selectPlace')+'</div><div class="cal-pick-list">';
         unscheduled.forEach(function(w){
           var cat=CAT[w.category]||CAT.other,cic=catIcon(w.category,16);
           h+='<button class="cal-pick-item" onclick="calPickSelect(\''+w.id+'\')"><div class="cal-pick-icon" style="background:'+cat.bg+'">'+cic+'</div><div class="cal-pick-info"><div class="cal-pick-name">'+w.name+'</div>'+(w.notes?'<div class="cal-pick-sub">'+w.notes+'</div>':'')+'</div><span class="cal-pick-cat" style="background:'+cat.bg+';color:'+cat.color+'">'+catLabel(w.category)+'</span></button>';
@@ -2945,7 +3228,10 @@
     // ==================== MAP ====================
     function goToCalDay(dayId){
       var idx=DAYS.findIndex(function(d){return d.id===dayId;});
-      if(idx>=0)calPage=idx;
+      if(idx>=0){
+        var isMob=window.innerWidth<=768;
+        calPage=isMob?idx:Math.floor(idx/calDaysPerPage());
+      }
       switchView('calendar');
     }
     function goToMapDay(dayId){
@@ -2962,13 +3248,13 @@
         fr.innerHTML='';renderMapList();
       } else {
         var isAll=mapFilter==='all';
-        var fh='<button class="map-filter-btn'+(isAll?' active':'')+'" onclick="setMapFilter(\'all\',this)"'+(isAll?' style="background:var(--accent);color:var(--accent-fg);border-color:transparent"':'')+'>전체</button>';
+        var fh='<button class="map-filter-btn'+(isAll?' active':'')+'" onclick="setMapFilter(\'all\',this)"'+(isAll?' style="background:var(--accent);color:var(--accent-fg);border-color:transparent"':'')+'>'+t('allFilter')+'</button>';
         DAYS.forEach(function(d,i){
           var active=mapFilter===d.id;
-          fh+='<button class="map-filter-btn'+(active?' active':'')+'" onclick="setMapFilter(\''+d.id+'\',this)"'+(active?' style="background:'+d.color+';color:white;border-color:transparent"':'')+'>'+'Day '+(i+1)+'</button>';
+          fh+='<button class="map-filter-btn'+(active?' active':'')+'" onclick="setMapFilter(\''+d.id+'\',this)"'+(active?' style="background:'+d.color+';color:white;border-color:transparent"':'')+'>'+STRINGS.dayN[currentLang](i+1)+'</button>';
         });
         var isWish=mapFilter==='wishlist';
-        fh+='<button class="map-filter-btn'+(isWish?' active':'')+'" onclick="setMapFilter(\'wishlist\',this)"'+(isWish?' style="background:#8b5cf6;color:white;border-color:transparent"':'')+'><span style="display:inline-flex;vertical-align:middle">'+icon('star',13)+'</span> 미배정</button>';
+        fh+='<button class="map-filter-btn'+(isWish?' active':'')+'" onclick="setMapFilter(\'wishlist\',this)"'+(isWish?' style="background:#8b5cf6;color:white;border-color:transparent"':'')+'><span style="display:inline-flex;vertical-align:middle">'+icon('star',13)+'</span> '+t('unassigned')+'</button>';
         fr.innerHTML=fh;renderMapList();
       }
       renderMapMobTabs();renderMapMobSheet();
@@ -2978,7 +3264,7 @@
       var el=document.getElementById('mapMobTabs');if(!el)return;
       var isHt=currentTripMeta&&currentTripMeta.type==='hometown';
       var tabs=isHt?[]:DAYS.map(function(d,i){
-        return '<button class="map-mob-tab'+(i===mapMobDay&&mapFilter!=='wishlist'?' active':'')+'" onclick="setMapMobDay('+i+')">Day '+(i+1)+'</button>';
+        return '<button class="map-mob-tab'+(i===mapMobDay&&mapFilter!=='wishlist'?' active':'')+'" onclick="setMapMobDay('+i+')">'+STRINGS.dayN[currentLang](i+1)+'</button>';
       });
       tabs.push('<button class="map-mob-tab'+(mapFilter==='wishlist'||(isHt&&mapFilter==='all')?' active':'')+'" onclick="setMapMobWishlist()" style="display:inline-flex;align-items:center;justify-content:center;'+(mapFilter==='wishlist'||(isHt&&mapFilter==='all')?'background:#8b5cf6;color:white;border-color:#8b5cf6':'')+'">'+icon('star',14)+'</button>');
       el.innerHTML=tabs.join('');
@@ -3001,12 +3287,12 @@
             '<div class="map-mob-card-info">'+
             '<div class="map-mob-card-name">'+w.name+'</div>'+
             (w.notes?'<div class="map-mob-card-time">'+w.notes+'</div>':'')+
-            (hasCoords?'':'<div class="map-mob-card-time" style="color:#f59e0b;font-size:0.7rem">위치 정보 없음</div>')+
+            (hasCoords?'':'<div class="map-mob-card-time" style="color:#f59e0b;font-size:0.7rem">'+t('noLocation')+'</div>')+
             '</div></div>';
         }).join('');
         el.innerHTML='<div class="map-mob-handle"></div>'+
-          '<div class="map-mob-title-row"><div class="map-mob-title" style="color:#8b5cf6;display:flex;align-items:center;gap:5px">'+icon('star',15)+' 미배정 장소</div></div>'+
-          '<div class="map-mob-cards">'+(cards||'<div style="padding:16px;font-size:0.82rem;color:var(--text-secondary)">미배정 장소가 없습니다</div>')+'</div>';
+          '<div class="map-mob-title-row"><div class="map-mob-title" style="color:#8b5cf6;display:flex;align-items:center;gap:5px">'+icon('star',15)+' '+t('unassignedPlaces')+'</div></div>'+
+          '<div class="map-mob-cards">'+(cards||'<div style="padding:16px;font-size:0.82rem;color:var(--text-secondary)">'+t('noUnassigned')+'</div>')+'</div>';
         return;
       }
       var day=DAYS[mapMobDay];if(!day){el.innerHTML='';return;}
@@ -3021,13 +3307,13 @@
       }).join('');
       el.innerHTML=
         '<div class="map-mob-handle"></div>'+
-        '<div class="map-mob-label">Day '+(mapMobDay+1)+'</div>'+
+        '<div class="map-mob-label">'+STRINGS.dayN[currentLang](mapMobDay+1)+'</div>'+
         (weatherData[dayIsoDate(day)]?'<div class="mob-weather-row">'+weatherData[dayIsoDate(day)].icon+' <span>'+weatherData[dayIsoDate(day)].tempMax+'° / '+weatherData[dayIsoDate(day)].tempMin+'°</span></div>':'')+
         '<div class="map-mob-title-row">'+
           '<div class="map-mob-title">'+day.date+' — '+day.theme+'</div>'+
           '<div class="map-mob-btns">'+
-            '<button class="map-mob-btn map-mob-btn-add" onclick="openCalAdd(\''+day.id+'\',null)" title="장소 추가" style="background:var(--accent);color:var(--accent-fg);border-color:transparent;font-size:1.2rem;font-weight:300">+</button>'+
-            '<button class="map-mob-btn" onclick="goToCalDay(\''+day.id+'\')" title="캘린더로 보기">'+icon('calendar',16)+'</button>'+
+            '<button class="map-mob-btn map-mob-btn-add" onclick="openCalAdd(\''+day.id+'\',null)" title="'+t('addPlace')+'" style="background:var(--accent);color:var(--accent-fg);border-color:transparent;font-size:1.2rem;font-weight:300">+</button>'+
+            '<button class="map-mob-btn" onclick="goToCalDay(\''+day.id+'\')" title="'+t('viewInCalendar')+'">'+icon('calendar',16)+'</button>'+
           '</div>'+
         '</div>'+
         '<div class="map-mob-cards">'+cards+'</div>';
@@ -3058,13 +3344,13 @@
         unassigned.forEach(function(w){
           var ic=catIcon(w.category,16);
           var hasCoords=w.lat!=null&&w.lng!=null;
-          h+='<div class="map-event-row'+(hasCoords?'':' no-coords')+'" '+(hasCoords?'onclick="focusWishMarker(\''+w.id+'\')"':'')+' style="'+(hasCoords?'':'opacity:0.55;cursor:default')+'"><span style="font-size:14px;line-height:1;flex-shrink:0">'+ic+'</span><div style="flex:1;min-width:0"><div class="map-event-name">'+w.name+'</div>'+(w.notes?'<div class="map-event-time">'+w.notes+'</div>':'')+(hasCoords?'':'<div class="map-event-time" style="color:#f59e0b;font-size:0.72rem">위치 정보 없음 — 구글맵 링크를 추가해 주세요</div>')+'</div></div>';
+          h+='<div class="map-event-row'+(hasCoords?'':' no-coords')+'" '+(hasCoords?'onclick="focusWishMarker(\''+w.id+'\')"':'')+' style="'+(hasCoords?'':'opacity:0.55;cursor:default')+'"><span style="font-size:14px;line-height:1;flex-shrink:0">'+ic+'</span><div style="flex:1;min-width:0"><div class="map-event-name">'+w.name+'</div>'+(w.notes?'<div class="map-event-time">'+w.notes+'</div>':'')+(hasCoords?'':'<div class="map-event-time" style="color:#f59e0b;font-size:0.72rem">'+t('noLocationHint')+'</div>')+'</div></div>';
         });
         h+='</div>';
       } else {
         DAYS.forEach(function(day){
           if(mapFilter!=='all'&&mapFilter!==day.id)return;
-          h+='<div class="map-group"><div class="map-group-title" style="background:'+day.color+'20;color:'+day.color+';display:flex;align-items:center;justify-content:space-between"><span style="display:flex;align-items:center;gap:5px"><span style="width:7px;height:7px;border-radius:50%;background:'+day.color+';display:inline-block;"></span>'+day.date+' · '+day.theme+mapWeatherChip(day)+'</span><button onclick="goToCalDay(\''+day.id+'\')" title="캘린더로 보기" style="background:none;border:none;cursor:pointer;padding:0 2px;opacity:0.75;display:flex;align-items:center">'+icon('calendar',13)+'</button></div>';
+          h+='<div class="map-group"><div class="map-group-title" style="background:'+day.color+'20;color:'+day.color+';display:flex;align-items:center;justify-content:space-between"><span style="display:flex;align-items:center;gap:5px"><span style="width:7px;height:7px;border-radius:50%;background:'+day.color+';display:inline-block;"></span>'+day.date+' · '+day.theme+mapWeatherChip(day)+'</span><button onclick="goToCalDay(\''+day.id+'\')" title="'+t('viewInCalendar')+'" style="background:none;border:none;cursor:pointer;padding:0 2px;opacity:0.75;display:flex;align-items:center">'+icon('calendar',13)+'</button></div>';
           sortEvs(day.events).forEach(function(ev){
             if(!ev.lat)return;
             var ic=catIcon(ev.category,16);
@@ -3152,7 +3438,7 @@
               '</div>',
             className:'',iconSize:[36,41],iconAnchor:[18,41]
           });
-          var popup='<div style="font-family:Noto Sans KR,Inter,sans-serif;min-width:140px"><div style="font-weight:700;font-size:13px;margin-bottom:3px">'+w.name+'</div>'+(w.notes?'<div style="font-size:11px;color:#888">'+w.notes+'</div>':'')+'</div>';
+          var popup='<div style="font-family:Inter,Noto Sans KR,sans-serif;min-width:140px"><div style="font-weight:700;font-size:13px;margin-bottom:3px">'+w.name+'</div>'+(w.notes?'<div style="font-size:11px;color:#888">'+w.notes+'</div>':'')+'</div>';
           var m=L.marker([w.lat,w.lng],{icon:iconEl}).addTo(leafletMap).bindPopup(popup);
           m._wishId=w.id;mapMarkers.push(m);
         });
@@ -3173,7 +3459,7 @@
               +'</div>',
             className:'',iconSize:[36,41],iconAnchor:[18,41]
           });
-          var popup='<div style="font-family:Noto Sans KR,Inter,sans-serif;min-width:160px"><div style="font-weight:700;font-size:13px;margin-bottom:3px">'+ev.title+'</div><div style="font-size:11px;color:#888">'+fmtTime(ev.time)+(ev.endTime?' – '+fmtTime(ev.endTime):'')+'</div>'+(ev.subtitle?'<div style="font-size:11px;margin-top:4px">'+ev.subtitle+'</div>':'')+(ev.notes?'<div style="font-size:11px;color:#f59e0b;margin-top:4px;display:flex;align-items:start;gap:3px">'+icon('pin',11)+' '+ev.notes+'</div>':'')+(canEdit()?'<button type="button" onclick="openEdit(\''+day.id+'\',\''+ev.id+'\')" style="margin-top:8px;width:100%;padding:6px 10px;font-size:11px;font-weight:600;border-radius:6px;border:none;background:var(--accent);color:var(--accent-fg);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:5px;font-family:inherit">'+icon('pencil',11)+' 편집</button>':'')+'</div>';
+          var popup='<div style="font-family:Inter,Noto Sans KR,sans-serif;min-width:160px"><div style="font-weight:700;font-size:13px;margin-bottom:3px">'+ev.title+'</div><div style="font-size:11px;color:#888">'+fmtTime(ev.time)+(ev.endTime?' – '+fmtTime(ev.endTime):'')+'</div>'+(ev.subtitle?'<div style="font-size:11px;margin-top:4px">'+ev.subtitle+'</div>':'')+(ev.notes?'<div style="font-size:11px;color:#f59e0b;margin-top:4px;display:flex;align-items:start;gap:3px">'+icon('pin',11)+' '+ev.notes+'</div>':'')+(canEdit()?'<button type="button" onclick="openEdit(\''+day.id+'\',\''+ev.id+'\')" style="margin-top:8px;width:100%;padding:6px 10px;font-size:11px;font-weight:600;border-radius:6px;border:none;background:var(--accent);color:var(--accent-fg);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:5px;font-family:inherit">'+icon('pencil',11)+' '+t('editBtn')+'</button>':'')+'</div>';
           var m=L.marker([ev.lat,ev.lng],{icon:mIcon}).addTo(leafletMap).bindPopup(popup);
           m._evData={dayId:day.id,evId:ev.id};mapMarkers.push(m);n++;
         });
@@ -3232,7 +3518,7 @@
       var ev=getEv(dayId,evId);if(!ev)return;
       editingDayId=dayId;editingEvId=evId;
       document.getElementById('editModalTitle').textContent = t('editEvent');
-      var _db=document.getElementById('editDeleteBtn'); _db.style.display=''; _db.textContent='삭제';
+      var _db=document.getElementById('editDeleteBtn'); _db.style.display=''; _db.textContent=t('delete_');
       document.getElementById('editSubmitBtn').textContent = t('save');
       // Populate date picker, constrained to trip window
       var dateInput=document.getElementById('editDate');
@@ -3255,7 +3541,7 @@
         var ph=document.getElementById('editPlaceHeader');
         var gmapsUrl=ev.mapsUrl||wl.mapsUrl||((ev.lat!=null&&ev.lng!=null)?('https://www.google.com/maps/search/?api=1&query='+ev.lat+','+ev.lng):'');
         var actBtns='<div class="eph-actions" style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">'+
-          '<button type="button" class="btn btn-primary" style="padding:7px 12px;font-size:0.8rem;display:inline-flex;align-items:center;gap:6px" onclick="closeEditModal();goToMapDay(\''+dayId+'\')">'+icon('pin',14)+' 지도 보기</button>'+
+          '<button type="button" class="btn btn-primary" style="padding:7px 12px;font-size:0.8rem;display:inline-flex;align-items:center;gap:6px" onclick="closeEditModal();goToMapDay(\''+dayId+'\')">'+icon('pin',14)+' '+t('viewOnMap')+'</button>'+
           (gmapsUrl?'<a href="'+gmapsUrl.replace(/"/g,'&quot;')+'" target="_blank" rel="noopener" class="btn btn-secondary" style="padding:7px 12px;font-size:0.8rem;text-decoration:none;display:inline-flex;align-items:center;gap:6px">Google Maps <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg></a>':'')+
           '</div>';
         ph.innerHTML='<div class="eph-icon" style="background:'+catC.bg+';color:'+catC.color+'">'+catIcon(ev.category||'other',18)+'</div>'+
@@ -3263,7 +3549,7 @@
           (ev.subtitle?'<div class="eph-sub">'+ev.subtitle+'</div>':wl.notes?'<div class="eph-sub">'+wl.notes+'</div>':'')+
           actBtns+'</div>';
         ph.style.display='';
-        var dBtn=document.getElementById('editDeleteBtn'); if(dBtn) dBtn.textContent='시간 해제';
+        var dBtn=document.getElementById('editDeleteBtn'); if(dBtn) dBtn.textContent=t('removeFromSchedule');
         document.getElementById('editTypeSeg').style.display='none';
         document.getElementById('editModalTitle').textContent=t('editTime');
         var form=document.getElementById('editForm');
@@ -3379,7 +3665,9 @@
       });
       var total=WISHLIST.length,done=WISHLIST.filter(function(w){return w.visited;}).length;
       var isHt=currentTripMeta&&currentTripMeta.type==='hometown';
-      var h='<div class="wl-toolbar"><div class="wl-toolbar-top"><span class="wl-title" style="display:inline-flex;align-items:center;gap:5px">'+icon('star',16)+' '+t('places')+'</span>'+(isHt?'<span class="wl-count">'+total+'</span>':'<span class="wl-count">'+STRINGS.scheduledCount[currentLang](done,total)+'</span>')+'</div><div class="wl-filter-rows"><div class="wl-filter-group">';
+      var h='';
+      if(canEdit()){h+='<div class="wl-quick-add"><input type="text" class="wl-quick-input" id="wlQuickUrl" placeholder="'+t('quickAddPlaceholder')+'" onpaste="setTimeout(function(){quickAddPlace()},100)"><button class="wl-quick-btn" onclick="quickAddPlace()">'+t('navAdd')+'</button></div>';}
+      h+='<div class="wl-toolbar"><div class="wl-toolbar-top"><span class="wl-title" style="display:inline-flex;align-items:center;gap:5px">'+icon('star',16)+' '+t('places')+'</span>'+(isHt?'<span class="wl-count">'+total+'</span>':'<span class="wl-count">'+STRINGS.scheduledCount[currentLang](done,total)+'</span>')+'</div><div class="wl-filter-rows"><div class="wl-filter-group">';
       h+=wlCatBtn('all',t('all'),wishCatFilter)+wlCatBtn('food',icon('food',13)+' '+t('catFood'),wishCatFilter)+wlCatBtn('bar',icon('bar',13)+' '+t('catBar'),wishCatFilter)+wlCatBtn('culture',icon('culture',13)+' '+t('catCulture'),wishCatFilter);
       if(!isHt){
         h+='</div><div class="wl-filter-group">';
@@ -3467,14 +3755,53 @@
       var wu=document.getElementById('wishMapsUrl');
       if(wu&&lat!=null&&lng!=null){wu.dataset.lat=lat;wu.dataset.lng=lng;}
     }
+    function detectCategory(name){
+      var n=name.toLowerCase();
+      if(/bar|cantina|pulque|mezcal|cervec|coctel|taberna|licor|tlecan|balmori|pub\b/i.test(n))return'bar';
+      if(/museo|palacio|biblioteca|plaza|iglesia|catedral|monumento|arqueol|pirámide|galería|galeria/i.test(n))return'culture';
+      if(/hotel|hostal|suites|andaz|marriott|hilton|hyatt|inn\b|lodge/i.test(n))return'hotel';
+      if(/aeropuerto|airport|terminal|estaci[oó]n|metro\b/i.test(n))return'transport';
+      if(/taquería|taqueria|taco|restauran|bistro|comedor|mariscos|fonda|mercado|cocina|café|cafe|coffee|bakery|panadería|torta|sushi|pizza|burger/i.test(n))return'food';
+      return null;
+    }
     function autoDetectCategory(name){
-      var n=name.toLowerCase(),cat=null;
-      if(/bar|cantina|pulque|mezcal|cervec|coctel|taberna|licor|tlecan|balmori|pub\b/i.test(n))cat='bar';
-      else if(/museo|palacio|biblioteca|plaza|iglesia|catedral|monumento|arqueol|pirámide|galería|galeria/i.test(n))cat='culture';
-      else if(/hotel|hostal|suites|andaz|marriott|hilton|hyatt|inn\b|lodge/i.test(n))cat='hotel';
-      else if(/aeropuerto|airport|terminal|estaci[oó]n|metro\b/i.test(n))cat='transport';
-      else if(/taquería|taqueria|taco|restauran|bistro|comedor|mariscos|fonda|mercado|cocina|café|cafe|coffee|bakery|panadería|torta|sushi|pizza|burger/i.test(n))cat='food';
+      var cat=detectCategory(name);
       if(cat){var sel=document.getElementById('wishCategory');if(sel)sel.value=cat;}
+    }
+    function quickAddPlace(){
+      var input=document.getElementById('wlQuickUrl');if(!input)return;
+      var url=(input.value||'').trim();if(!url)return;
+      url=extractMapsUrl(url);
+      if(!url)return;
+      input.value='';input.placeholder=t('loadingPlace');
+      if(/maps\.app\.goo\.gl|goo\.gl\/maps/.test(url)){
+        fetch('https://palo-travel-expand-url.jihoon8846.workers.dev/api/expand-url?url='+encodeURIComponent(url))
+          .then(function(r){return r.json();})
+          .then(function(d){
+            _addQuickPlace(d.url||url,d.name||'',d.address||'',d.lat,d.lng,d.category||'');
+            input.placeholder=t('quickAddPlaceholder');
+          })
+          .catch(function(){_addQuickPlace(url,'','',null,null,'');input.placeholder=t('quickAddPlaceholder');});
+      } else {
+        _addQuickPlace(url,'','',null,null,'');
+        input.placeholder=t('quickAddPlaceholder');
+      }
+    }
+    function _addQuickPlace(url,name,address,lat,lng,category){
+      name=(name||'').replace(/\+/g,' ');
+      if(!name){var nm=url.match(/maps\/(?:place|search)\/([^/@?,&]+)/);if(nm)name=decodeURIComponent(nm[1]).replace(/\+/g,' ').replace(/_/g,' ').trim();}
+      if(!name){var qm=url.match(/[?&](?:q|query)=([^&@,]+)/);if(qm)name=decodeURIComponent(qm[1]).replace(/\+/g,' ').trim();}
+      var displayName=name||address||url;
+      var cat=category||detectCategory(displayName)||'other';
+      if(!lat){var cm=url.match(/@(-?\d+\.?\d*),(-?\d+\.?\d*)/)||url.match(/!3d(-?\d+\.?\d+)!4d(-?\d+\.?\d+)/);if(cm){lat=parseFloat(cm[1]);lng=parseFloat(cm[2]);}}
+      var addedBy=currentUser?(currentUser.displayName||currentUser.email.split('@')[0]):'';
+      var addedByPhoto=currentUser&&currentUser.photoURL?currentUser.photoURL:'';
+      var newW={id:'wl_'+genId(),name:displayName,notes:address||'',category:cat,wishType:'place',mapsUrl:url,lat:lat||null,lng:lng||null,visited:false,fromItinerary:false,dayLabel:'',calDayId:null,calEventId:null,addedBy:addedBy,addedByPhoto:addedByPhoto};
+      WISHLIST.push(newW);
+      if(!lat&&url)_resolveWishCoords(newW);
+      else if(!lat&&displayName)geocodeWishItem(newW);
+      wishStatusFilter='all';
+      rerender();
     }
     function updateWishSaveBtn(){
       var hasName=!!(document.getElementById('wishName').value.trim());
@@ -3482,7 +3809,7 @@
       var enabled=(hasName||hasUrl)&&!_wishUrlResolving;
       var btn=document.getElementById('wishSaveBtn');
       btn.disabled=!enabled;btn.style.opacity=enabled?'':'0.4';btn.style.cursor=enabled?'':'not-allowed';
-      if(_wishUrlResolving) btn.textContent='로딩중...';
+      if(_wishUrlResolving) btn.textContent=t('loadingPlace');
       else if(editingWishId) btn.textContent=t('save');
       else btn.textContent=t('add');
     }
@@ -3626,7 +3953,7 @@
       var el=document.getElementById('calAddWishList');if(!el)return;
       var multiCat={hotel:1,transport:1};
       var unassigned=WISHLIST.filter(function(w){return w.wishType!=='note'&&(!w.calDayId||multiCat[w.category]);});
-      if(!unassigned.length){el.innerHTML='<div class="cal-add-empty">추가된 장소가 없습니다.<br><button type="button" class="cal-add-empty-btn" onclick="closeCalAdd();openWishAdd()">장소 추가하기</button></div>';return;}
+      if(!unassigned.length){el.innerHTML='<div class="cal-add-empty">'+t('noPlacesInCal')+'<br><button type="button" class="cal-add-empty-btn" onclick="closeCalAdd();openWishAdd()">'+t('addPlaceAction')+'</button></div>';return;}
       el.innerHTML=unassigned.map(function(w){
         var cic=catIcon(w.category,16);
         var sel=calAddWishId===w.id;
@@ -3998,12 +4325,12 @@
     // ==================== THEME ====================
     var savedTheme=localStorage.getItem('viz-theme');
     var currentTheme=savedTheme||(window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark');
-    function applyTheme(t){
-      document.documentElement.className='theme-'+t;
-      document.getElementById('themeIcon').innerHTML=t==='dark'?'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg>':'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/></svg>';
-      document.getElementById('themeLabel').textContent=t==='dark'?'다크모드':'라이트모드';
-      localStorage.setItem('viz-theme',t);currentTheme=t;
-      if(leafletMap)setTiles(t==='dark');rerender();
+    function applyTheme(th){
+      document.documentElement.className='theme-'+th;
+      document.getElementById('themeIcon').innerHTML=th==='dark'?'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg>':'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/></svg>';
+      document.getElementById('themeLabel').textContent=th==='dark'?t('darkMode'):t('lightMode');
+      localStorage.setItem('viz-theme',th);currentTheme=th;
+      if(leafletMap)setTiles(th==='dark');rerender();
       var dashVisible = document.getElementById('view-dashboard') && document.getElementById('view-dashboard').style.display !== 'none';
       if(dashVisible){ setTimeout(function(){ initCobe(cobeCachedTrips); }, 50); }
     }
@@ -4027,7 +4354,7 @@
       document.getElementById('feedbackMsg').value = '';
       document.querySelectorAll('.fb-type-btn').forEach(function(b){ b.classList.toggle('active', b.dataset.type === 'bug'); });
       document.getElementById('feedbackSubmitBtn').disabled = false;
-      document.getElementById('feedbackSubmitBtn').textContent = '보내기';
+      document.getElementById('feedbackSubmitBtn').textContent = t('feedbackSubmit');
       document.getElementById('feedbackModal').classList.add('open');
       setTimeout(function(){ document.getElementById('feedbackMsg').focus(); }, 100);
     }
@@ -4037,7 +4364,7 @@
       var msg = document.getElementById('feedbackMsg').value.trim();
       if (!msg) return;
       var btn = document.getElementById('feedbackSubmitBtn');
-      btn.disabled = true; btn.textContent = '보내는 중...';
+      btn.disabled = true; btn.textContent = t('feedbackSending');
       try {
         await db.collection('feedback').add({
           type: _fbType,
@@ -4048,11 +4375,11 @@
           resolved: false
         });
         closeFeedbackModal();
-        alert(_fbType === 'bug' ? '버그 신고가 접수되었습니다. 감사합니다!' : '기능 제안이 접수되었습니다. 감사합니다!');
+        alert(_fbType === 'bug' ? t('feedbackBugSuccess') : t('feedbackFeatureSuccess'));
       } catch(err) {
         console.error('Failed to submit feedback:', err);
-        btn.disabled = false; btn.textContent = '보내기';
-        alert('전송에 실패했습니다. 다시 시도해 주세요.');
+        btn.disabled = false; btn.textContent = t('feedbackSubmit');
+        alert(t('feedbackFailed'));
       }
     }
 
