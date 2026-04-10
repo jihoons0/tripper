@@ -1,5 +1,5 @@
 export default {
-  async fetch(request) {
+  async fetch(request, env) {
     const url = new URL(request.url);
 
     // CORS preflight
@@ -7,9 +7,20 @@ export default {
       return new Response(null, {
         headers: {
           'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET',
+          'Access-Control-Allow-Methods': 'GET, POST',
+          'Access-Control-Allow-Headers': 'Content-Type',
         },
       });
+    }
+
+    // Route: Google Places Autocomplete
+    if (url.pathname === '/api/places/autocomplete' && request.method === 'POST') {
+      return handlePlacesAutocomplete(request, env);
+    }
+
+    // Route: Google Places Details
+    if (url.pathname === '/api/places/details') {
+      return handlePlacesDetails(url, env);
     }
 
     if (url.pathname !== '/api/expand-url') {
@@ -116,6 +127,122 @@ export default {
     }
   }
 };
+
+// ==================== Google Places API Handlers ====================
+
+async function handlePlacesAutocomplete(request, env) {
+  const apiKey = env.GOOGLE_PLACES_API_KEY;
+  if (!apiKey) return json({ error: 'API key not configured' }, 500);
+
+  let body;
+  try { body = await request.json(); } catch (e) { return json({ error: 'invalid JSON' }, 400); }
+
+  const { input, sessionToken, locationBias } = body;
+  if (!input) return json({ error: 'input required' }, 400);
+
+  const reqBody = { input, languageCode: 'en' };
+  if (sessionToken) reqBody.sessionToken = sessionToken;
+  if (locationBias && locationBias.lat != null && locationBias.lng != null) {
+    reqBody.locationBias = {
+      circle: {
+        center: { latitude: locationBias.lat, longitude: locationBias.lng },
+        radius: locationBias.radius || 50000
+      }
+    };
+  }
+
+  try {
+    const res = await fetch('https://places.googleapis.com/v1/places:autocomplete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Goog-Api-Key': apiKey },
+      body: JSON.stringify(reqBody)
+    });
+    const data = await res.json();
+
+    const suggestions = (data.suggestions || [])
+      .filter(s => s.placePrediction)
+      .map(s => ({
+        placeId: s.placePrediction.placeId,
+        text: s.placePrediction.text?.text || '',
+        mainText: s.placePrediction.structuredFormat?.mainText?.text || '',
+        secondaryText: s.placePrediction.structuredFormat?.secondaryText?.text || '',
+      }));
+
+    return json({ suggestions });
+  } catch (e) {
+    return json({ error: e.message }, 500);
+  }
+}
+
+const GTYPE_TO_CAT = {
+  restaurant: 'food', cafe: 'food', bakery: 'food', meal_takeaway: 'food', meal_delivery: 'food',
+  coffee_shop: 'food', ice_cream_shop: 'food', pizza_restaurant: 'food', sushi_restaurant: 'food',
+  ramen_restaurant: 'food', seafood_restaurant: 'food', steak_house: 'food', sandwich_shop: 'food',
+  bar: 'bar', night_club: 'bar', wine_bar: 'bar',
+  museum: 'culture', art_gallery: 'culture', church: 'culture', tourist_attraction: 'culture',
+  performing_arts_theater: 'culture', historical_landmark: 'culture', national_park: 'culture', park: 'culture',
+  lodging: 'hotel', hotel: 'hotel', resort_hotel: 'hotel',
+  airport: 'transport', train_station: 'transport', bus_station: 'transport', transit_station: 'transport',
+  subway_station: 'transport',
+};
+
+async function handlePlacesDetails(url, env) {
+  const apiKey = env.GOOGLE_PLACES_API_KEY;
+  if (!apiKey) return json({ error: 'API key not configured' }, 500);
+
+  const placeId = url.searchParams.get('placeId');
+  const sessionToken = url.searchParams.get('sessionToken');
+  if (!placeId) return json({ error: 'placeId required' }, 400);
+
+  const fieldMask = 'displayName,location,photos,primaryType,types,formattedAddress,websiteUri,googleMapsUri';
+
+  try {
+    let detailUrl = `https://places.googleapis.com/v1/places/${placeId}?languageCode=en`;
+    if (sessionToken) detailUrl += `&sessionToken=${sessionToken}`;
+
+    const res = await fetch(detailUrl, {
+      headers: {
+        'X-Goog-Api-Key': apiKey,
+        'X-Goog-FieldMask': fieldMask
+      }
+    });
+    const d = await res.json();
+
+    // Resolve first photo to a URL
+    let photoUrl = '';
+    if (d.photos && d.photos.length > 0) {
+      const photoName = d.photos[0].name;
+      photoUrl = `https://places.googleapis.com/v1/${photoName}/media?maxHeightPx=400&key=${apiKey}`;
+    }
+
+    // Map Google type to our category
+    const primaryType = d.primaryType || '';
+    let category = GTYPE_TO_CAT[primaryType] || '';
+    if (!category && d.types) {
+      for (const t of d.types) {
+        if (GTYPE_TO_CAT[t]) { category = GTYPE_TO_CAT[t]; break; }
+      }
+    }
+
+    return json({
+      name: d.displayName?.text || '',
+      address: d.formattedAddress || '',
+      lat: d.location?.latitude || null,
+      lng: d.location?.longitude || null,
+      photoUrl,
+      category,
+      primaryType,
+      types: d.types || [],
+      mapsUrl: d.googleMapsUri || '',
+      websiteUrl: d.websiteUri || '',
+      placeId,
+    });
+  } catch (e) {
+    return json({ error: e.message }, 500);
+  }
+}
+
+// ==================== URL Expansion ====================
 
 async function followRedirect(url, maxRedirects = 5) {
   if (maxRedirects === 0) return url;

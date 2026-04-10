@@ -121,12 +121,24 @@
     .nav-add-btn { height:40px; padding:0 18px; border-radius:16px; border:none; background:var(--text); color:var(--bg); font-family:inherit; font-size:0.82rem; font-weight:600; cursor:pointer; white-space:nowrap; transition:opacity var(--dur-small), transform var(--dur-micro) var(--ease-out); }
     .nav-add-btn:hover { opacity:0.85; }
     .nav-add-btn:active { transform:scale(0.96); }
-    .wl-quick-add { display:flex; gap:8px; margin-bottom:18px; }
+    .wl-quick-add { position:relative; display:flex; gap:8px; margin-bottom:18px; }
     .wl-quick-input { flex:1; padding:10px 14px; border-radius:12px; border:1px solid var(--border); background:var(--surface); color:var(--text); font-family:inherit; font-size:0.85rem; outline:none; transition:border-color var(--dur-small); }
     .wl-quick-input:focus { border-color:var(--accent); }
     .wl-quick-input::placeholder { color:var(--text-secondary); }
     .wl-quick-btn { padding:10px 18px; border-radius:12px; border:none; background:var(--text); color:var(--bg); font-family:inherit; font-size:0.85rem; font-weight:600; cursor:pointer; white-space:nowrap; transition:opacity var(--dur-small); }
     .wl-quick-btn:hover { opacity:0.85; }
+    /* Place search dropdown */
+    .place-search-dropdown { position:absolute; top:calc(100% + 4px); left:0; right:0; background:var(--surface); border:1px solid var(--border-strong); border-radius:10px; z-index:200; max-height:260px; overflow-y:auto; box-shadow:0 8px 28px rgba(0,0,0,0.22); animation:viewEnter 0.18s var(--ease-out) both; }
+    .place-search-option { padding:10px 13px; cursor:pointer; font-size:0.85rem; display:flex; flex-direction:column; gap:2px; transition:background var(--dur-micro); border-radius:7px; margin:3px; }
+    .place-search-option:hover, .place-search-option.focused { background:var(--surface-hover); }
+    .place-search-main { font-weight:600; }
+    .place-search-secondary { font-size:0.72rem; color:var(--text-secondary); }
+    .place-search-loading { padding:12px 14px; text-align:center; color:var(--text-secondary); font-size:0.82rem; }
+    /* Wish modal search dropdown */
+    .wish-search-wrap { position:relative; }
+    .wish-search-wrap .place-search-dropdown { z-index:300; }
+    /* Place card photo */
+    .wl-card-photo { width:100%; height:120px; object-fit:cover; border-radius:8px; margin-bottom:8px; }
     @media (max-width:768px) {
       body.in-trip { background:var(--bg); overflow:visible; }
       body.in-trip .app-header { background:var(--bg); border-bottom:1px solid var(--border); }
@@ -820,7 +832,7 @@
     <div class="modal">
       <div class="modal-head"><h2 id="wishModalTitle">Add</h2><button class="modal-close" onclick="closeWishModal()">✕</button></div>
       <form id="wishForm" onsubmit="saveWishItem(event)">
-        <div class="form-group"><label class="form-label" for="wishMapsUrl" id="wishMapsLabel">Google Maps Link</label><input type="text" class="form-input" id="wishMapsUrl" placeholder="https://maps.app.goo.gl/..." oninput="parseGmapsUrl(this.value);updateWishSaveBtn()" onpaste="setTimeout(function(){parseGmapsUrl(document.getElementById('wishMapsUrl').value);updateWishSaveBtn()},150)" onchange="parseGmapsUrl(this.value);updateWishSaveBtn()" onblur="parseGmapsUrl(this.value);updateWishSaveBtn()" ondrop="setTimeout(function(){parseGmapsUrl(document.getElementById('wishMapsUrl').value);updateWishSaveBtn()},150)"><div style="font-size:0.74rem;color:var(--text-secondary);margin-top:4px" id="wishMapsHint">Share from Google Maps → paste the link to auto-fill name and location</div></div>
+        <div class="form-group wish-search-wrap"><label class="form-label" for="wishMapsUrl" id="wishMapsLabel">Search or Link</label><input type="text" class="form-input" id="wishMapsUrl" placeholder="Search a place or paste Google Maps link..." oninput="onWishSearchInput(this)" onpaste="setTimeout(function(){var el=document.getElementById('wishMapsUrl');if(el&&isGmapsUrl(el.value)){parseGmapsUrl(el.value);updateWishSaveBtn();}else{onWishSearchInput(el);}},150)" onkeydown="onPlaceSearchKeydown(event,'wishPlaceDropdown')" onchange="parseGmapsUrl(this.value);updateWishSaveBtn()" onblur="setTimeout(function(){var dd=document.getElementById('wishPlaceDropdown');if(dd)dd.style.display='none';parseGmapsUrl(document.getElementById('wishMapsUrl').value);updateWishSaveBtn()},200)" ondrop="setTimeout(function(){parseGmapsUrl(document.getElementById('wishMapsUrl').value);updateWishSaveBtn()},150)"><div class="place-search-dropdown" id="wishPlaceDropdown" style="display:none"></div><div style="font-size:0.74rem;color:var(--text-secondary);margin-top:4px" id="wishMapsHint">Type to search or paste a Google Maps link</div></div>
         <div class="form-group"><label class="form-label" for="wishName" id="wishNameLabel">Place Name</label><input type="text" class="form-input" id="wishName" placeholder="e.g. Contramar" oninput="updateWishSaveBtn()"></div>
         <div class="form-group"><label class="form-label" for="wishCategory" id="wishCatLabel">Category</label><select class="form-input" id="wishCategory"><option value="food">🍽️ Food</option><option value="bar">🍹 Bar/Drinks</option><option value="culture">🏛️ Culture</option><option value="hotel">🏨 Hotel</option><option value="conference">💼 Business</option><option value="transport">✈️ Transport</option><option value="other">📍 Other</option></select></div>
         <div class="form-group"><label class="form-label" for="wishNotes" id="wishNotesLabel">Notes</label><input type="text" class="form-input" id="wishNotes" placeholder="Why you want to go, hours, etc."></div>
@@ -1074,7 +1086,7 @@
       eventNamePlaceholder: { ko:'장소 또는 이벤트명', en:'Place or event name' },
       description: { ko:'설명', en:'Description' },
       descPlaceholder: { ko:'장소 설명', en:'Place description' },
-      gmapsLink: { ko:'구글맵 링크', en:'Google Maps Link' },
+      gmapsLink: { ko:'검색 또는 링크', en:'Search or Link' },
       gmapsForMap: { ko:'지도 표시용', en:'for map display' },
       notesPlaceholder: { ko:'예약 여부, 주의사항 등', en:'Reservations, notes, etc.' },
       linkOptional: { ko:'링크', en:'Link' },
@@ -1186,7 +1198,7 @@
       originalDate: { ko:'원래', en:'Originally' },
       noLocation: { ko:'위치 정보 없음', en:'No location' },
       noLocationHint: { ko:'위치 정보 없음 — 구글맵 링크를 추가해 주세요', en:'No location — add a Google Maps link' },
-      gmapsHint: { ko:'구글맵에서 공유 → 링크 복사 후 붙여넣으면 이름·위치가 자동으로 채워집니다', en:'Share from Google Maps → paste the link to auto-fill name and location' },
+      gmapsHint: { ko:'장소 이름을 입력하거나 구글맵 링크를 붙여넣으세요', en:'Type to search or paste a Google Maps link' },
       editBtn: { ko:'편집', en:'Edit' },
       leaveTrip: { ko:'나가기', en:'Leave' },
       allTrips: { ko:'모든 여행 보기', en:'All Trips' },
@@ -1195,8 +1207,11 @@
       // Language
       langLabel: { ko:'English', en:'한국어' },
       // Quick add
-      quickAddPlaceholder: { ko:'구글맵 링크를 붙여넣어 장소 추가...', en:'Paste Google Maps link to add a place...' },
+      quickAddPlaceholder: { ko:'장소 검색 또는 구글맵 링크 붙여넣기...', en:'Search a place or paste Google Maps link...' },
       navAdd: { ko:'+ 추가', en:'+ Add' },
+      searching: { ko:'검색 중...', en:'Searching...' },
+      noSearchResults: { ko:'검색 결과 없음', en:'No results found' },
+      wishMapsPlaceholder: { ko:'장소 검색 또는 구글맵 링크 붙여넣기...', en:'Search a place or paste Google Maps link...' },
     };
     function t(key) {
       var s = STRINGS[key];
@@ -1268,6 +1283,8 @@
       // Quick add placeholder
       var wlQuickUrl = document.getElementById('wlQuickUrl');
       if (wlQuickUrl) wlQuickUrl.placeholder = t('quickAddPlaceholder');
+      var wishMapsUrl = document.getElementById('wishMapsUrl');
+      if (wishMapsUrl && !wishMapsUrl.value) wishMapsUrl.placeholder = t('wishMapsPlaceholder');
       // Category selects
       var catSelects = [document.getElementById('editCategory'), document.getElementById('wishCategory')];
       var catKeys = ['catOptFood','catOptBar','catOptCulture','catOptHotel','catOptConference','catOptTransport','catOptOther'];
@@ -3680,7 +3697,7 @@
       var total=WISHLIST.length,done=WISHLIST.filter(function(w){return w.visited;}).length;
       var isHt=currentTripMeta&&currentTripMeta.type==='hometown';
       var h='';
-      if(canEdit()){h+='<div class="wl-quick-add"><input type="text" class="wl-quick-input" id="wlQuickUrl" placeholder="'+t('quickAddPlaceholder')+'" onpaste="setTimeout(function(){quickAddPlace()},100)"><button class="wl-quick-btn" onclick="quickAddPlace()">'+t('navAdd')+'</button></div>';}
+      if(canEdit()){h+='<div class="wl-quick-add"><input type="text" class="wl-quick-input" id="wlQuickUrl" placeholder="'+t('quickAddPlaceholder')+'" oninput="onQuickSearchInput(this)" onpaste="setTimeout(function(){var el=document.getElementById(\'wlQuickUrl\');if(el&&isGmapsUrl(el.value))quickAddPlace();},100)" onkeydown="onPlaceSearchKeydown(event,\'quickPlaceDropdown\')"><button class="wl-quick-btn" onclick="quickAddPlace()">'+t('navAdd')+'</button><div class="place-search-dropdown" id="quickPlaceDropdown" style="display:none"></div></div>';}
       h+='<div class="wl-toolbar"><div class="wl-toolbar-top"><span class="wl-title" style="display:inline-flex;align-items:center;gap:5px">'+icon('star',16)+' '+t('places')+'</span>'+(isHt?'<span class="wl-count">'+total+'</span>':'<span class="wl-count">'+STRINGS.scheduledCount[currentLang](done,total)+'</span>')+'</div><div class="wl-filter-rows"><div class="wl-filter-group">';
       h+=wlCatBtn('all',t('all'),wishCatFilter)+wlCatBtn('food',icon('food',13)+' '+t('catFood'),wishCatFilter)+wlCatBtn('bar',icon('bar',13)+' '+t('catBar'),wishCatFilter)+wlCatBtn('culture',icon('culture',13)+' '+t('catCulture'),wishCatFilter);
       if(!isHt){
@@ -3693,6 +3710,7 @@
         var cat=CAT[w.category]||CAT.other,cic=catIcon(w.category,16);
         var st='';if(w.calDayId&&w.calEventId){var ev=getEv(w.calDayId,w.calEventId);if(ev)st=fmtTime(ev.time)+(ev.endTime?' – '+fmtTime(ev.endTime):'');}
         h+='<div class="wl-card'+(w.visited?' visited':'')+'" onclick="editWishItem(\''+w.id+'\')">';
+        if (w.photoUrl) h+='<img class="wl-card-photo" src="'+w.photoUrl+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">';
         var authorEl = '';
         if (w.addedBy) {
           if (w.addedByPhoto) {
@@ -3706,7 +3724,10 @@
         if(w.visited&&w.dayLabel)h+='<span class="wl-badge" style="background:rgba(99,102,241,0.15);color:#6366f1;display:inline-flex;align-items:center;gap:3px">'+icon('calendar',11)+' '+w.dayLabel+'</span>';
         if(st)h+='<span class="wl-badge" style="background:rgba(16,185,129,0.12);color:var(--positive);display:inline-flex;align-items:center;gap:3px">'+icon('calendar',11)+' '+st+'</span>';
         h+='</div><div class="wl-card-bottom">';
-        if(w.mapsUrl)h+='<a class="wl-maps-link" href="'+w.mapsUrl+'" target="_blank" rel="noopener" onclick="event.stopPropagation()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg> '+t('googleMaps')+'</a>';
+        var linksH='';
+        if(w.mapsUrl)linksH+='<a class="wl-maps-link" href="'+w.mapsUrl+'" target="_blank" rel="noopener" onclick="event.stopPropagation()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg> '+t('googleMaps')+'</a>';
+        if(w.websiteUrl)linksH+='<a class="wl-maps-link" href="'+w.websiteUrl+'" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="margin-left:6px">'+icon('globe',12)+' Web</a>';
+        if(linksH) h+=linksH;
         else h+='<span></span>';
         if(!isHt){
           if(w.visited&&w.calEventId)h+='<div style="display:flex;gap:5px"><button class="wl-visited-toggle adjust" onclick="event.stopPropagation();openSchedModal(\''+w.id+'\')" style="display:inline-flex;align-items:center;gap:3px">'+icon('pencil',12)+' '+t('adjustTime')+'</button><button class="wl-visited-toggle wl-time-remove" onclick="event.stopPropagation();removeTimeFromWish(\''+w.id+'\')" style="display:inline-flex;align-items:center;gap:3px">'+icon('calendar',12)+' '+t('removeTime')+'</button></div>';
@@ -3769,6 +3790,173 @@
       var wu=document.getElementById('wishMapsUrl');
       if(wu&&lat!=null&&lng!=null){wu.dataset.lat=lat;wu.dataset.lng=lng;}
     }
+    // ==================== GOOGLE PLACES SEARCH ====================
+    var _placesSessionToken = null;
+    var _placesResults = [];
+    var _placesDropdownIdx = -1;
+    var _placesSearchTimer = null;
+    var _placesSearchAbort = null;
+    var WORKER_BASE = 'https://palo-travel-expand-url.jihoon8846.workers.dev';
+
+    function getPlacesSessionToken() {
+      if (!_placesSessionToken) _placesSessionToken = crypto.randomUUID();
+      return _placesSessionToken;
+    }
+    function resetPlacesSessionToken() { _placesSessionToken = null; }
+
+    function isGmapsUrl(str) {
+      return /maps\.app\.goo\.gl|goo\.gl\/maps|google\.com\/maps|maps\.google/.test(str);
+    }
+
+    // Autocomplete search for quick-add bar
+    function onQuickSearchInput(el) {
+      var val = (el.value || '').trim();
+      var dd = document.getElementById('quickPlaceDropdown');
+      if (!dd) return;
+      if (!val || val.length < 2) { dd.style.display = 'none'; _placesResults = []; return; }
+      // If it looks like a URL, don't search — let paste/enter handle it
+      if (isGmapsUrl(val) || /^https?:\/\//.test(val)) { dd.style.display = 'none'; return; }
+      clearTimeout(_placesSearchTimer);
+      _placesSearchTimer = setTimeout(function() { searchPlaces(val, 'quickPlaceDropdown'); }, 300);
+    }
+
+    // Autocomplete search for wish modal
+    function onWishSearchInput(el) {
+      var val = (el.value || '').trim();
+      var dd = document.getElementById('wishPlaceDropdown');
+      if (!dd) return;
+      if (!val || val.length < 2) { dd.style.display = 'none'; _placesResults = []; updateWishSaveBtn(); return; }
+      if (isGmapsUrl(val) || /^https?:\/\//.test(val)) {
+        dd.style.display = 'none';
+        parseGmapsUrl(val);
+        updateWishSaveBtn();
+        return;
+      }
+      clearTimeout(_placesSearchTimer);
+      _placesSearchTimer = setTimeout(function() { searchPlaces(val, 'wishPlaceDropdown'); }, 300);
+    }
+
+    async function searchPlaces(query, dropdownId) {
+      var dd = document.getElementById(dropdownId);
+      if (!dd) return;
+      dd.innerHTML = '<div class="place-search-loading">' + t('searching') + '</div>';
+      dd.style.display = 'block';
+      _placesDropdownIdx = -1;
+
+      var body = { input: query, sessionToken: getPlacesSessionToken() };
+      // Location bias: use current trip city coords
+      if (currentTripMeta && currentTripMeta.cityLat != null) {
+        body.locationBias = { lat: currentTripMeta.cityLat, lng: currentTripMeta.cityLng, radius: 50000 };
+      }
+
+      try {
+        if (_placesSearchAbort) _placesSearchAbort.abort();
+        _placesSearchAbort = new AbortController();
+        var res = await fetch(WORKER_BASE + '/api/places/autocomplete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+          signal: _placesSearchAbort.signal
+        });
+        var data = await res.json();
+        _placesResults = data.suggestions || [];
+        _placesDropdownIdx = -1;
+        if (!_placesResults.length) {
+          dd.innerHTML = '<div class="place-search-loading">' + t('noSearchResults') + '</div>';
+          return;
+        }
+        dd.innerHTML = _placesResults.map(function(s, i) {
+          return '<div class="place-search-option" data-i="' + i + '" onmousedown="event.preventDefault();selectPlace(' + i + ',\'' + dropdownId + '\')" onmouseover="_placesDropdownIdx=' + i + ';highlightPlaceOption(\'' + dropdownId + '\')">' +
+            '<div class="place-search-main">' + escH(s.mainText) + '</div>' +
+            '<div class="place-search-secondary">' + escH(s.secondaryText) + '</div></div>';
+        }).join('');
+      } catch (e) {
+        if (e.name === 'AbortError') return;
+        dd.innerHTML = '<div class="place-search-loading">Error</div>';
+      }
+    }
+
+    function highlightPlaceOption(dropdownId) {
+      document.querySelectorAll('#' + dropdownId + ' .place-search-option').forEach(function(el, i) {
+        el.classList.toggle('focused', i === _placesDropdownIdx);
+      });
+    }
+
+    function onPlaceSearchKeydown(e, dropdownId) {
+      var dd = document.getElementById(dropdownId);
+      if (!dd || dd.style.display === 'none') return;
+      var opts = dd.querySelectorAll('.place-search-option');
+      if (!opts.length) return;
+      if (e.key === 'ArrowDown') { e.preventDefault(); _placesDropdownIdx = Math.min(_placesDropdownIdx + 1, opts.length - 1); highlightPlaceOption(dropdownId); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); _placesDropdownIdx = Math.max(_placesDropdownIdx - 1, 0); highlightPlaceOption(dropdownId); }
+      else if (e.key === 'Enter' && _placesDropdownIdx >= 0) { e.preventDefault(); selectPlace(_placesDropdownIdx, dropdownId); }
+      else if (e.key === 'Escape') { dd.style.display = 'none'; }
+    }
+
+    async function selectPlace(idx, dropdownId) {
+      var dd = document.getElementById(dropdownId);
+      if (dd) dd.style.display = 'none';
+      var place = _placesResults[idx];
+      if (!place) return;
+
+      var token = getPlacesSessionToken();
+      resetPlacesSessionToken();
+
+      // Fetch place details
+      try {
+        var res = await fetch(WORKER_BASE + '/api/places/details?placeId=' + encodeURIComponent(place.placeId) + '&sessionToken=' + encodeURIComponent(token));
+        var d = await res.json();
+
+        if (dropdownId === 'quickPlaceDropdown') {
+          // Quick-add: create wishlist item directly
+          _addPlaceFromSearch(d);
+          var input = document.getElementById('wlQuickUrl');
+          if (input) { input.value = ''; input.placeholder = t('quickAddPlaceholder'); }
+        } else {
+          // Wish modal: populate fields
+          _populateWishModalFromSearch(d);
+        }
+      } catch (e) {
+        console.error('[selectPlace] details fetch failed:', e);
+      }
+    }
+
+    function _addPlaceFromSearch(d) {
+      var addedBy = currentUser ? (currentUser.displayName || currentUser.email.split('@')[0]) : '';
+      var addedByPhoto = currentUser && currentUser.photoURL ? currentUser.photoURL : '';
+      var newW = {
+        id: 'wl_' + genId(), name: d.name || '', notes: d.address || '', category: d.category || 'other',
+        wishType: 'place', mapsUrl: d.mapsUrl || '', lat: d.lat || null, lng: d.lng || null,
+        visited: false, fromItinerary: false, dayLabel: '', calDayId: null, calEventId: null,
+        addedBy: addedBy, addedByPhoto: addedByPhoto,
+        googlePlaceId: d.placeId || '', photoUrl: d.photoUrl || '', websiteUrl: d.websiteUrl || '', primaryType: d.primaryType || ''
+      };
+      WISHLIST.push(newW);
+      wishStatusFilter = 'all';
+      rerender();
+    }
+
+    function _populateWishModalFromSearch(d) {
+      var nf = document.getElementById('wishName');
+      if (nf) nf.value = d.name || '';
+      var notesEl = document.getElementById('wishNotes');
+      if (notesEl) notesEl.value = d.address || '';
+      var catSel = document.getElementById('wishCategory');
+      if (catSel && d.category) catSel.value = d.category;
+      var wuEl = document.getElementById('wishMapsUrl');
+      if (wuEl) {
+        wuEl.value = d.mapsUrl || '';
+        if (d.lat != null) { wuEl.dataset.lat = d.lat; wuEl.dataset.lng = d.lng; }
+        wuEl.dataset.placeId = d.placeId || '';
+        wuEl.dataset.photoUrl = d.photoUrl || '';
+        wuEl.dataset.websiteUrl = d.websiteUrl || '';
+        wuEl.dataset.primaryType = d.primaryType || '';
+      }
+      updateWishSaveBtn();
+    }
+
+    function escH(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
     function detectCategory(name){
       var n=name.toLowerCase();
       if(/bar|cantina|pulque|mezcal|cervec|coctel|taberna|licor|tlecan|balmori|pub\b/i.test(n))return'bar';
@@ -3830,7 +4018,7 @@
     function openWishAdd(){
       if (!canEdit()) return;
       editingWishId=null;_wishUrlResolving=false;_lastParsedGmapsUrl='';
-      var wuEl=document.getElementById('wishMapsUrl');wuEl.value='';delete wuEl.dataset.lat;delete wuEl.dataset.lng;
+      var wuEl=document.getElementById('wishMapsUrl');wuEl.value='';wuEl.placeholder=t('wishMapsPlaceholder');delete wuEl.dataset.lat;delete wuEl.dataset.lng;delete wuEl.dataset.placeId;delete wuEl.dataset.photoUrl;delete wuEl.dataset.websiteUrl;delete wuEl.dataset.primaryType;
       document.getElementById('wishName').value='';
       document.getElementById('wishNotes').value='';document.getElementById('wishCategory').value='other';
       document.getElementById('wishDeleteBtn').style.display='none';
@@ -3869,6 +4057,11 @@
         var addedBy = currentUser ? (currentUser.displayName || currentUser.email.split('@')[0]) : '';
         var addedByPhoto = currentUser && currentUser.photoURL ? currentUser.photoURL : '';
         var newW={id:'wl_'+genId(),name:name,notes:notes,category:cat,wishType:'place',mapsUrl:url,lat:lat,lng:lng,visited:false,fromItinerary:false,dayLabel:'',calDayId:null,calEventId:null,addedBy:addedBy,addedByPhoto:addedByPhoto};
+        // Pick up Google Places fields if available
+        if(wuEl.dataset.placeId) newW.googlePlaceId=wuEl.dataset.placeId;
+        if(wuEl.dataset.photoUrl) newW.photoUrl=wuEl.dataset.photoUrl;
+        if(wuEl.dataset.websiteUrl) newW.websiteUrl=wuEl.dataset.websiteUrl;
+        if(wuEl.dataset.primaryType) newW.primaryType=wuEl.dataset.primaryType;
         WISHLIST.push(newW);
         wishStatusFilter='all';
         if(!lat&&url) _resolveWishCoords(newW);
