@@ -1563,12 +1563,26 @@
     }
     async function renderShareList() {
       var access = (currentTripMeta && currentTripMeta.access) || {};
+      // Fix corrupted dot-path pending entries (e.g. "pending_user@gmail" : {"com":"write"})
+      var corruptedKeys = Object.keys(access).filter(function(k){ return k.startsWith('pending_') && typeof access[k] === 'object'; });
+      if (corruptedKeys.length) {
+        var fixedAccess = Object.assign({}, access);
+        corruptedKeys.forEach(function(k) {
+          var nested = access[k]; var suffix = Object.keys(nested)[0]; var role = nested[suffix];
+          var fullEmail = (k.replace('pending_','') + '.' + suffix).toLowerCase();
+          delete fixedAccess[k];
+          fixedAccess['pending_' + fullEmail] = role;
+        });
+        access = fixedAccess;
+        currentTripMeta.access = fixedAccess;
+        try { await db.collection('trips').doc(currentTripId).update({ access: fixedAccess }); } catch(e) {}
+      }
       // Auto-resolve any stale pending entries
       var pendingKeys = Object.keys(access).filter(function(k){return k.startsWith('pending_');});
       for(var pi=0;pi<pendingKeys.length;pi++){
         var pe=pendingKeys[pi].replace('pending_','').toLowerCase();
         try{var ps=await db.collection('users').where('email','==',pe).limit(1).get();
-        if(!ps.empty){var pu=ps.docs[0].id;if(!access[pu]){var up={};up['access.'+pu]=access[pendingKeys[pi]];up['access.'+pendingKeys[pi]]=firebase.firestore.FieldValue.delete();await db.collection('trips').doc(currentTripId).update(up);access[pu]=access[pendingKeys[pi]];delete access[pendingKeys[pi]];}}}catch(e){}
+        if(!ps.empty){var pu=ps.docs[0].id;if(!access[pu]){var newAcc=Object.assign({},access);newAcc[pu]=access[pendingKeys[pi]];delete newAcc[pendingKeys[pi]];await db.collection('trips').doc(currentTripId).update({access:newAcc});access[pu]=access[pendingKeys[pi]];delete access[pendingKeys[pi]];currentTripMeta.access=access;}}}catch(e){}
       }
       var keys = Object.keys(access);
       // Look up display names for UIDs
