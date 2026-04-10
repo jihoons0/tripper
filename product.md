@@ -40,11 +40,16 @@ Three tabs per trip: **Calendar → Map → Places**. On desktop the views rende
 - Fly-to on event tap; popovers for assigned places include an 편집 button
 
 **Places** (formerly Wishlist)
-- Place cards with category + visited/unvisited filters
-- **Quick-add URL bar** at top: paste a Google Maps link to instantly add a place without opening the modal
-- Full add modal: paste Google Maps URL → auto-fill name, coords, category (via Cloudflare Worker + Nominatim)
-- Desktop: **"+ Add" button in navbar** next to view tabs (contrasting style: dark on light, white on dark). Replaces FAB on desktop.
+- Place cards with photo thumbnails, editorial summary, price level, opening hours, phone number
+- Card layout: category + Edit Place button, schedule row (date/time + Edit Schedule or full-width + Schedule), dividing line, links row (Google Maps ↗, Web, phone)
+- **Search bar** at top: type to search via Google Places API autocomplete or paste a Google Maps link
+- Selecting from autocomplete opens add-place modal with photo preview, all fields pre-filled (name, category, address, coords, Google Places metadata)
+- **Google Places API integration**: autocomplete with session tokens, place details with enterprise-tier fields (opening hours, editorial summary, price level, phone number)
+- Desktop: **search icon button in navbar** next to view tabs. Replaces FAB on desktop.
 - Schedule directly to calendar from a place card
+
+**Map**
+- Search bar in desktop sidebar for adding places directly from map view (same autocomplete as Places tab)
 
 ### Trip Creation
 - City search → auto-detects country flag, timezone
@@ -72,8 +77,9 @@ Three tabs per trip: **Calendar → Map → Places**. On desktop the views rende
 ### Other
 - Dark / light theme toggle
 - Currency converter (currency auto-detected from trip country via Frankfurter API)
-- Google Maps short URL parsing (Cloudflare Worker: `palo-travel-expand-url.jihoon8846.workers.dev`)
+- Google Maps short URL parsing + Google Places API proxy (Cloudflare Worker: `palo-travel-expand-url.jihoon8846.workers.dev`)
 - Mobile: FAB hidden on map view; paste from Google Maps share handles name+URL text
+- Place photo thumbnails on cards (Google Places Photos API, browser HTTP-cached)
 
 ---
 
@@ -92,7 +98,7 @@ trips/{tripId}
 
 trips/{tripId}/data/main
   days: [{ id, date, isoDate, theme, color, events[] }]
-  wishlist: [{ id, name, notes, category, mapsUrl, lat, lng, visited, calDayId, calEventId, addedBy, addedByPhoto }]
+  wishlist: [{ id, name, notes, category, mapsUrl, lat, lng, visited, calDayId, calEventId, addedBy, addedByPhoto, googlePlaceId, photoUrl, websiteUrl, primaryType, openingHours, editorialSummary, priceLevel, phoneNumber }]
 ```
 
 **Event fields:** `id, time, endTime, title, subtitle, notes, category, optional, lat, lng, link, mapsUrl`
@@ -110,10 +116,11 @@ trips/{tripId}/data/main
 | Frontend | Vanilla JS, single `index.html` (no framework) |
 | Database | Firebase/Firestore (`mexico-trip-c5644`) |
 | Maps | Leaflet 1.9.4 + OSRM routes |
+| Places search | Google Places API (New) via Cloudflare Worker proxy |
 | Geocoding | Nominatim (OpenStreetMap) |
 | Weather | Open-Meteo |
 | Currency | Frankfurter API |
-| URL expansion | Cloudflare Worker |
+| URL expansion + API proxy | Cloudflare Worker |
 | Hosting | Vercel |
 
 ---
