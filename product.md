@@ -19,15 +19,16 @@ Palo is a collaborative travel planning app. Plan trips with a time-grid calenda
 - Animated globe (cobe.js) showing trip cities with flag emoji overlays
 - Trip card grid: emoji, name, city, date range, edit/delete actions
 - Trip emoji auto-derived from country flag
-- "새 여행 추가" CTA
+- "+ Add New Trip" CTA
 
 ### Trip Views
 Three tabs per trip: **Calendar → Map → Places**. On desktop the views render inside an inset rounded canvas card; mobile uses a flat full-width layout.
 
 **Calendar**
 - Time-grid (8AM–midnight, 64px/hr)
+- Desktop: paginated when trip has many days (min 160px column width), with page navigation dots/arrows at top
 - Two-color event scheme: indigo for time-assigned places, gray for free time blocks (no category-based coloring in the grid)
-- Tapping a time-assigned place opens a place-card modal with primary "지도 보기" button, "Google Maps ↗" external link, and "시간 해제" to unschedule (keeps the place in Places)
+- Tapping a time-assigned place opens a place-card modal with "View on map" button, "Google Maps" external link, and "Remove from schedule" to unschedule (keeps the place in Places)
 - Per-event edit / delete modal with **date picker** (locked to trip date window) for moving events between days
 - Weather forecast per day (Open-Meteo)
 - Mobile: single-day view with swipe nav
@@ -40,7 +41,9 @@ Three tabs per trip: **Calendar → Map → Places**. On desktop the views rende
 
 **Places** (formerly Wishlist)
 - Place cards with category + visited/unvisited filters
-- Paste Google Maps URL → auto-fill name, coords, category (via Cloudflare Worker + Nominatim)
+- **Quick-add URL bar** at top: paste a Google Maps link to instantly add a place without opening the modal
+- Full add modal: paste Google Maps URL → auto-fill name, coords, category (via Cloudflare Worker + Nominatim)
+- Desktop: **"+ Add" button in navbar** next to view tabs (contrasting style: dark on light, white on dark). Replaces FAB on desktop.
 - Schedule directly to calendar from a place card
 
 ### Trip Creation
@@ -51,7 +54,7 @@ Three tabs per trip: **Calendar → Map → Places**. On desktop the views rende
 ### Trip Sharing (Collaboration)
 - Owner-only share modal: invite by email
 - Roles: `owner` (full control) and `write` (add/edit events & wishlist)
-- Pending invites: if invitee has no account, stored as `pending_<email>` — auto-resolved on their sign-in
+- Pending invites: if invitee has no account, stored as `pending_<email>` — auto-resolved on their sign-in. Share modal also auto-repairs corrupted dot-path entries (Firestore splits dots in emails into nested fields).
 - Share status button in header: lock icon when private, member count when shared
 - Wishlist items show author avatar/initials
 
@@ -60,6 +63,11 @@ Three tabs per trip: **Calendar → Map → Places**. On desktop the views rende
 - Trip name + chevron next to it open the trip dropdown listing all trips reverse-chronological
 - Mobile: flag button hidden, trip emoji prepended inline before the trip name
 - "모든 여행 보기" link to dashboard
+
+### Internationalization
+- English (default) and Korean
+- Language toggle in hamburger menu, persists to localStorage
+- All UI strings translated; city names always stored in English (Nominatim `Accept-Language: en`)
 
 ### Other
 - Dark / light theme toggle

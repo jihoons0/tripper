@@ -39,7 +39,7 @@ npm start     # starts Express server without watch
 
 ## File Structure
 
-- `index.html` (~4070 lines) — the entire app: HTML, CSS, and JS in one file. Use offset/limit when reading.
+- `index.html` (~4400 lines) — the entire app: HTML, CSS, and JS in one file. Use offset/limit when reading.
 - `server.js` — Express dev server; serves static files + `/api/expand-url` for local Google Maps URL expansion
 - `api/expand-url.js` — Vercel serverless function (same expand-url logic, but bypassed in prod due to Vercel auth)
 - `worker.js` + `wrangler.toml` — Cloudflare Worker for Google Maps URL expansion (used in production)
@@ -78,10 +78,10 @@ Hash-based: `navigateTo('#dashboard')`, `navigateTo('#trip/<tripId>')`. `DOMCont
 
 ### Views
 
-- **Dashboard** (`#view-dashboard`) — globe (cobe.js) + "새 여행 추가" CTA + trip cards grid. `renderDashboard(trips)` / `loadDashboard()`. Uses original page bg (no inset chrome).
-- **Calendar** (`#view-calendar`) — time-grid, 8AM–midnight, 64px/hr (`HOUR_PX`). `renderCal()`.
+- **Dashboard** (`#view-dashboard`) — globe (cobe.js) + "+ Add New Trip" CTA + trip cards grid. `renderDashboard(trips)` / `loadDashboard()`. Uses original page bg (no inset chrome).
+- **Calendar** (`#view-calendar`) — time-grid, 8AM–midnight, 64px/hr (`HOUR_PX`). `renderCal()`. Desktop: paginated when days exceed viewport (min column width `CAL_COL_MIN=160`px). `calDaysPerPage()` / `calTotalPages()` / `calPageDays()` / `renderCalPageNav()`.
 - **Map** (`#view-map`) — Leaflet map + sidebar (desktop) / fullscreen + overlay (mobile). `initMap()` / `rebuildMarkers()`.
-- **Places** (`#view-wishlist`) — card grid with category/status filters. `renderWishlist()`. Tab is labeled "Places" in the UI; the underlying view id and `WISHLIST` array still use the legacy "wishlist" name.
+- **Places** (`#view-wishlist`) — card grid with category/status filters. `renderWishlist()`. Tab is labeled "Places" in the UI; the underlying view id and `WISHLIST` array still use the legacy "wishlist" name. **Quick-add URL bar** at top (visible when `canEdit()`) — paste a Google Maps link to add a place without opening the modal. `quickAddPlace()` / `_addQuickPlace()`.
 
 Three in-trip views toggled via `switchView(v)`. Tab labels: **Calendar / Map / Places** (English). `body.in-trip` class is added/removed by `switchView()` and the dashboard route to drive the chrome (see Trip Canvas Chrome below).
 
@@ -95,12 +95,13 @@ CSS variables driving the chrome (defined in both `html.theme-dark` / `html.them
 - `--tab-active-bg` / `--tab-active-fg` — selected tab in the floating pill. Dark `#000`/`#fff`, light `#F3F3F3`/`#0f172a`.
 
 Header chrome under `body.in-trip`:
-- **Floating tablist** (`.view-tabs`) — 380×40 pill, 16px radius, centered absolutely above the card. Each tab fills width.
+- **Floating tablist** (`.nav-tabs-group` > `.view-tabs` + `.nav-add-btn`) — centered absolutely via `.nav-tabs-group`. The tab pill is 380×40, 16px radius. The `+ Add` button sits adjacent in the same flex row.
+- **Desktop "+ Add" button** (`.nav-add-btn`) — contrasting style (`--text` bg, `--bg` color), same height/radius as tabs. Calls `openWishAdd()`. Hidden on mobile, dashboard, and for non-edit users. Visibility controlled by `updateFab()`.
 - **Flag button** (`.app-logo-flag`) — 36px circle on the left. **Click navigates to dashboard** (`goToDashboard()`); on hover, the flag emoji swaps to a home icon (CSS `:hover` on `.flag-emoji` / `.flag-home`).
 - **Trip name + chevron** — chevron next to the name still triggers `toggleTripDropdown(event)`.
 - **Share button** (`.share-status-btn`) — restyled to match the tablist (40h / 16r).
 - **Hamburger** (`.viz-menu-toggle`) — 36px circle to mirror the flag.
-- **Mobile (≤768px)**: flag button hidden, trip emoji prepended to the name via `.app-logo-name[data-flag]::before`. `data-flag` attribute is set in `updateHeader()`.
+- **Mobile (≤768px)**: flag button and nav-add-btn hidden, trip emoji prepended to the name via `.app-logo-name[data-flag]::before`. `data-flag` attribute is set in `updateHeader()`.
 
 ### Dashboard
 
@@ -119,6 +120,7 @@ Header chrome under `body.in-trip`:
 - Sticky `.cal-day-nav` replaces `.cal-header-row`
 - `calPage` (0-indexed) tracks visible day; `setCalPage(idx)` switches days
 - Only `.active-day` column shown
+- Desktop: `calPage` tracks page of days (group); pagination nav bar (`.cal-page-nav`) with arrows, dots, and date range label
 
 **Map (≤768px):**
 - Fullscreen map; `.map-mob-tabs` (day pill buttons) + `.map-mob-sheet` (bottom sheet)
@@ -138,7 +140,8 @@ All views render via innerHTML string concatenation. `rerender()` refreshes curr
 - `loadDashboard()` / `renderDashboard(trips)` — dashboard with hometown card, globe, CTAs, trip cards
 - `loadTripData(tripId)` — load trip from Firestore into `DAYS`/`WISHLIST`
 - `renderCal()` / `renderCalBody()` / `renderCalHeader()` / `renderCalDayNav()` — calendar
-- `setCalPage(idx)` — mobile calendar day switch
+- `setCalPage(idx)` — calendar day/page switch (mobile: single day, desktop: group of days)
+- `calDaysPerPage()` / `calTotalPages()` / `calPageDays()` / `renderCalPageNav()` — desktop calendar pagination
 - `renderWishlist()` — wishlist grid
 - `initMap()` / `rebuildMarkers()` / `fitMapToDay(idx)` — Leaflet map
 - `clearRoutes()` / `buildRoutes()` — OSRM walking routes per day; falls back to dashed lines
@@ -148,6 +151,8 @@ All views render via innerHTML string concatenation. `rerender()` refreshes curr
 - `openEdit(dayId, evId)` / `saveEditEvent()` / `deleteCurrentEvent()` — edit event modal
 - `openAdd(dayId)` / `saveNewEvent()` — add event modal
 - `openWishAdd()` / `saveWishItem()` / `deleteWishItem()` — wishlist modal
+- `quickAddPlace()` / `_addQuickPlace()` — quick-add from URL without modal
+- `detectCategory(name)` — returns category string from place name (used by quick-add and modal)
 - `openTripCreate()` / `openTripEdit(tripId)` / `saveTripCreate(e)` — trip create/edit modal
 - `archiveTrip(tripId)` — delete trip
 - `goToDashboard()` — clears trip state and routes to dashboard (also wired to flag-button click)
@@ -218,13 +223,19 @@ Start time uses native `<input type="time">`. Duration slider (`CAL_ADD_DURS=[30
 - `canEdit()` — true for `owner` or `write` roles
 - `isOwner()` — true for `owner` only
 
-**Sharing UI:** Owner-only share modal (`#shareModal`) to invite by email. `addShareUser(e)` looks up user by email in `users` collection — if found, adds UID to `access`; if not, adds `pending_<email>` entry. Pending invites auto-resolve on sign-in via `resolvePendingInvites(user)`. Share status button in header shows lock icon ("나만 보기") when private, member count when shared. Share button hidden on dashboard.
+**Sharing UI:** Owner-only share modal (`#shareModal`) to invite by email. `addShareUser(e)` looks up user by email in `users` collection — if found, adds UID to `access`; if not, adds `pending_<email>` entry. Pending invites auto-resolve on sign-in via `resolvePendingInvites(user)`. `renderShareList()` also auto-resolves stale pending entries and fixes corrupted dot-path entries (where Firestore split `pending_user@gmail.com` into nested `{"pending_user@gmail":{"com":"write"}}`). Share status button in header shows lock icon when private, member count when shared. Share button hidden on dashboard.
 
 **Authorship:** Wishlist items have `addedBy` (display name) and `addedByPhoto` (Google avatar URL). Shown as avatar or initials chip on wishlist cards.
 
+### Internationalization (i18n)
+
+Two languages: English (default) and Korean. `STRINGS` dictionary with `{ko, en}` pairs (some entries are functions for parameterized strings like `dayN`). `t(key)` lookup returns current language value. `setLang(lang)` persists to localStorage, calls `applyLangToStaticHTML()`, `refreshDayLabels()`, and re-renders. `refreshDayLabels()` regenerates `day.date` and `day.dayName` from `isoDate` using current language — must be called after `reconcileDays()` and inside `onSnapshot` handler to prevent Firestore overwriting labels.
+
+City search (Nominatim) always uses `Accept-Language: en` so stored city names are English. One-time migration (`city-en-v1`) reverse-geocodes existing Korean city names.
+
 ### FAB (Floating Action Button)
 
-Fixed-position "장소 추가" button (`.fab`). Hidden on dashboard, on mobile map view (≤768px), and for non-editable trips. Visibility updated via `updateFab(v)` — also re-evaluated on `window.resize`.
+**Mobile only.** Fixed-position "Add Place" button (`.fab`). Hidden on dashboard, on mobile map view (≤768px), for non-editable trips, and **on desktop** (replaced by `.nav-add-btn` in the navbar). Visibility updated via `updateFab(v)` — also re-evaluated on `window.resize`.
 
 ### Currency Converter
 
