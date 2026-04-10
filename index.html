@@ -139,6 +139,14 @@
     .wish-search-wrap .place-search-dropdown { z-index:300; }
     /* Place card photo */
     .wl-card-photo { width:100%; height:120px; object-fit:cover; border-radius:8px; margin-bottom:8px; }
+    /* Place details info */
+    .place-details-info { margin-top:6px; font-size:0.78rem; color:var(--text-secondary); }
+    .place-detail-summary { font-style:italic; margin-bottom:3px; line-height:1.35; }
+    .place-detail-meta { display:flex; flex-wrap:wrap; align-items:center; gap:4px; }
+    .place-detail-price { font-weight:700; color:var(--positive); }
+    .place-detail-hours { display:inline-flex; align-items:center; gap:3px; }
+    .place-detail-phone { color:var(--text-secondary); text-decoration:none; }
+    .place-detail-phone:hover { color:var(--text); }
     @media (max-width:768px) {
       body.in-trip { background:var(--bg); overflow:visible; }
       body.in-trip .app-header { background:var(--bg); border-bottom:1px solid var(--border); }
@@ -1110,7 +1118,7 @@
       scheduled: { ko:'일정추가됨', en:'Scheduled' },
       noWlItems: { ko:'아직 항목이 없어요', en:'No items yet' },
       noWlItemsHint: { ko:'하단 + 버튼으로 추가해보세요', en:'Add items with the + button below' },
-      googleMaps: { ko:'구글맵', en:'Maps' },
+      googleMaps: { ko:'Google Maps ↗', en:'Google Maps ↗' },
       adjustTime: { ko:'시간 조정', en:'Adjust' },
       removeTime: { ko:'시간 제거', en:'Remove' },
       addToScheduleBtn: { ko:'＋ 일정 추가', en:'+ Schedule' },
@@ -3469,7 +3477,7 @@
               '</div>',
             className:'',iconSize:[36,41],iconAnchor:[18,41]
           });
-          var popup='<div style="font-family:Inter,Noto Sans KR,sans-serif;min-width:140px"><div style="font-weight:700;font-size:13px;margin-bottom:3px">'+w.name+'</div>'+(w.notes?'<div style="font-size:11px;color:#888">'+w.notes+'</div>':'')+'</div>';
+          var popup='<div style="font-family:Inter,Noto Sans KR,sans-serif;min-width:140px"><div style="font-weight:700;font-size:13px;margin-bottom:3px">'+w.name+'</div>'+(w.notes?'<div style="font-size:11px;color:#888">'+w.notes+'</div>':'')+placeDetailsHtml(w,true)+'</div>';
           var m=L.marker([w.lat,w.lng],{icon:iconEl}).addTo(leafletMap).bindPopup(popup);
           m._wishId=w.id;mapMarkers.push(m);
         });
@@ -3490,7 +3498,9 @@
               +'</div>',
             className:'',iconSize:[36,41],iconAnchor:[18,41]
           });
-          var popup='<div style="font-family:Inter,Noto Sans KR,sans-serif;min-width:160px"><div style="font-weight:700;font-size:13px;margin-bottom:3px">'+ev.title+'</div><div style="font-size:11px;color:#888">'+fmtTime(ev.time)+(ev.endTime?' – '+fmtTime(ev.endTime):'')+'</div>'+(ev.subtitle?'<div style="font-size:11px;margin-top:4px">'+ev.subtitle+'</div>':'')+(ev.notes?'<div style="font-size:11px;color:#f59e0b;margin-top:4px;display:flex;align-items:start;gap:3px">'+icon('pin',11)+' '+ev.notes+'</div>':'')+(canEdit()?'<button type="button" onclick="openEdit(\''+day.id+'\',\''+ev.id+'\')" style="margin-top:8px;width:100%;padding:6px 10px;font-size:11px;font-weight:600;border-radius:6px;border:none;background:var(--accent);color:var(--accent-fg);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:5px;font-family:inherit">'+icon('pencil',11)+' '+t('editBtn')+'</button>':'')+'</div>';
+          var evWl=WISHLIST.find(function(x){return x.calEventId===ev.id;});
+          var evDetails=evWl?placeDetailsHtml(evWl,true):'';
+          var popup='<div style="font-family:Inter,Noto Sans KR,sans-serif;min-width:160px"><div style="font-weight:700;font-size:13px;margin-bottom:3px">'+ev.title+'</div><div style="font-size:11px;color:#888">'+fmtTime(ev.time)+(ev.endTime?' – '+fmtTime(ev.endTime):'')+'</div>'+(ev.subtitle?'<div style="font-size:11px;margin-top:4px">'+ev.subtitle+'</div>':'')+evDetails+(ev.notes?'<div style="font-size:11px;color:#f59e0b;margin-top:4px;display:flex;align-items:start;gap:3px">'+icon('pin',11)+' '+ev.notes+'</div>':'')+(canEdit()?'<button type="button" onclick="openEdit(\''+day.id+'\',\''+ev.id+'\')" style="margin-top:8px;width:100%;padding:6px 10px;font-size:11px;font-weight:600;border-radius:6px;border:none;background:var(--accent);color:var(--accent-fg);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:5px;font-family:inherit">'+icon('pencil',11)+' '+t('editBtn')+'</button>':'')+'</div>';
           var m=L.marker([ev.lat,ev.lng],{icon:mIcon}).addTo(leafletMap).bindPopup(popup);
           m._evData={dayId:day.id,evId:ev.id};mapMarkers.push(m);n++;
         });
@@ -3578,6 +3588,7 @@
         ph.innerHTML='<div class="eph-icon" style="background:'+catC.bg+';color:'+catC.color+'">'+catIcon(ev.category||'other',18)+'</div>'+
           '<div class="eph-info" style="flex:1"><div class="eph-name">'+(ev.title||wl.name||'')+'</div>'+
           (ev.subtitle?'<div class="eph-sub">'+ev.subtitle+'</div>':wl.notes?'<div class="eph-sub">'+wl.notes+'</div>':'')+
+          placeDetailsHtml(wl, false)+
           actBtns+'</div>';
         ph.style.display='';
         var dBtn=document.getElementById('editDeleteBtn'); if(dBtn) dBtn.textContent=t('removeFromSchedule');
@@ -3720,19 +3731,24 @@
           }
         }
         h+='<div class="wl-card-top"><div class="wl-card-info"><div class="wl-card-name">'+w.name+'</div>'+(w.notes?'<div class="wl-card-sub">'+w.notes+'</div>':'')+'</div>'+authorEl+'</div>';
+        h+=placeDetailsHtml(w, true);
         h+='<div class="wl-card-badges"><span class="wl-badge" style="background:'+cat.bg+';color:'+cat.color+'">'+cic+' '+catLabel(w.category)+'</span>';
         if(w.visited&&w.dayLabel)h+='<span class="wl-badge" style="background:rgba(99,102,241,0.15);color:#6366f1;display:inline-flex;align-items:center;gap:3px">'+icon('calendar',11)+' '+w.dayLabel+'</span>';
         if(st)h+='<span class="wl-badge" style="background:rgba(16,185,129,0.12);color:var(--positive);display:inline-flex;align-items:center;gap:3px">'+icon('calendar',11)+' '+st+'</span>';
-        h+='</div><div class="wl-card-bottom">';
+        h+='</div>';
+        // Schedule row (above links)
+        if(!isHt){
+          if(w.visited&&w.calEventId)h+='<div class="wl-card-bottom"><div style="display:flex;gap:5px"><button class="wl-visited-toggle adjust" onclick="event.stopPropagation();openSchedModal(\''+w.id+'\')" style="display:inline-flex;align-items:center;gap:3px">'+icon('pencil',12)+' '+t('adjustTime')+'</button><button class="wl-visited-toggle wl-time-remove" onclick="event.stopPropagation();removeTimeFromWish(\''+w.id+'\')" style="display:inline-flex;align-items:center;gap:3px">'+icon('calendar',12)+' '+t('removeTime')+'</button></div></div>';
+          else h+='<div class="wl-card-bottom"><button class="wl-visited-toggle" onclick="event.stopPropagation();openSchedModal(\''+w.id+'\')">'+t('addToScheduleBtn')+'</button></div>';
+        }
+        // Links row (Google Maps, Web, Phone)
+        h+='<div class="wl-card-bottom">';
         var linksH='';
         if(w.mapsUrl)linksH+='<a class="wl-maps-link" href="'+w.mapsUrl+'" target="_blank" rel="noopener" onclick="event.stopPropagation()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg> '+t('googleMaps')+'</a>';
         if(w.websiteUrl)linksH+='<a class="wl-maps-link" href="'+w.websiteUrl+'" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="margin-left:6px">'+icon('globe',12)+' Web</a>';
+        if(w.phoneNumber)linksH+='<a class="wl-maps-link" href="tel:'+w.phoneNumber+'" onclick="event.stopPropagation()" style="margin-left:6px">'+w.phoneNumber+'</a>';
         if(linksH) h+=linksH;
         else h+='<span></span>';
-        if(!isHt){
-          if(w.visited&&w.calEventId)h+='<div style="display:flex;gap:5px"><button class="wl-visited-toggle adjust" onclick="event.stopPropagation();openSchedModal(\''+w.id+'\')" style="display:inline-flex;align-items:center;gap:3px">'+icon('pencil',12)+' '+t('adjustTime')+'</button><button class="wl-visited-toggle wl-time-remove" onclick="event.stopPropagation();removeTimeFromWish(\''+w.id+'\')" style="display:inline-flex;align-items:center;gap:3px">'+icon('calendar',12)+' '+t('removeTime')+'</button></div>';
-          else h+='<button class="wl-visited-toggle" onclick="event.stopPropagation();openSchedModal(\''+w.id+'\')">'+t('addToScheduleBtn')+'</button>';
-        }
         h+='</div></div>';
       });
       h+='</div>';c.innerHTML=h;
@@ -3929,7 +3945,8 @@
         wishType: 'place', mapsUrl: d.mapsUrl || '', lat: d.lat || null, lng: d.lng || null,
         visited: false, fromItinerary: false, dayLabel: '', calDayId: null, calEventId: null,
         addedBy: addedBy, addedByPhoto: addedByPhoto,
-        googlePlaceId: d.placeId || '', photoUrl: d.photoUrl || '', websiteUrl: d.websiteUrl || '', primaryType: d.primaryType || ''
+        googlePlaceId: d.placeId || '', photoUrl: d.photoUrl || '', websiteUrl: d.websiteUrl || '', primaryType: d.primaryType || '',
+        openingHours: d.openingHours || null, editorialSummary: d.editorialSummary || '', priceLevel: d.priceLevel, phoneNumber: d.phoneNumber || ''
       };
       WISHLIST.push(newW);
       wishStatusFilter = 'all';
@@ -3951,11 +3968,50 @@
         wuEl.dataset.photoUrl = d.photoUrl || '';
         wuEl.dataset.websiteUrl = d.websiteUrl || '';
         wuEl.dataset.primaryType = d.primaryType || '';
+        wuEl.dataset.openingHours = d.openingHours ? JSON.stringify(d.openingHours) : '';
+        wuEl.dataset.editorialSummary = d.editorialSummary || '';
+        wuEl.dataset.priceLevel = d.priceLevel != null ? d.priceLevel : '';
+        wuEl.dataset.phoneNumber = d.phoneNumber || '';
       }
       updateWishSaveBtn();
     }
 
     function escH(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+    // Format price level as $ signs
+    function fmtPrice(level) {
+      if (level == null || level === '') return '';
+      var n = parseInt(level);
+      if (n <= 0) return '';
+      return '$'.repeat(n);
+    }
+
+    // Get today's opening hours from weekday descriptions
+    function getTodayHours(openingHours) {
+      if (!openingHours || !openingHours.length) return '';
+      var dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+      var today = dayNames[new Date().getDay()];
+      for (var i = 0; i < openingHours.length; i++) {
+        if (openingHours[i].indexOf(today) === 0) {
+          return openingHours[i].replace(today + ': ', '');
+        }
+      }
+      return '';
+    }
+
+    // Build place details info HTML (used in Places cards, edit modal, map popovers)
+    function placeDetailsHtml(w, compact) {
+      var parts = [];
+      if (w.editorialSummary) parts.push('<div class="place-detail-summary">' + escH(w.editorialSummary) + '</div>');
+      var meta = [];
+      var price = fmtPrice(w.priceLevel);
+      if (price) meta.push('<span class="place-detail-price">' + price + '</span>');
+      var hours = getTodayHours(w.openingHours);
+      if (hours) meta.push('<span class="place-detail-hours">' + icon('calendar', 11) + ' ' + escH(hours) + '</span>');
+      if (w.phoneNumber && !compact) meta.push('<a class="place-detail-phone" href="tel:' + escH(w.phoneNumber) + '">' + escH(w.phoneNumber) + '</a>');
+      if (meta.length) parts.push('<div class="place-detail-meta">' + meta.join(' · ') + '</div>');
+      return parts.length ? '<div class="place-details-info">' + parts.join('') + '</div>' : '';
+    }
 
     function detectCategory(name){
       var n=name.toLowerCase();
@@ -4018,7 +4074,7 @@
     function openWishAdd(){
       if (!canEdit()) return;
       editingWishId=null;_wishUrlResolving=false;_lastParsedGmapsUrl='';
-      var wuEl=document.getElementById('wishMapsUrl');wuEl.value='';wuEl.placeholder=t('wishMapsPlaceholder');delete wuEl.dataset.lat;delete wuEl.dataset.lng;delete wuEl.dataset.placeId;delete wuEl.dataset.photoUrl;delete wuEl.dataset.websiteUrl;delete wuEl.dataset.primaryType;
+      var wuEl=document.getElementById('wishMapsUrl');wuEl.value='';wuEl.placeholder=t('wishMapsPlaceholder');delete wuEl.dataset.lat;delete wuEl.dataset.lng;delete wuEl.dataset.placeId;delete wuEl.dataset.photoUrl;delete wuEl.dataset.websiteUrl;delete wuEl.dataset.primaryType;delete wuEl.dataset.openingHours;delete wuEl.dataset.editorialSummary;delete wuEl.dataset.priceLevel;delete wuEl.dataset.phoneNumber;
       document.getElementById('wishName').value='';
       document.getElementById('wishNotes').value='';document.getElementById('wishCategory').value='other';
       document.getElementById('wishDeleteBtn').style.display='none';
@@ -4062,6 +4118,10 @@
         if(wuEl.dataset.photoUrl) newW.photoUrl=wuEl.dataset.photoUrl;
         if(wuEl.dataset.websiteUrl) newW.websiteUrl=wuEl.dataset.websiteUrl;
         if(wuEl.dataset.primaryType) newW.primaryType=wuEl.dataset.primaryType;
+        if(wuEl.dataset.openingHours) try{newW.openingHours=JSON.parse(wuEl.dataset.openingHours);}catch(e){}
+        if(wuEl.dataset.editorialSummary) newW.editorialSummary=wuEl.dataset.editorialSummary;
+        if(wuEl.dataset.priceLevel) newW.priceLevel=parseInt(wuEl.dataset.priceLevel);
+        if(wuEl.dataset.phoneNumber) newW.phoneNumber=wuEl.dataset.phoneNumber;
         WISHLIST.push(newW);
         wishStatusFilter='all';
         if(!lat&&url) _resolveWishCoords(newW);

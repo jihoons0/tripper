@@ -194,7 +194,7 @@ async function handlePlacesDetails(url, env) {
   const sessionToken = url.searchParams.get('sessionToken');
   if (!placeId) return json({ error: 'placeId required' }, 400);
 
-  const fieldMask = 'displayName,location,photos,primaryType,types,formattedAddress,websiteUri,googleMapsUri';
+  const fieldMask = 'displayName,location,photos,primaryType,types,formattedAddress,websiteUri,googleMapsUri,regularOpeningHours,editorialSummary,priceLevel,internationalPhoneNumber';
 
   try {
     let detailUrl = `https://places.googleapis.com/v1/places/${placeId}?languageCode=en`;
@@ -224,6 +224,16 @@ async function handlePlacesDetails(url, env) {
       }
     }
 
+    // Format opening hours into compact weekday strings
+    let openingHours = null;
+    if (d.regularOpeningHours && d.regularOpeningHours.weekdayDescriptions) {
+      openingHours = d.regularOpeningHours.weekdayDescriptions;
+    }
+
+    // Map priceLevel enum to a number (1-4)
+    const PRICE_MAP = { PRICE_LEVEL_FREE: 0, PRICE_LEVEL_INEXPENSIVE: 1, PRICE_LEVEL_MODERATE: 2, PRICE_LEVEL_EXPENSIVE: 3, PRICE_LEVEL_VERY_EXPENSIVE: 4 };
+    const priceLevel = PRICE_MAP[d.priceLevel] ?? null;
+
     return json({
       name: d.displayName?.text || '',
       address: d.formattedAddress || '',
@@ -236,6 +246,10 @@ async function handlePlacesDetails(url, env) {
       mapsUrl: d.googleMapsUri || '',
       websiteUrl: d.websiteUri || '',
       placeId,
+      openingHours,
+      editorialSummary: d.editorialSummary?.text || '',
+      priceLevel,
+      phoneNumber: d.internationalPhoneNumber || '',
     });
   } catch (e) {
     return json({ error: e.message }, 500);
