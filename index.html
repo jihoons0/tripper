@@ -136,9 +136,75 @@
     body.in-trip .view-tab:hover:not(.active) { background:var(--surface-hover); color:var(--text); }
     body.in-trip .app-logo-flag { cursor:pointer; display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:50%; background:var(--canvas-bg); border:1px solid var(--border); transition:background var(--dur-small),border-color var(--dur-small); font-size:1.05rem; }
     body.in-trip .app-logo-flag:hover { background:var(--surface-hover); border-color:var(--border-strong); }
-    body.in-trip .app-logo-flag .flag-home { display:none; color:var(--text); }
-    body.in-trip .app-logo-flag:hover .flag-emoji { display:none; }
-    body.in-trip .app-logo-flag:hover .flag-home { display:inline-flex; }
+    body.in-trip .app-logo-flag .flag-home,
+    body.in-trip .app-logo-flag .flag-hamburger,
+    body.in-trip .app-logo-flag .flag-collapse { display:none; color:var(--text); }
+    @media (min-width:769px) {
+      /* Desktop: flag button shows hamburger (closed) / collapse (open); no flag emoji inside the button */
+      body.in-trip .app-logo-flag .flag-emoji { display:none; }
+      body.in-trip .app-logo-flag .flag-hamburger { display:inline-flex; }
+      body.in-trip.left-panel-open .app-logo-flag .flag-hamburger { display:none; }
+      body.in-trip.left-panel-open .app-logo-flag .flag-collapse { display:inline-flex; }
+    }
+    /* Mobile: flag still swaps to home icon on hover (it still navigates to dashboard) */
+    @media (max-width:768px) {
+      body.in-trip .app-logo-flag:hover .flag-emoji { display:none; }
+      body.in-trip .app-logo-flag:hover .flag-home { display:inline-flex; }
+    }
+    .app-logo-name-flag:empty { display:none; }
+    .app-logo-name-flag { font-size:1.05rem; line-height:1; }
+    /* LEFT PANEL (desktop-only, gated by body.left-panel-open) */
+    .left-panel { display:none; position:fixed; top:8px; left:20px; bottom:20px; width:280px; z-index:150; padding:18px 16px; overflow-y:auto; overflow-x:hidden; opacity:0; transform:translateX(-12px); transition:opacity var(--dur-medium) var(--ease-out), transform var(--dur-medium) var(--ease-out); }
+    @media (min-width:769px) {
+      body.in-trip .left-panel { display:flex; flex-direction:column; gap:12px; pointer-events:none; }
+      body.in-trip.left-panel-open .left-panel { opacity:1; transform:translateX(0); pointer-events:auto; }
+      body.in-trip #main-content { transition:margin-left var(--dur-medium) var(--ease-out); }
+      body.in-trip.left-panel-open #main-content { margin-left:312px; }
+      body.in-trip .app-header { transition:padding-left var(--dur-medium) var(--ease-out); }
+      body.in-trip.left-panel-open .app-header { padding-left:312px; }
+      body.in-trip .app-header .nav-tabs-group { transition:left var(--dur-medium) var(--ease-out); }
+      body.in-trip.left-panel-open .app-header .nav-tabs-group { left:calc(50% + 156px); }
+    }
+    .lp-brand { font-size:1.05rem; font-weight:700; letter-spacing:-0.01em; margin-bottom:8px; padding-left:4px; }
+    .lp-trip-head { display:flex; flex-direction:column; gap:2px; padding:10px 12px 12px; position:relative; }
+    .lp-trip-name { font-size:0.9rem; font-weight:600; color:var(--text); padding-right:60px; line-height:1.3; }
+    .lp-trip-dates { font-size:0.72rem; color:var(--text-secondary); padding-right:60px; }
+    .lp-edit-btn { position:absolute; top:10px; right:10px; padding:5px 12px; border-radius:999px; border:1px solid var(--border); background:var(--surface); color:var(--text); font-family:inherit; font-size:0.72rem; cursor:pointer; transition:border-color var(--dur-small), background var(--dur-small); }
+    .lp-edit-btn:hover { border-color:var(--border-strong); background:var(--surface-hover); }
+    .lp-card { background:var(--surface-hover); border:1px solid var(--border); border-radius:14px; padding:14px; display:flex; flex-direction:column; gap:10px; }
+    .lp-card-title { font-size:0.68rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.04em; }
+    .lp-button { width:100%; padding:11px 14px; border-radius:12px; border:1px solid var(--border); background:var(--surface); color:var(--text); font-family:inherit; font-size:0.82rem; font-weight:500; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:border-color var(--dur-small), background var(--dur-small); text-align:center; }
+    .lp-button:hover { border-color:var(--border-strong); background:var(--surface-hover); }
+    .lp-spacer { flex:1; min-height:10px; }
+    .lp-toggle-row { display:flex; gap:6px; }
+    .lp-toggle { flex:1; padding:8px 4px; border-radius:10px; border:1px solid var(--border); background:var(--surface); color:var(--text-secondary); font-family:inherit; font-size:0.68rem; font-weight:500; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; transition:border-color var(--dur-small), background var(--dur-small), color var(--dur-small); min-height:52px; line-height:1.15; }
+    .lp-toggle:hover { border-color:var(--border-strong); color:var(--text); background:var(--surface-hover); }
+    .lp-footer { font-size:0.68rem; color:var(--text-secondary); opacity:0.6; text-align:center; padding:8px 0 2px; }
+    .lp-wx-list { display:flex; flex-direction:column; gap:5px; max-height:210px; overflow-y:auto; }
+    .lp-wx-row { display:flex; align-items:center; gap:8px; font-size:0.78rem; }
+    .lp-wx-icon { width:18px; text-align:center; }
+    .lp-wx-date { flex:1; color:var(--text-secondary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .lp-wx-temp { color:var(--text); font-weight:500; white-space:nowrap; }
+    /* Hide viz-menu on desktop when panel is the canonical chrome */
+    @media (min-width:769px) { body.in-trip .viz-menu { display:none; } }
+    /* PROFILE CHIP (desktop only, in-trip) */
+    .profile-chip-wrap { display:none; position:fixed; top:12px; right:20px; z-index:210; }
+    @media (min-width:769px) { body.in-trip .profile-chip-wrap { display:block; } }
+    .profile-chip { display:flex; align-items:center; gap:8px; padding:4px 6px 4px 12px; border-radius:999px; border:1px solid var(--border); background:var(--canvas-bg); color:var(--text); font-family:inherit; font-size:0.82rem; font-weight:600; cursor:pointer; transition:border-color var(--dur-small), background var(--dur-small); }
+    .profile-chip:hover { border-color:var(--border-strong); background:var(--surface-hover); }
+    .profile-chip-name { max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .profile-chip-avatar { width:28px; height:28px; border-radius:50%; background:var(--accent); color:var(--accent-fg); display:flex; align-items:center; justify-content:center; font-size:0.72rem; font-weight:700; overflow:hidden; flex-shrink:0; }
+    .profile-chip-avatar img { width:100%; height:100%; object-fit:cover; }
+    .profile-popover { position:absolute; top:48px; right:0; min-width:220px; background:var(--surface); border:1px solid var(--border); border-radius:11px; padding:6px; opacity:0; visibility:hidden; transform:translateY(-4px) scale(0.97); transition:opacity var(--dur-small) var(--ease-out), transform var(--dur-small) var(--ease-out), visibility var(--dur-small); transform-origin:top right; }
+    .profile-popover.open { opacity:1; visibility:visible; transform:translateY(0) scale(1); }
+    .profile-popover-account { padding:10px 12px; display:flex; align-items:center; gap:9px; }
+    .profile-popover-avatar { width:32px; height:32px; border-radius:50%; background:var(--accent); color:var(--accent-fg); display:flex; align-items:center; justify-content:center; font-size:0.78rem; font-weight:700; overflow:hidden; flex-shrink:0; }
+    .profile-popover-avatar img { width:100%; height:100%; object-fit:cover; }
+    .profile-popover-user { flex:1; min-width:0; }
+    .profile-popover-name { font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .profile-popover-email { font-size:11px; color:var(--text-secondary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .profile-popover-btn { width:100%; margin-top:4px; padding:9px 12px; border:none; border-radius:7px; background:transparent; color:var(--text); font-size:13px; font-family:inherit; cursor:pointer; text-align:left; display:flex; align-items:center; gap:9px; transition:background 0.15s; }
+    .profile-popover-btn:hover { background:var(--surface-hover); }
     .nav-add-btn { width:36px; height:36px; padding:0; border-radius:50%; border:1px solid var(--border); background:var(--canvas-bg); color:var(--text); display:inline-flex; align-items:center; justify-content:center; cursor:pointer; transition:opacity var(--dur-small), transform var(--dur-micro) var(--ease-out), background var(--dur-small), border-color var(--dur-small); }
     .nav-add-btn:hover { opacity:0.85; }
     .nav-add-btn:active { transform:scale(0.96); }
@@ -761,7 +827,6 @@
     <div class="viz-menu-dropdown" id="vizMenuDropdown">
       <button id="shareMenuBtn" onclick="openShareModal()" style="display:none"><span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.935-2.186 2.25 2.25 0 0 0-3.935 2.186Z"/></svg></span><span>Share Settings</span></button>
       <button id="exportItineraryMenuBtn" onclick="openItineraryModal()" style="display:none"><span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z"/></svg></span><span>Export itinerary</span></button>
-      <button id="currMenuBtn" onclick="openCurrConverter()"><span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z"/></svg></span><span>Currency Converter</span></button>
       <button onclick="cycleTheme()"><span id="themeIcon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z"/></svg></span><span id="themeLabel">Dark mode</span></button>
       <button onclick="openFeedbackModal()"><span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 0 1 1.037-.443 48.282 48.282 0 0 0 5.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"/></svg></span><span>Send Feedback</span></button>
       <button id="langToggleBtn" onclick="setLang(currentLang==='ko'?'en':'ko')"><span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 21l5.25-11.25L21 21m-9-3h7.5M3 5.621a48.474 48.474 0 016-.371m0 0c1.12 0 2.233.038 3.334.114M9 5.25V3m3.334 2.364C11.176 10.658 7.69 15.08 3 17.502m9.334-12.138c.896.061 1.785.147 2.666.257m-4.589 8.495a18.023 18.023 0 01-3.827-5.802"/></svg></span><span>한국어</span></button>
@@ -783,12 +848,53 @@
       </div>
     </div>
   </div>
+  <div class="profile-chip-wrap" id="profileChipWrap">
+    <button class="profile-chip" id="profileChipBtn" onclick="toggleProfilePopover(event)" aria-label="Profile">
+      <span class="profile-chip-name" id="profileChipName"></span>
+      <span class="profile-chip-avatar" id="profileChipAvatar"></span>
+    </button>
+    <div class="profile-popover" id="profilePopover">
+      <div class="profile-popover-account">
+        <div class="profile-popover-avatar" id="profilePopoverAvatar"></div>
+        <div class="profile-popover-user">
+          <div class="profile-popover-name" id="profilePopoverName"></div>
+          <div class="profile-popover-email" id="profilePopoverEmail"></div>
+        </div>
+      </div>
+      <button class="profile-popover-btn" onclick="doSignOut();closeProfilePopover()" id="profilePopoverSignOut">Sign out</button>
+    </div>
+  </div>
+  <aside class="left-panel" id="leftPanel" aria-label="Trip tools">
+    <div class="lp-brand">Faropin</div>
+    <div class="lp-trip-head">
+      <div class="lp-trip-name" id="lpTripName"></div>
+      <div class="lp-trip-dates" id="lpTripDates"></div>
+      <button class="lp-edit-btn" id="lpEditBtn" onclick="if(currentTripId)openTripEdit(currentTripId)">Edit</button>
+    </div>
+    <div class="lp-card" id="lpCurrencyCard"></div>
+    <div class="lp-card" id="lpWeatherCard"></div>
+    <button class="lp-button" id="lpExportBtn" onclick="openItineraryModal()">Export itinerary</button>
+    <div class="lp-spacer"></div>
+    <div class="lp-toggle-row">
+      <button class="lp-toggle" id="lpThemeToggle" onclick="cycleTheme()"></button>
+      <button class="lp-toggle" id="lpLangToggle" onclick="setLang(currentLang==='ko'?'en':'ko')"></button>
+      <button class="lp-toggle" id="lpUnitToggle" onclick="toggleWeatherUnit()"></button>
+    </div>
+    <button class="lp-button" id="lpFeedbackBtn" onclick="openFeedbackModal()">Feedback</button>
+    <button class="lp-button" id="lpHowToBtn" onclick="openHowToUseModal()">How to use</button>
+    <div class="lp-footer">Built by Jihoon</div>
+  </aside>
   <header class="app-header animate">
     <div class="app-logo trip-switcher" id="appLogo" style="display:flex;align-items:center;gap:8px">
 
-      <span class="app-logo-flag" id="appLogoFlag" onclick="goToDashboard()" title="Dashboard"><span class="flag-emoji"></span><span class="flag-home"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12 12 2.25 21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg></span></span>
+      <span class="app-logo-flag" id="appLogoFlag" onclick="(window.innerWidth>768)?toggleLeftPanel():goToDashboard()" title="Menu">
+        <span class="flag-emoji"></span>
+        <span class="flag-hamburger"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="5" x2="17" y2="5"/><line x1="3" y1="10" x2="17" y2="10"/><line x1="3" y1="15" x2="17" y2="15"/></svg></span>
+        <span class="flag-collapse"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="9" y1="4" x2="9" y2="20"/></svg></span>
+        <span class="flag-home"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12 12 2.25 21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg></span>
+      </span>
       <div class="app-logo-text" onclick="toggleTripDropdown(event)">
-        <div class="app-logo-name" id="appLogoName" style="display:flex;align-items:center;gap:3px">FAROPIN<span class="trip-switcher-chevron" id="tripSwitcherChevron"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg></span></div>
+        <div class="app-logo-name" id="appLogoName" style="display:flex;align-items:center;gap:6px"><span class="app-logo-name-flag" id="appLogoNameFlag"></span><span class="app-logo-name-text">FAROPIN</span><span class="trip-switcher-chevron" id="tripSwitcherChevron"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg></span></div>
         <div class="app-logo-dates" id="appLogoDates"></div>
       </div>
       <div class="trip-dropdown" id="tripDropdown" style="display:none"></div>
@@ -929,24 +1035,13 @@
     </div>
   </div>
 
-  <!-- CURRENCY CONVERTER MODAL -->
-  <div class="modal-overlay" id="currModal" onclick="if(event.target===this)closeCurrConverter()" role="dialog" aria-modal="true">
-    <div class="modal" style="max-width:320px">
-      <div class="modal-head"><h2 id="currModalTitle">Currency Converter</h2><button class="modal-close" onclick="closeCurrConverter()">✕</button></div>
-      <div class="curr-fields">
-        <div class="curr-field">
-          <span class="curr-field-label" id="currLocalLabel">MXN</span>
-          <input type="number" id="currLocal" value="1000" min="0" oninput="currConvert('local')">
-        </div>
-        <div class="curr-divider">=</div>
-        <div class="curr-field">
-          <span class="curr-field-label">🇺🇸 USD</span>
-          <input type="number" id="currUSD" min="0" oninput="currConvert('usd')">
-        </div>
-      </div>
-      <div class="curr-footer">
-        <span class="curr-rate-info" id="currRateInfo">Loading rates…</span>
-        <button class="curr-refresh" id="currRefreshBtn" onclick="refreshCurrRates()">↻ Refresh</button>
+  <!-- HOW TO USE MODAL -->
+  <div class="modal-overlay" id="howToUseModal" onclick="if(event.target===this)closeHowToUseModal()" role="dialog" aria-modal="true">
+    <div class="modal" style="max-width:480px">
+      <div class="modal-head"><h2 id="howToUseTitle">How to use Faropin</h2><button class="modal-close" onclick="closeHowToUseModal()">✕</button></div>
+      <div id="howToUseBody" style="display:flex;flex-direction:column;gap:14px;font-size:0.88rem;line-height:1.5"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-primary" onclick="closeHowToUseModal()" id="howToUseCloseBtn">Got it</button>
       </div>
     </div>
   </div>
@@ -1229,6 +1324,20 @@
       localStorage.setItem('palo-lang-v2', '1');
     }
     var currentLang = localStorage.getItem('palo-lang') || 'en';
+    var leftPanelOpen = (function(){var v=localStorage.getItem('palo-left-panel');return v===null?true:v==='1';})();
+    var weatherUnit = (localStorage.getItem('palo-weather-unit')==='f')?'f':'c';
+    function toggleLeftPanel(){
+      leftPanelOpen=!leftPanelOpen;
+      try{localStorage.setItem('palo-left-panel',leftPanelOpen?'1':'0');}catch(e){}
+      applyLeftPanelState();
+    }
+    function applyLeftPanelState(){
+      if(window.innerWidth>768 && document.body.classList.contains('in-trip') && leftPanelOpen){
+        document.body.classList.add('left-panel-open');
+      } else {
+        document.body.classList.remove('left-panel-open');
+      }
+    }
     var STRINGS = {
       // General
       loading: { ko:'데이터 불러오는 중…', en:'Loading data…' },
@@ -1275,6 +1384,18 @@
       tripName: { ko:'여행 이름', en:'Trip Name' },
       partySize: { ko:'인원', en:'Party size' },
       exportItinerary: { ko:'일정 내보내기', en:'Export itinerary' },
+      weatherSummary: { ko:'날씨 요약', en:'Weather Summary' },
+      howToUse: { ko:'사용법', en:'How to use' },
+      howToUseTitle: { ko:'Faropin 사용법', en:'How to use Faropin' },
+      howToSec1Title: { ko:'장소 추가하기', en:'Add places' },
+      howToSec1Body: { ko:'위시리스트 탭에서 빠른 추가 또는 Discover 버튼을 사용하세요. 구글맵 링크도 붙여넣기 가능합니다.', en:'Use the quick-add bar in Places or the Discover pills (restaurants, cafes, museums, etc.). You can also paste a Google Maps link.' },
+      howToSec2Title: { ko:'일정 잡기', en:'Schedule them' },
+      howToSec2Body: { ko:'장소 카드에서 "+ 일정 추가"를 누르거나 캘린더에서 빈 공간을 클릭해 시간 블록을 만드세요.', en:'On a place card, click "+ Schedule" and pick a day + time. Or click an empty spot in the calendar to create a time block.' },
+      howToSec3Title: { ko:'함께 계획하기', en:'Share with friends' },
+      howToSec3Body: { ko:'우측 상단 공유 버튼으로 이메일 초대를 보내면 함께 장소를 추가하고 좋아요할 수 있습니다.', en:'Open the share dialog (top-right) and invite by email. Collaborators can add places and vote on picks.' },
+      howToSec4Title: { ko:'ChatGPT로 내보내기', en:'Export for ChatGPT' },
+      howToSec4Body: { ko:'왼쪽 패널에서 "일정 내보내기"를 누르면 마크다운 요약을 복사해 AI에게 질문할 수 있습니다.', en:'Left panel → Export itinerary. Generate a markdown summary you can paste into ChatGPT, Claude, or Gemini.' },
+      howToGotIt: { ko:'확인', en:'Got it' },
       exportItineraryTitle: { ko:'일정 내보내기', en:'Export itinerary' },
       exportItineraryHint: { ko:'ChatGPT, Claude, Gemini에 붙여넣을 수 있는 마크다운 요약을 생성합니다', en:'Generate a markdown summary to paste into ChatGPT, Claude, or Gemini' },
       generate: { ko:'생성', en:'Generate' },
@@ -1577,8 +1698,6 @@
       _a('.viz-menu-toggle','aria-label','menu');
       var shareMenuBtn = document.getElementById('shareMenuBtn');
       if (shareMenuBtn) shareMenuBtn.querySelector('span:last-child').textContent = t('shareSettings');
-      var currMenuBtn = document.getElementById('currMenuBtn');
-      if (currMenuBtn) currMenuBtn.querySelector('span:last-child').textContent = t('currConverter');
       var expMenuBtn = document.getElementById('exportItineraryMenuBtn');
       if (expMenuBtn) expMenuBtn.querySelector('span:last-child').textContent = t('exportItinerary');
       _t('themeLabel', currentTheme==='dark'?'darkMode':'lightMode');
@@ -1644,8 +1763,7 @@
       _t('tcCancelBtn', 'cancel');
       var tcSubmit = document.getElementById('tcSubmitBtn');
       if (tcSubmit) tcSubmit.textContent = tcSubmit.textContent === 'Create' || tcSubmit.textContent === t('create') ? t('create') : t('save');
-      // Currency modal
-      _t('currModalTitle', 'currConverter');
+      // Currency panel card
       var currRefreshBtn = document.getElementById('currRefreshBtn');
       if (currRefreshBtn) currRefreshBtn.textContent = '↻ ' + t('currRefresh');
       // Wish modal
@@ -1747,13 +1865,33 @@
         if (dashPill) dashPill.style.display = '';
         loggedIn.style.display = '';
         loggedOut.style.display = 'none';
+        // Profile chip (desktop, in-trip)
+        var pcName = document.getElementById('profileChipName');
+        var pcAv = document.getElementById('profileChipAvatar');
+        if (pcName) pcName.textContent = name;
+        if (pcAv) {
+          if (user.photoURL) pcAv.innerHTML = '<img src="'+user.photoURL+'" alt="">';
+          else { pcAv.innerHTML = ''; pcAv.textContent = initials; }
+        }
+        var ppAv = document.getElementById('profilePopoverAvatar');
+        if (ppAv) {
+          if (user.photoURL) ppAv.innerHTML = '<img src="'+user.photoURL+'" alt="">';
+          else { ppAv.innerHTML = ''; ppAv.textContent = initials; }
+        }
+        var ppNm = document.getElementById('profilePopoverName'); if (ppNm) ppNm.textContent = name;
+        var ppEm = document.getElementById('profilePopoverEmail'); if (ppEm) ppEm.textContent = user.email || '';
+        var ppSo = document.getElementById('profilePopoverSignOut'); if (ppSo) ppSo.textContent = t('signOut');
+        var pcWrap = document.getElementById('profileChipWrap'); if (pcWrap) pcWrap.style.display = '';
       } else {
         loggedIn.style.display = 'none';
         loggedOut.style.display = '';
         var dashPill = document.getElementById('dashAccountPill');
         if (dashPill) dashPill.style.display = 'none';
+        var pcWrap = document.getElementById('profileChipWrap'); if (pcWrap) pcWrap.style.display = 'none';
       }
     }
+    function toggleProfilePopover(ev){ if(ev)ev.stopPropagation(); document.getElementById('profilePopover').classList.toggle('open'); }
+    function closeProfilePopover(){ var pp=document.getElementById('profilePopover'); if(pp)pp.classList.remove('open'); }
     function getTripRole() {
       if (!currentUser || !currentTripMeta || !currentTripMeta.access) return 'none';
       return currentTripMeta.access[currentUser.uid] || 'none';
@@ -2225,7 +2363,8 @@
         var lat=currentTripMeta.cityLat,lng=currentTripMeta.cityLng;
         var tz=currentTripMeta.timezone||'auto';
         var today=new Date().toISOString().slice(0,10);
-        var base='&daily=temperature_2m_max,temperature_2m_min,weather_code&timezone='+encodeURIComponent(tz);
+        var unitParam=(weatherUnit==='f')?'&temperature_unit=fahrenheit':'';
+        var base='&daily=temperature_2m_max,temperature_2m_min,weather_code&timezone='+encodeURIComponent(tz)+unitParam;
         var coords='latitude='+lat+'&longitude='+lng;
 
         async function fetchRange(apiUrl,s,e,dateMap){
@@ -2266,7 +2405,55 @@
           }
         }
         renderCal();if(currentView==='map')renderMapUI();
+        renderLpWeather();
       }catch(e){console.warn('Weather fetch failed:',e);}
+    }
+    function toggleWeatherUnit(){
+      weatherUnit=(weatherUnit==='f')?'c':'f';
+      try{localStorage.setItem('palo-weather-unit',weatherUnit);}catch(e){}
+      renderLeftPanel();
+      fetchWeather();
+    }
+    function renderLpWeather(){
+      var el=document.getElementById('lpWeatherCard');if(!el)return;
+      var header='<div class="lp-card-title">'+t('weatherSummary')+'</div>';
+      if(!DAYS||!DAYS.length){el.innerHTML=header+'<div style="font-size:0.72rem;color:var(--text-secondary)">—</div>';return;}
+      var rows='';
+      DAYS.forEach(function(d){
+        var w=weatherData[dayIsoDate(d)];
+        if(!w){rows+='<div class="lp-wx-row"><span class="lp-wx-icon">·</span><span class="lp-wx-date">'+(d.date||'')+'</span><span class="lp-wx-temp" style="opacity:0.4">—</span></div>';return;}
+        rows+='<div class="lp-wx-row"><span class="lp-wx-icon">'+w.icon+'</span><span class="lp-wx-date">'+(d.date||'')+'</span><span class="lp-wx-temp">'+w.tempMax+'° <span style="opacity:0.6">/ '+w.tempMin+'°</span></span></div>';
+      });
+      el.innerHTML=header+'<div class="lp-wx-list">'+rows+'</div>';
+    }
+    function renderLpCurrency(){
+      var el=document.getElementById('lpCurrencyCard');if(!el)return;
+      var currency=_detectTripCurrency();
+      var header='<div class="lp-card-title">'+t('currConverter')+'</div>';
+      el.innerHTML=header+
+        '<div class="curr-fields">'+
+          '<div class="curr-field"><span class="curr-field-label" id="currLocalLabel">'+currency+'</span><input type="number" id="currLocal" value="1000" min="0" oninput="currConvert(\'local\')"></div>'+
+          '<div class="curr-divider">=</div>'+
+          '<div class="curr-field"><span class="curr-field-label">🇺🇸 USD</span><input type="number" id="currUSD" min="0" oninput="currConvert(\'usd\')"></div>'+
+        '</div>'+
+        '<div class="curr-footer"><span class="curr-rate-info" id="currRateInfo">'+t('currLoading')+'</span><button class="curr-refresh" id="currRefreshBtn" onclick="refreshCurrRates()">↻ '+t('currRefresh')+'</button></div>';
+      if(typeof currRate==='undefined'||currRate==null){try{loadCurrRates();}catch(e){}}
+      else { currConvert('local'); }
+    }
+    function openHowToUseModal(){
+      document.getElementById('howToUseTitle').textContent=t('howToUseTitle');
+      document.getElementById('howToUseCloseBtn').textContent=t('howToGotIt');
+      var sections=[['howToSec1Title','howToSec1Body'],['howToSec2Title','howToSec2Body'],['howToSec3Title','howToSec3Body'],['howToSec4Title','howToSec4Body']];
+      document.getElementById('howToUseBody').innerHTML=sections.map(function(s){
+        return '<div><div style="font-weight:700;font-size:0.9rem;margin-bottom:3px">'+t(s[0])+'</div><div style="color:var(--text-secondary)">'+t(s[1])+'</div></div>';
+      }).join('');
+      document.getElementById('howToUseModal').classList.add('open');
+    }
+    function closeHowToUseModal(){document.getElementById('howToUseModal').classList.remove('open');}
+    function _detectTripCurrency(){
+      if(!currentTripMeta||!currentTripMeta.cityCountryCode)return 'USD';
+      var cc=(currentTripMeta.cityCountryCode||'').toUpperCase();
+      return (typeof CC_TO_CURR!=='undefined'&&CC_TO_CURR[cc])||'USD';
     }
 
 
@@ -2492,7 +2679,7 @@
       if (!_routerInited) {
         _routerInited = true;
         window.addEventListener('hashchange', handleRoute);
-        window.addEventListener('resize', function(){updateFab();if(currentView==='calendar'){calPage=0;renderCal();}});
+        window.addEventListener('resize', function(){updateFab();applyLeftPanelState();if(currentView==='calendar'){calPage=0;renderCal();}});
       }
       handleRoute();
     }
@@ -2563,28 +2750,50 @@
       var nameEl = document.getElementById('appLogoName');
       var datesEl = document.getElementById('appLogoDates');
       var tabsEl = document.getElementById('navTabsGroup');
-      var currBtn = document.getElementById('currMenuBtn');
       var switcher = document.getElementById('appLogo');
       closeTripDropdown();
+      var nameTextEl = nameEl ? nameEl.querySelector('.app-logo-name-text') : null;
+      var nameFlagEl = nameEl ? nameEl.querySelector('.app-logo-name-flag') : null;
       if (!trip) {
         if (flagEl) { var fe0=flagEl.querySelector('.flag-emoji'); if (fe0) fe0.textContent=''; }
         if (nameEl) nameEl.removeAttribute('data-flag');
-        if (nameEl) { nameEl.childNodes[0].textContent = 'FAROPIN'; }
+        if (nameFlagEl) nameFlagEl.textContent = '';
+        if (nameTextEl) nameTextEl.textContent = 'FAROPIN';
         if (datesEl) datesEl.textContent = '';
         if (tabsEl) tabsEl.style.display = 'none';
-        if (currBtn) currBtn.style.display = 'none';
         if (switcher) switcher.classList.remove('has-trip');
         document.title = 'FAROPIN';
       } else {
-        if (currBtn) currBtn.style.display = '';
         if (flagEl) { var fe1=flagEl.querySelector('.flag-emoji'); if (fe1) fe1.textContent = trip.emoji || '🌍'; }
         if (nameEl) nameEl.setAttribute('data-flag', trip.emoji || '🌍');
-        if (nameEl) { nameEl.childNodes[0].textContent = trip.name || trip.city || t('trip'); }
+        if (nameFlagEl) nameFlagEl.textContent = trip.emoji || '🌍';
+        if (nameTextEl) nameTextEl.textContent = trip.name || trip.city || t('trip');
         if (datesEl) datesEl.textContent = tripDateLabel(trip);
         if (tabsEl) tabsEl.style.display = '';
         if (switcher) switcher.classList.add('has-trip');
         document.title = 'FAROPIN - ' + (trip.emoji?trip.emoji+' ':'') + (trip.name||t('trip'));
       }
+      renderLeftPanel();
+    }
+    function renderLeftPanel(){
+      var trip = currentTripMeta;
+      var lpName = document.getElementById('lpTripName');
+      var lpDates = document.getElementById('lpTripDates');
+      var lpEdit = document.getElementById('lpEditBtn');
+      if(lpName) lpName.textContent = trip ? ((trip.emoji?trip.emoji+' ':'')+(trip.name||trip.city||'')) : '';
+      if(lpDates) lpDates.textContent = trip ? (tripDateLabel(trip)||'') : '';
+      if(lpEdit) { lpEdit.textContent = t('edit'); lpEdit.style.display = (canEdit()?'':'none'); }
+      var lpExport = document.getElementById('lpExportBtn'); if(lpExport) lpExport.textContent = t('exportItinerary');
+      var lpFb = document.getElementById('lpFeedbackBtn'); if(lpFb) lpFb.textContent = t('sendFeedback');
+      var lpHow = document.getElementById('lpHowToBtn'); if(lpHow) lpHow.textContent = t('howToUse');
+      var lpTheme = document.getElementById('lpThemeToggle');
+      if(lpTheme) lpTheme.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg><span>'+t(currentTheme==='dark'?'darkMode':'lightMode')+'</span>';
+      var lpLang = document.getElementById('lpLangToggle');
+      if(lpLang) lpLang.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 21l5.25-11.25L21 21m-9-3h7.5M3 5.621a48.474 48.474 0 016-.371m0 0c1.12 0 2.233.038 3.334.114M9 5.25V3m3.334 2.364C11.176 10.658 7.69 15.08 3 17.502m9.334-12.138c.896.061 1.785.147 2.666.257m-4.589 8.495a18.023 18.023 0 01-3.827-5.802"/></svg><span>'+(currentLang==='ko'?'한국어':'EN')+'</span>';
+      var lpUnit = document.getElementById('lpUnitToggle');
+      if(lpUnit) lpUnit.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z"/></svg><span>'+(weatherUnit==='f'?'°F':'°C')+'</span>';
+      renderLpWeather();
+      renderLpCurrency();
     }
     function tripDateLabel(trip) {
       if (!trip.startDate || !trip.endDate) return '';
@@ -2929,6 +3138,7 @@
       dashEl.style.display = 'block';
       document.body.classList.add('on-dashboard');
       document.body.classList.remove('in-trip');
+      document.body.classList.remove('left-panel-open');
       dashEl.classList.remove('dash-enter');
       requestAnimationFrame(function(){ dashEl.classList.add('dash-enter'); });
       updateHeader(null);
@@ -3592,6 +3802,7 @@
       var dash=document.getElementById('view-dashboard');if(dash)dash.style.display='none';
       document.body.classList.remove('on-dashboard');
       document.body.classList.add('in-trip');
+      applyLeftPanelState();
       document.querySelectorAll('.view').forEach(function(el){el.classList.remove('active','view-enter');el.style.display='';});
       document.querySelectorAll('.view-tab').forEach(function(t){t.classList.remove('active');t.setAttribute('aria-selected','false');});
       var el=document.getElementById('view-'+v);
@@ -5390,13 +5601,6 @@
       if(from==='local'){var v=parseFloat(localEl.value)||0;usdEl.value=+(v*currRate).toFixed(2);}
       else{var v=parseFloat(usdEl.value)||0;localEl.value=+(v/currRate).toFixed(2);}
     }
-    function openCurrConverter(){
-      document.getElementById('vizMenuDropdown').classList.remove('open');
-      document.getElementById('currModal').classList.add('open');
-      currRate=null; loadCurrRates();
-      setTimeout(function(){var el=document.getElementById('currLocal');if(el){el.focus();el.select();}},100);
-    }
-    function closeCurrConverter(){document.getElementById('currModal').classList.remove('open');}
 
     // ==================== LODGING MODAL ====================
     var _lodgingDayId=null,_lodgingSelectedWishId=null;
@@ -5787,11 +5991,12 @@
     function toggleMenu(){document.getElementById('vizMenuDropdown').classList.toggle('open');}
     document.addEventListener('click',function(ev){
       if(!ev.target.closest('.viz-menu'))document.getElementById('vizMenuDropdown').classList.remove('open');
+      if(!ev.target.closest('.profile-chip-wrap')){var pp=document.getElementById('profilePopover');if(pp)pp.classList.remove('open');}
       if(ev.target===document.getElementById('editModal'))closeEditModal();
       if(ev.target===document.getElementById('wishModal'))closeWishModal();
     });
     document.addEventListener('keydown',function(ev){
-      if(ev.key==='Escape'){document.getElementById('vizMenuDropdown').classList.remove('open');closeEditModal();closeWishModal();closeCalPickModal();closeSchedModal();closeCurrConverter();closeTripCreate();closeItineraryModal();closeBulkExportModal();closeLodgingModal();}
+      if(ev.key==='Escape'){document.getElementById('vizMenuDropdown').classList.remove('open');closeEditModal();closeWishModal();closeCalPickModal();closeSchedModal();closeTripCreate();closeItineraryModal();closeBulkExportModal();closeLodgingModal();closeHowToUseModal();}
     });
 
     // ==================== COBE GLOBE ====================
@@ -5927,6 +6132,7 @@
       document.getElementById('themeLabel').textContent=th==='dark'?t('darkMode'):t('lightMode');
       localStorage.setItem('viz-theme',th);currentTheme=th;
       if(leafletMap)setTiles(th==='dark');rerender();
+      renderLeftPanel();
       var dashVisible = document.getElementById('view-dashboard') && document.getElementById('view-dashboard').style.display !== 'none';
       if(dashVisible){ setTimeout(function(){ initCobe(cobeCachedTrips); }, 50); }
     }
