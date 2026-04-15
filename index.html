@@ -3,10 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>PALO - Travel Planner</title>
+  <title>FAROPIN - Travel Planner</title>
+  <meta name="description" content="Plan your next trip together. Collaborative travel planning with calendar, map, and places.">
+  <meta property="og:title" content="Faropin - Plan your next trip together">
+  <meta property="og:description" content="Collaborative travel planning with calendar, map, and places. Invite friends, discover spots, and build your itinerary.">
+  <meta property="og:image" content="https://faropin.com/og-image.jpg">
+  <meta property="og:image:width" content="2000">
+  <meta property="og:image:height" content="1200">
+  <meta property="og:url" content="https://faropin.com">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Faropin">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Faropin - Plan your next trip together">
+  <meta name="twitter:description" content="Collaborative travel planning with calendar, map, and places.">
+  <meta name="twitter:image" content="https://faropin.com/og-image.jpg">
+  <link rel="canonical" href="https://faropin.com">
+  <meta name="theme-color" content="#171717">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
@@ -94,7 +110,12 @@
     .app-header .nav-tabs-group { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); display:flex; align-items:center; gap:8px; }
     .app-header .view-tabs { position:static; transform:none; }
     .view-tabs { display:flex; gap:3px; background:var(--surface); padding:3px; border-radius:10px; border:1px solid var(--border); height:34px; align-items:center; }
-    .view-tab { padding:0 13px; height:26px; display:inline-flex; align-items:center; border-radius:7px; border:none; background:transparent; color:var(--text-secondary); font-family:inherit; font-size:0.82rem; font-weight:500; cursor:pointer; transition:background var(--dur-small) var(--ease-out), color var(--dur-small), transform var(--dur-micro) var(--ease-out); white-space:nowrap; }
+    .view-tab { position:relative; padding:0 13px; height:26px; display:inline-flex; align-items:center; border-radius:7px; border:none; background:transparent; color:var(--text-secondary); font-family:inherit; font-size:0.82rem; font-weight:500; cursor:pointer; transition:background var(--dur-small) var(--ease-out), color var(--dur-small), transform var(--dur-micro) var(--ease-out); white-space:nowrap; }
+    .tab-badge { position:absolute; top:-4px; right:-4px; min-width:16px; height:16px; padding:0 4px; border-radius:8px; background:#ef4444; color:white; font-size:0.6rem; font-weight:700; line-height:16px; text-align:center; pointer-events:none; z-index:1; }
+    .item-new-dot { width:7px; height:7px; border-radius:50%; background:#ef4444; position:absolute; z-index:1; }
+    .wl-card .item-new-dot { top:8px; right:8px; }
+    .cal-event .item-new-dot { top:4px; right:4px; }
+    @media(max-width:768px){ .tab-badge { top:-3px; right:-3px; min-width:14px; height:14px; font-size:0.55rem; line-height:14px; } }
     .view-tab.active { background:var(--accent); color:var(--accent-fg); }
     .view-tab:hover:not(.active) { background:var(--surface-hover); color:var(--text); }
     .view-tab:active { transform:scale(0.95); }
@@ -124,6 +145,33 @@
     .view-search-bar { position:relative; display:flex; margin-bottom:10px; }
     .view-search-bar .wl-quick-input { flex:1; padding:8px 10px !important; border-radius:8px !important; font-size:0.8rem !important; }
 
+    .wl-add-panel { background:color-mix(in srgb, var(--text) 3%, transparent); border:1px solid var(--border); border-radius:14px; padding:14px; margin-bottom:16px; display:flex; flex-direction:column; gap:10px; }
+    .wl-add-panel .wl-quick-add { margin-bottom:0; }
+    .wl-add-panel .wl-discover { margin-bottom:0; display:flex; align-items:center; gap:10px; flex-wrap:nowrap; }
+    .wl-add-panel .wl-discover-label { margin-bottom:0; flex-shrink:0; white-space:nowrap; }
+    .wl-add-panel .wl-discover-btns { flex:1; min-width:0; padding-bottom:0; }
+    .wl-discover { margin-bottom:14px; }
+    .wl-discover-label { font-size:0.75rem; font-weight:600; color:var(--text-secondary); margin-bottom:6px; display:flex; align-items:center; gap:4px; }
+    .wl-discover-btns { display:flex; gap:7px; overflow-x:auto; padding-bottom:4px; -webkit-overflow-scrolling:touch; }
+    .wl-discover-btns::-webkit-scrollbar { display:none; }
+    .wl-discover-btn { flex-shrink:0; padding:7px 13px; border-radius:10px; font-size:0.78rem; font-weight:500; border:1px solid var(--border); background:var(--surface); cursor:pointer; font-family:inherit; color:var(--text-primary); transition:border-color 0.15s, background 0.15s, opacity 0.15s; white-space:nowrap; }
+    .wl-discover-btn:hover { border-color:var(--accent); }
+    .wl-discover-btn:disabled { opacity:0.45; cursor:not-allowed; }
+    .disc-item { display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--border); }
+    .disc-item:last-child { border-bottom:none; }
+    .disc-item-photo { width:52px; height:52px; border-radius:8px; object-fit:cover; flex-shrink:0; background:var(--surface); }
+    .disc-item-photo-empty { width:52px; height:52px; border-radius:8px; flex-shrink:0; background:var(--surface); display:flex; align-items:center; justify-content:center; color:var(--text-secondary); font-size:1.2rem; }
+    .disc-item-info { flex:1; min-width:0; }
+    .disc-item-name { font-size:0.85rem; font-weight:600; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .disc-item-sub { font-size:0.75rem; color:var(--text-secondary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px; }
+    .disc-item-add { flex-shrink:0; padding:5px 12px; border-radius:8px; font-size:0.78rem; font-weight:500; border:1px solid var(--border); background:var(--surface); cursor:pointer; font-family:inherit; color:var(--text-primary); transition:background 0.15s; }
+    .disc-item-add:hover { background:var(--accent); color:var(--accent-fg); }
+    .disc-item-add.added { background:var(--surface); color:var(--text-secondary); border-color:transparent; cursor:default; pointer-events:none; }
+    .disc-loading { text-align:center; padding:32px 0; color:var(--text-secondary); font-size:0.85rem; }
+    .wish-recommend-null { text-align:center; color:var(--text-secondary); font-size:0.85rem; padding:48px 16px; }
+    .wish-recommend-cats { display:flex; gap:7px; flex-wrap:wrap; margin-bottom:14px; }
+    .wish-recommend-footer { display:none; padding-top:10px; text-align:right; }
+    .wish-discover-row .wl-discover-btn { padding:6px 10px; font-size:0.85rem; }
     .wl-quick-add { position:relative; display:flex; margin-bottom:18px; }
     .wl-quick-input { flex:1; padding:10px 14px; border-radius:12px; border:1px solid var(--border); background:var(--surface); color:var(--text); font-family:inherit; font-size:0.85rem; outline:none; transition:border-color var(--dur-small); }
     .wl-quick-input:focus { border-color:var(--accent); }
@@ -215,7 +263,11 @@
     /* WISHLIST */
     .wishlist-view { max-width:860px; margin:0 auto; padding:28px 20px 120px; }
     .wl-toolbar { display:flex; flex-direction:column; gap:10px; margin-bottom:22px; }
-    .wl-toolbar-top { display:flex; align-items:center; }
+    .wl-toolbar-top { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+    .wl-view-toggle { display:inline-flex; background:var(--surface-hover); border-radius:8px; padding:2px; gap:2px; }
+    .wl-view-btn { width:30px; height:28px; border:none; border-radius:6px; background:transparent; color:var(--text-secondary); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background var(--dur-small), color var(--dur-small); }
+    .wl-view-btn.active { background:var(--surface); color:var(--text); box-shadow:0 1px 3px rgba(0,0,0,0.08); }
+    .wl-view-btn:hover:not(.active) { color:var(--text); }
     .wl-filter-rows { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; }
     .wl-filter-group { display:flex; gap:5px; flex-wrap:wrap; align-items:center; }
     .wl-title { font-size:1.3rem; font-weight:700; }
@@ -226,7 +278,34 @@
     .wl-filter.status-btn.active { background:#6366f1; border-color:transparent; }
     .wl-filter.status-btn:hover:not(.active) { border-color:#6366f1; color:#6366f1; }
     .wl-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:14px; }
-    .wl-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px 18px; cursor:pointer; transition:transform var(--dur-small) var(--ease-out), box-shadow var(--dur-small) var(--ease-out), border-color var(--dur-small); display:flex; flex-direction:column; gap:6px; }
+    .wl-grid.list { grid-template-columns:1fr; gap:8px; }
+    .wl-grid.list .wl-card { padding:10px 14px; gap:4px; }
+    .wl-grid.list .place-details, .wl-grid.list .wl-card-details { display:none; }
+    .wl-grid.list .wl-card-sub { font-size:0.76rem; margin-top:1px; }
+    .wl-grid.list .wl-card-top { align-items:flex-start; }
+    .wl-grid.list .wl-card-name { font-size:0.9rem; }
+    .wl-grid.list hr { display:none; }
+    .wl-grid.list .wl-card-bottom { padding:0; }
+    .wl-grid.list .wl-card-links { margin-top:2px; gap:8px; }
+    .wl-grid.list .wl-card { position:relative; }
+    .wl-grid.list .wl-card-top { padding-right:90px; }
+    .wl-grid.list .wl-card-bottom { justify-content:space-between; }
+    .wl-grid.list .wl-card-bottom:has(.wl-visited-toggle[onclick*="editWishItem"]) .wl-visited-toggle { position:absolute; top:8px; right:14px; }
+    /* Author slot: default (grid) shows the one in wl-card-top, list shows the one in the meta/category row */
+    .wl-author-meta { display:none; margin-left:6px; }
+    .wl-grid.list .wl-author-top { display:none; }
+    .wl-grid.list .wl-author-meta { display:inline-flex; align-items:center; }
+    .wl-author-slot img, .wl-author-slot .wl-author-initials { vertical-align:middle; }
+    .wl-grid.list .wl-card:has(.wl-card-photo) { display:grid; grid-template-columns:60px 1fr; column-gap:12px; align-items:center; padding:8px 12px; }
+    .wl-grid.list .wl-card:has(.wl-card-photo) > .wl-card-photo { grid-row:1 / -1; grid-column:1; width:60px; height:60px; border-radius:8px; margin:0; object-fit:cover; }
+    .wl-grid.list .wl-card:has(.wl-card-photo) > *:not(.wl-card-photo) { grid-column:2; min-width:0; }
+    .toggle-switch { position:relative; display:inline-block; width:40px; height:22px; flex-shrink:0; }
+    .toggle-switch input { opacity:0; width:0; height:0; }
+    .toggle-slider { position:absolute; cursor:pointer; inset:0; background:var(--border-strong); border-radius:22px; transition:background var(--dur-small); }
+    .toggle-slider:before { content:''; position:absolute; height:16px; width:16px; left:3px; bottom:3px; background:white; border-radius:50%; transition:transform var(--dur-small); }
+    .toggle-switch input:checked + .toggle-slider { background:var(--accent); }
+    .toggle-switch input:checked + .toggle-slider:before { transform:translateX(18px); }
+    .wl-card { position:relative; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px 18px; cursor:pointer; transition:transform var(--dur-small) var(--ease-out), box-shadow var(--dur-small) var(--ease-out), border-color var(--dur-small); display:flex; flex-direction:column; gap:6px; }
     @media (hover:hover) and (pointer:fine) { .wl-card:hover { border-color:var(--border-strong); } }
     .wl-card:active { transform:scale(0.98); transition-duration:var(--dur-micro); }
     .wl-card.visited { }
@@ -235,18 +314,32 @@
     .wl-card-info { flex:1; min-width:0; }
     .wl-card-name { font-size:0.95rem; font-weight:700; line-height:1.3; }
     .wl-card-sub { font-size:0.78rem; color:var(--text-secondary); margin-top:2px; }
-    .wl-author-avatar { width:24px; height:24px; border-radius:50%; flex-shrink:0; object-fit:cover; cursor:default; }
-    .wl-author-initials { width:24px; height:24px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:0.6rem; font-weight:700; background:var(--surface-hover); color:var(--text-secondary); cursor:default; }
+    .wl-author { display:inline-flex; align-items:center; gap:5px; font-size:0.75rem; color:var(--text-secondary); max-width:100%; min-width:0; }
+    .wl-author-name { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0; }
+    .wl-author-avatar { width:20px; height:20px; border-radius:50%; flex-shrink:0; object-fit:cover; cursor:default; }
+    .wl-author-initials { width:20px; height:20px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:0.58rem; font-weight:700; background:var(--surface-hover); color:var(--text-secondary); cursor:default; }
     .wl-card-badges { display:flex; gap:5px; flex-wrap:wrap; align-items:center; }
     .wl-badge { display:inline-flex; align-items:center; gap:3px; font-size:0.67rem; padding:2px 7px; border-radius:10px; font-weight:500; }
     .wl-card-bottom { display:flex; align-items:center; justify-content:space-between; margin-top:4px; }
     .wl-maps-link { display:inline-flex; align-items:center; gap:4px; font-size:0.72rem; color:var(--text-secondary); text-decoration:none; white-space:nowrap; }
     .wl-maps-link:hover { color:var(--accent); }
-    .wl-card-links { display:flex; align-items:center; gap:10px; margin-top:4px; }
+    .wl-card-links { display:flex; align-items:center; gap:10px; margin-top:4px; flex-wrap:wrap; }
+    .wl-vote-inline { display:inline-flex; align-items:center; gap:6px; }
+    .wl-author-slot { display:inline-flex; align-items:center; gap:8px; min-width:0; }
     .wl-visited-toggle { display:inline-flex; align-items:center; justify-content:center; gap:4px; font-size:0.72rem; background:none; border:1px solid var(--border); border-radius:6px; padding:5px 10px; cursor:pointer; color:var(--text-secondary); font-family:inherit; transition:border-color var(--dur-small), color var(--dur-small); height:30px; box-sizing:border-box; }
     .wl-visited-toggle:hover { border-color:var(--accent); color:var(--accent); }
     .wl-card.visited .wl-visited-toggle.adjust { border-color:var(--border); color:var(--text-secondary); }
     .wl-card.visited .wl-visited-toggle.adjust:hover { border-color:var(--accent); color:var(--accent); }
+    .wl-vote-row { display:flex; align-items:center; gap:8px; margin:2px 0 4px; }
+    .wl-vote-btn { display:inline-flex; align-items:center; gap:5px; padding:4px 9px; border-radius:999px; border:1px solid var(--border-strong); background:transparent; color:var(--text-secondary); font-family:inherit; font-size:0.78rem; font-weight:600; cursor:pointer; transition:all var(--dur-small); }
+    .wl-vote-btn:hover { border-color:var(--accent); color:var(--text); }
+    .wl-vote-btn.voted { background:color-mix(in srgb, var(--accent) 14%, transparent); border-color:var(--accent); color:var(--text); }
+    .wl-vote-btn.voted svg { fill:var(--accent); stroke:var(--accent); }
+    .wl-vote-avatars { display:flex; margin-left:2px; }
+    .wl-vote-avatars > * { width:18px; height:18px; border-radius:50%; border:1.5px solid var(--surface); margin-left:-5px; background:var(--surface-hover); display:inline-flex; align-items:center; justify-content:center; font-size:9px; font-weight:700; color:var(--text); overflow:hidden; }
+    .wl-vote-avatars > *:first-child { margin-left:0; }
+    .wl-vote-avatars img { width:100%; height:100%; object-fit:cover; }
+    .wl-vote-overflow { font-size:9px; color:var(--text-secondary); }
     .wl-time-remove { color:var(--warning)!important; border-color:rgba(245,158,11,0.4)!important; }
     .wl-time-remove:hover { background:rgba(245,158,11,0.1)!important; border-color:var(--warning)!important; }
     .wl-del-btn { color:#ef4444!important; border-color:#ef444460!important; }
@@ -276,20 +369,26 @@
     .modal-actions { display:flex; gap:7px; justify-content:flex-end; margin-top:22px; }
     /* Edit modal type toggle */
     .edit-type-seg { display:flex; background:var(--surface-hover); border-radius:10px; padding:3px; gap:2px; margin-bottom:18px; }
-    .edit-type-btn { flex:1; padding:7px 10px; border:none; border-radius:7px; font-family:inherit; font-size:0.82rem; font-weight:600; cursor:pointer; background:transparent; color:var(--text-secondary); transition:background var(--dur-small), color var(--dur-small); }
+    .edit-type-btn { flex:1; padding:7px 10px; border:none; border-radius:7px; font-family:inherit; font-size:0.82rem; font-weight:600; cursor:pointer; background:transparent; color:var(--text-secondary); transition:background var(--dur-small), color var(--dur-small); text-align:center; }
     .edit-type-btn.active { background:var(--surface); color:var(--text); box-shadow:0 1px 5px rgba(0,0,0,0.12); }
     #editForm { display:flex; flex-direction:column; }
-    #editForm .fg-time  { order:1; } #editForm .fg-title { order:2; } #editForm .fg-sub { order:3; }
-    #editForm .fg-map   { order:4; } #editForm .fg-notes { order:5; } #editForm .fg-link { order:6; }
-    #editForm .fg-cat   { order:7; } #editForm .fg-opt { order:8; } #editForm .modal-actions { order:9; }
-    #editForm.mode-place .fg-map { order:1; } #editForm.mode-place .fg-title { order:2; }
-    #editForm.mode-place .fg-time { order:3; }
+    #editForm .fg-date  { order:1; }
+    #editForm .fg-time  { order:2; } #editForm .fg-title { order:3; } #editForm .fg-notes { order:4; }
+    #editForm .fg-sub   { order:5; } #editForm .fg-map   { order:6; } #editForm .fg-link { order:7; }
+    #editForm .fg-cat   { order:8; } #editForm .fg-opt   { order:9; }
+    #editForm #editExtraPills { order:10; } #editForm .modal-actions { order:11; }
+    .edit-pill-row { display:flex; flex-wrap:wrap; gap:6px; margin:4px 0 14px; }
+    .edit-pill { padding:5px 11px; border-radius:999px; border:1px dashed var(--border-strong); background:transparent; color:var(--text-secondary); font-family:inherit; font-size:0.78rem; cursor:pointer; transition:border-color var(--dur-small), color var(--dur-small), border-style var(--dur-small); }
+    .edit-pill:hover { border-color:var(--accent); color:var(--text); border-style:solid; }
+    .edit-field-hide { display:none !important; }
+    .fg-dismiss { float:right; background:none; border:none; color:var(--text-secondary); cursor:pointer; font-size:0.95rem; line-height:1; padding:0 4px; margin-left:8px; }
+    .fg-dismiss:hover { color:var(--text); }
     .edit-place-header { display:flex; align-items:flex-start; gap:10px; padding:12px 14px; background:var(--surface-hover); border-radius:10px; margin-bottom:14px; order:0; }
     .edit-place-header .eph-icon { width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
     .edit-place-header .eph-info { flex:1; min-width:0; }
     .edit-place-header .eph-name { font-weight:700; font-size:0.92rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .edit-place-header .eph-sub { font-size:0.75rem; color:var(--text-secondary); margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    #editForm.mode-wishlist .fg-title, #editForm.mode-wishlist .fg-sub, #editForm.mode-wishlist .fg-map, #editForm.mode-wishlist .fg-cat, #editForm.mode-wishlist .fg-opt { display:none; }
+    #editForm.mode-wishlist .fg-title, #editForm.mode-wishlist .fg-sub, #editForm.mode-wishlist .fg-map, #editForm.mode-wishlist .fg-cat, #editForm.mode-wishlist .fg-opt, #editForm.mode-wishlist #editExtraPills { display:none !important; }
     #editForm.mode-wishlist .fg-time { order:1; }
     #editForm.mode-wishlist .fg-notes { order:2; }
     #editForm.mode-wishlist .fg-link { order:3; }
@@ -398,6 +497,14 @@
     .weather-min { opacity:0.6; }
     .map-weather-chip { font-size:0.72rem; opacity:0.85; margin-left:auto; white-space:nowrap; }
     .mob-weather-row { font-size:0.78rem; color:var(--text-secondary); margin-bottom:8px; display:flex; align-items:center; gap:6px; }
+    .day-chip { font-size:0.72rem; color:var(--text-secondary); display:flex; align-items:center; justify-content:flex-start; gap:5px; padding:5px 10px; border-radius:8px; border:1px solid var(--border); background:var(--surface); cursor:pointer; white-space:nowrap; width:100%; transition:border-color var(--dur-small),background var(--dur-small); font-family:inherit; text-align:left; }
+    .day-chip:hover { border-color:var(--border-strong); }
+    .day-chip.empty { color:var(--text-secondary); opacity:0.65; border-style:dashed; }
+    .day-chip.empty:hover { opacity:1; border-color:var(--accent); color:var(--text); }
+    .day-chip-name { overflow:hidden; text-overflow:ellipsis; flex:1; min-width:0; }
+    .day-chip-time { opacity:0.7; }
+    .day-chip-warning { color:var(--negative); }
+    .cal-day-chips { display:flex; flex-direction:column; gap:4px; margin-top:6px; width:100%; }
     /* SAVE TOAST */
     @keyframes toastIn { from{opacity:0;transform:translateY(8px) scale(0.96)} to{opacity:1;transform:translateY(0) scale(1)} }
     @keyframes toastOut { from{opacity:1;transform:translateY(0) scale(1)} to{opacity:0;transform:translateY(6px) scale(0.96)} }
@@ -653,6 +760,7 @@
     </button>
     <div class="viz-menu-dropdown" id="vizMenuDropdown">
       <button id="shareMenuBtn" onclick="openShareModal()" style="display:none"><span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.935-2.186 2.25 2.25 0 0 0-3.935 2.186Z"/></svg></span><span>Share Settings</span></button>
+      <button id="exportItineraryMenuBtn" onclick="openItineraryModal()" style="display:none"><span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z"/></svg></span><span>Export itinerary</span></button>
       <button id="currMenuBtn" onclick="openCurrConverter()"><span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z"/></svg></span><span>Currency Converter</span></button>
       <button onclick="cycleTheme()"><span id="themeIcon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z"/></svg></span><span id="themeLabel">Dark mode</span></button>
       <button onclick="openFeedbackModal()"><span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 0 1 1.037-.443 48.282 48.282 0 0 0 5.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"/></svg></span><span>Send Feedback</span></button>
@@ -680,7 +788,7 @@
 
       <span class="app-logo-flag" id="appLogoFlag" onclick="goToDashboard()" title="Dashboard"><span class="flag-emoji"></span><span class="flag-home"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12 12 2.25 21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg></span></span>
       <div class="app-logo-text" onclick="toggleTripDropdown(event)">
-        <div class="app-logo-name" id="appLogoName" style="display:flex;align-items:center;gap:3px">PALO<span class="trip-switcher-chevron" id="tripSwitcherChevron"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg></span></div>
+        <div class="app-logo-name" id="appLogoName" style="display:flex;align-items:center;gap:3px">FAROPIN<span class="trip-switcher-chevron" id="tripSwitcherChevron"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg></span></div>
         <div class="app-logo-dates" id="appLogoDates"></div>
       </div>
       <div class="trip-dropdown" id="tripDropdown" style="display:none"></div>
@@ -800,6 +908,10 @@
         </div>
         <input type="hidden" id="tcTz">
         <span id="tcTzStatus" style="display:none"></span>
+        <div class="form-group">
+          <label class="form-label" id="tcPartySizeLabel">Party size</label>
+          <input type="number" class="form-input" id="tcPartySize" min="1" max="99" step="1" value="1" style="max-width:120px">
+        </div>
         <div class="form-group" id="tcInviteGroup">
           <label class="form-label" id="tcInviteLabel">Travel with <span style="font-weight:400;color:var(--text-secondary);font-size:0.8em">(Optional)</span></label>
           <div id="tcInviteList" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px"></div>
@@ -839,18 +951,110 @@
     </div>
   </div>
 
+  <!-- ITINERARY EXPORT MODAL -->
+  <div class="modal-overlay" id="itineraryModal" onclick="if(event.target===this)closeItineraryModal()" role="dialog" aria-modal="true">
+    <div class="modal" style="max-width:720px">
+      <div class="modal-head"><h2 id="itineraryModalTitle">Export itinerary</h2><button class="modal-close" onclick="closeItineraryModal()">✕</button></div>
+      <p id="itineraryHint" style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:16px;line-height:1.5">Generate a markdown summary to paste into ChatGPT, Claude, or Gemini.</p>
+      <div id="itineraryCodeWrap" style="display:none;margin-bottom:14px">
+        <pre id="itineraryCode" style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.78rem;line-height:1.55;color:var(--text);max-height:50vh;overflow:auto;white-space:pre-wrap;word-break:break-word;margin:0"></pre>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeItineraryModal()" id="itineraryCloseBtn">Close</button>
+        <button type="button" class="btn btn-secondary" id="itineraryDownloadBtn" onclick="downloadItinerary()" style="display:none">Download .md</button>
+        <button type="button" class="btn btn-secondary" id="itineraryCopyBtn" onclick="copyItinerary()" style="display:none">Copy</button>
+        <button type="button" class="btn btn-primary" id="itineraryGenBtn" onclick="generateItinerary()">Generate</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LODGING MODAL -->
+  <div class="modal-overlay" id="lodgingModal" onclick="if(event.target===this)closeLodgingModal()" role="dialog" aria-modal="true">
+    <div class="modal" style="max-width:440px">
+      <div class="modal-head"><h2 id="lodgingModalTitle">Edit lodging</h2><button class="modal-close" onclick="closeLodgingModal()">✕</button></div>
+      <div id="lodgingDayLabel" style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:14px"></div>
+      <div class="form-group">
+        <label class="form-label" id="lodgingPickLabel">Pick a place</label>
+        <div class="wl-quick-add" style="margin-bottom:8px">
+          <input type="text" class="wl-quick-input" id="lodgingSearchInput" placeholder="Search a hotel or paste a Google Maps link…" oninput="onChipSearchInput(this,'lodgingPlaceDropdown')" onkeydown="onPlaceSearchKeydown(event,'lodgingPlaceDropdown')">
+          <div class="place-search-dropdown" id="lodgingPlaceDropdown" style="display:none"></div>
+        </div>
+        <div id="lodgingPickList" style="max-height:32vh;overflow-y:auto;border:1px solid var(--border);border-radius:10px"></div>
+      </div>
+      <div class="form-checkbox-row" style="margin-bottom:6px">
+        <input type="checkbox" id="lodgingShowAll" onchange="renderLodgingPickList()">
+        <label for="lodgingShowAll" id="lodgingShowAllLabel">Show all places</label>
+      </div>
+      <div class="form-checkbox-row">
+        <input type="checkbox" id="lodgingApplyAll">
+        <label for="lodgingApplyAll" id="lodgingApplyAllLabel">Apply to all days</label>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-danger" id="lodgingClearBtn" onclick="clearDayLodging()" style="display:none">Clear</button>
+        <button type="button" class="btn btn-secondary" id="lodgingCancelBtn" onclick="closeLodgingModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" id="lodgingSaveBtn" onclick="saveLodging()" disabled style="opacity:0.4;cursor:not-allowed">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BULK ITINERARY EXPORT MODAL -->
+  <div class="modal-overlay" id="bulkExportModal" onclick="if(event.target===this)closeBulkExportModal()" role="dialog" aria-modal="true">
+    <div class="modal" style="max-width:720px">
+      <div class="modal-head"><h2 id="bulkExportModalTitle">Export multiple trips</h2><button class="modal-close" onclick="closeBulkExportModal()">✕</button></div>
+      <p id="bulkExportHint" style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:12px;line-height:1.5">Select trips to merge into one markdown file.</p>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <label style="display:flex;align-items:center;gap:8px;font-size:0.85rem;cursor:pointer"><input type="checkbox" id="bulkSelectAll" onchange="bulkToggleAll(this.checked)" style="accent-color:var(--accent)"> <span id="bulkSelectAllLabel">Select all</span></label>
+        <span id="bulkSelectedCount" style="font-size:0.8rem;color:var(--text-secondary)"></span>
+      </div>
+      <div id="bulkTripList" style="max-height:40vh;overflow-y:auto;border:1px solid var(--border);border-radius:10px;padding:4px;margin-bottom:14px"></div>
+      <div id="bulkCodeWrap" style="display:none;margin-bottom:14px">
+        <pre id="bulkCode" style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.78rem;line-height:1.55;color:var(--text);max-height:40vh;overflow:auto;white-space:pre-wrap;word-break:break-word;margin:0"></pre>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeBulkExportModal()" id="bulkCloseBtn">Close</button>
+        <button type="button" class="btn btn-secondary" id="bulkDownloadBtn" onclick="downloadBulkItinerary()" style="display:none">Download .md</button>
+        <button type="button" class="btn btn-secondary" id="bulkCopyBtn" onclick="copyBulkItinerary()" style="display:none">Copy</button>
+        <button type="button" class="btn btn-primary" id="bulkGenBtn" onclick="generateBulkItinerary()" disabled style="opacity:0.4;cursor:not-allowed">Generate</button>
+      </div>
+    </div>
+  </div>
+
   <!-- WISHLIST MODAL -->
   <div class="modal-overlay" id="wishModal" role="dialog" aria-modal="true">
     <div class="modal">
-      <div class="modal-head"><h2 id="wishModalTitle">Add</h2><button class="modal-close" onclick="closeWishModal()">✕</button></div>
+      <div class="modal-head"><h2 id="wishModalTitle">Add a Place</h2><button class="modal-close" onclick="closeWishModal()">✕</button></div>
+      <div class="edit-type-seg" id="wishModeSeg" style="margin-bottom:14px">
+        <button type="button" class="edit-type-btn active" id="wishModeSearchBtn" onclick="setWishMode('search')">Search a place</button>
+        <button type="button" class="edit-type-btn" id="wishModeRecBtn" onclick="setWishMode('recommend')">Recommend me</button>
+      </div>
       <form id="wishForm" onsubmit="saveWishItem(event)">
-        <div id="wishPhotoPreview"></div>
-        <div class="form-group wish-search-wrap"><label class="form-label" for="wishMapsUrl" id="wishMapsLabel">Search or Link</label><input type="text" class="form-input" id="wishMapsUrl" placeholder="Search a place or paste Google Maps link..." oninput="onWishSearchInput(this)" onpaste="setTimeout(function(){var el=document.getElementById('wishMapsUrl');if(el&&isGmapsUrl(el.value)){parseGmapsUrl(el.value);updateWishSaveBtn();}else{onWishSearchInput(el);}},150)" onkeydown="onPlaceSearchKeydown(event,'wishPlaceDropdown')" onchange="parseGmapsUrl(this.value);updateWishSaveBtn()" onblur="setTimeout(function(){var dd=document.getElementById('wishPlaceDropdown');if(dd)dd.style.display='none';parseGmapsUrl(document.getElementById('wishMapsUrl').value);updateWishSaveBtn()},200)" ondrop="setTimeout(function(){parseGmapsUrl(document.getElementById('wishMapsUrl').value);updateWishSaveBtn()},150)"><div class="place-search-dropdown" id="wishPlaceDropdown" style="display:none"></div><div style="font-size:0.74rem;color:var(--text-secondary);margin-top:4px" id="wishMapsHint">Type to search or paste a Google Maps link</div></div>
-        <div class="form-group"><label class="form-label" for="wishName" id="wishNameLabel">Place Name</label><input type="text" class="form-input" id="wishName" placeholder="e.g. Contramar" oninput="updateWishSaveBtn()"></div>
-        <div class="form-group"><label class="form-label" for="wishCategory" id="wishCatLabel">Category</label><select class="form-input" id="wishCategory"><option value="food">🍽️ Food</option><option value="bar">🍹 Bar/Drinks</option><option value="culture">🏛️ Culture</option><option value="hotel">🏨 Hotel</option><option value="conference">💼 Business</option><option value="transport">✈️ Transport</option><option value="other">📍 Other</option></select></div>
-        <div class="form-group"><label class="form-label" for="wishNotes" id="wishNotesLabel">Notes</label><input type="text" class="form-input" id="wishNotes" placeholder="Why you want to go, hours, etc."></div>
-        <div class="modal-actions"><button type="button" class="btn btn-danger" id="wishDeleteBtn" onclick="deleteWishItem()" style="display:none">Delete</button><button type="button" class="btn btn-secondary" id="wishCancelBtn" onclick="closeWishModal()">Cancel</button><button type="submit" class="btn btn-primary" id="wishSaveBtn" disabled style="opacity:0.4;cursor:not-allowed">Add</button></div>
+        <div id="wishSearchPane">
+          <div id="wishPhotoPreview"></div>
+          <div class="form-group wish-search-wrap"><label class="form-label" for="wishMapsUrl" id="wishMapsLabel">Search or Link</label><input type="text" class="form-input" id="wishMapsUrl" placeholder="Search a place or paste Google Maps link..." oninput="onWishSearchInput(this)" onpaste="setTimeout(function(){var el=document.getElementById('wishMapsUrl');if(el&&isGmapsUrl(el.value)){parseGmapsUrl(el.value);updateWishSaveBtn();}else{onWishSearchInput(el);}},150)" onkeydown="onPlaceSearchKeydown(event,'wishPlaceDropdown')" onchange="parseGmapsUrl(this.value);updateWishSaveBtn()" onblur="setTimeout(function(){var dd=document.getElementById('wishPlaceDropdown');if(dd)dd.style.display='none';parseGmapsUrl(document.getElementById('wishMapsUrl').value);updateWishSaveBtn()},200)" ondrop="setTimeout(function(){parseGmapsUrl(document.getElementById('wishMapsUrl').value);updateWishSaveBtn()},150)"><div class="place-search-dropdown" id="wishPlaceDropdown" style="display:none"></div><div style="font-size:0.74rem;color:var(--text-secondary);margin-top:4px" id="wishMapsHint">Type to search or paste a Google Maps link</div></div>
+          <div class="form-group"><label class="form-label" for="wishName" id="wishNameLabel">Place Name</label><input type="text" class="form-input" id="wishName" placeholder="e.g. Contramar" oninput="updateWishSaveBtn()"></div>
+          <div class="form-group"><label class="form-label" for="wishCategory" id="wishCatLabel">Category</label><select class="form-input" id="wishCategory"><option value="food">🍽️ Food</option><option value="bar">🍹 Bar/Drinks</option><option value="culture">🏛️ Culture</option><option value="hotel">🏨 Hotel</option><option value="conference">💼 Business</option><option value="transport">✈️ Transport</option><option value="other">📍 Other</option></select></div>
+          <div class="form-group"><label class="form-label" for="wishNotes" id="wishNotesLabel">Notes</label><input type="text" class="form-input" id="wishNotes" placeholder="Why you want to go, hours, etc."></div>
+          <div class="modal-actions"><button type="button" class="btn btn-danger" id="wishDeleteBtn" onclick="deleteWishItem()" style="display:none">Delete</button><button type="button" class="btn btn-secondary" id="wishCancelBtn" onclick="closeWishModal()">Cancel</button><button type="submit" class="btn btn-primary" id="wishSaveBtn" disabled style="opacity:0.4;cursor:not-allowed">Add</button></div>
+        </div>
+        <div id="wishRecommendPane" style="display:none">
+          <div class="wish-recommend-cats" id="wishRecommendCats"></div>
+          <div id="wishRecommendBody"></div>
+          <div class="wish-recommend-footer" id="wishRecommendFooter">
+            <button type="button" class="btn btn-primary" id="wishRecommendAddAllBtn" onclick="wishDiscoverAddAll()">Add All</button>
+          </div>
+        </div>
       </form>
+    </div>
+  </div>
+
+  <!-- DISCOVER MODAL -->
+  <div class="modal-overlay" id="discoverModal" onclick="closeDiscoverModal()">
+    <div class="modal" onclick="event.stopPropagation()" style="max-width:480px">
+      <div class="modal-head"><h2 id="discoverModalTitle">Discover</h2><button class="modal-close" onclick="closeDiscoverModal()">✕</button></div>
+      <div id="discoverModalBody" style="max-height:60vh;overflow-y:auto;padding:0 4px"></div>
+      <div class="modal-actions" id="discoverModalFooter" style="display:none">
+        <button type="button" class="btn btn-primary" id="discoverAddAllBtn" onclick="discoverAddAll()">Add All</button>
+      </div>
     </div>
   </div>
 
@@ -867,8 +1071,8 @@
         <button class="modal-close" onclick="closeCalAdd()">✕</button>
       </div>
       <div class="edit-type-seg" style="margin-bottom:12px">
-        <button type="button" class="edit-type-btn active" id="calAddModePlace" onclick="setCalAddMode('place')" style="display:inline-flex;align-items:center;gap:4px"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg> Assign Place</button>
-        <button type="button" class="edit-type-btn" id="calAddModeBlock" onclick="setCalAddMode('block')">📝 Time Block</button>
+        <button type="button" class="edit-type-btn active" id="calAddModePlace" onclick="setCalAddMode('place')">Assign Place</button>
+        <button type="button" class="edit-type-btn" id="calAddModeBlock" onclick="setCalAddMode('block')">Time Block</button>
       </div>
       <!-- Time + Duration (shared) -->
       <div class="cal-add-time-row">
@@ -922,6 +1126,21 @@
     <div class="modal" style="max-width:420px">
       <div class="modal-head"><h2 id="shareModalTitle">Share Settings</h2><button class="modal-close" onclick="closeShareModal()">✕</button></div>
       <div id="shareContent" style="padding:16px"></div>
+      <div id="shareLinkSection" style="padding:0 16px 12px;display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+          <div>
+            <div style="font-size:0.82rem;font-weight:600;margin-bottom:2px" id="shareLinkToggleLabel">Public Link</div>
+            <div style="font-size:0.75rem;color:var(--text-secondary)" id="shareLinkToggleDesc">Anyone with the link can view</div>
+          </div>
+          <label class="toggle-switch"><input type="checkbox" id="publicLinkToggle" onchange="setTripPublic(this.checked)"><span class="toggle-slider"></span></label>
+        </div>
+        <div id="publicLinkRow" style="display:none;margin-top:10px">
+          <div style="display:flex;gap:6px">
+            <input type="text" id="publicLinkInput" readonly style="flex:1;padding:7px 10px;border-radius:8px;border:1px solid var(--border);background:var(--surface-hover);color:var(--text-secondary);font-size:0.76rem;font-family:monospace;overflow:hidden;text-overflow:ellipsis">
+            <button type="button" onclick="copyPublicLink()" style="padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text-secondary);font-size:0.78rem;font-family:inherit;cursor:pointer;white-space:nowrap;flex-shrink:0" id="copyPublicLinkBtn">Copy</button>
+          </div>
+        </div>
+      </div>
       <div id="shareInviteSection" style="padding:0 16px 16px">
         <div style="font-size:0.8rem;font-weight:600;margin-bottom:8px;color:var(--text-secondary)" id="shareInviteLabel">Invite User</div>
         <form onsubmit="addShareUser(event)" style="display:flex;gap:8px">
@@ -940,19 +1159,22 @@
       <div class="modal-head"><h2 id="editModalTitle">Edit Event</h2><button class="modal-close" onclick="closeEditModal()">✕</button></div>
       <form id="editForm" onsubmit="saveEditEvent(event)">
         <div class="edit-place-header" id="editPlaceHeader" style="display:none"></div>
-        <div class="edit-type-seg" id="editTypeSeg">
-          <button type="button" class="edit-type-btn active" data-type="event" onclick="setEditMode('event')" style="display:inline-flex;align-items:center;gap:4px"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3V5.25M17.25 3V5.25M3 18.75V7.5C3 6.25736 4.00736 5.25 5.25 5.25H18.75C19.9926 5.25 21 6.25736 21 7.5V18.75M3 18.75C3 19.9926 4.00736 21 5.25 21H18.75C19.9926 21 21 19.9926 21 18.75M3 18.75V11.25C3 10.0074 4.00736 9 5.25 9H18.75C19.9926 9 21 10.0074 21 11.25V18.75"/></svg> <span id="editTypeEventLabel">Time Event</span></button>
-          <button type="button" class="edit-type-btn" data-type="place" onclick="setEditMode('place')" style="display:inline-flex;align-items:center;gap:4px"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg> <span id="editTypePlaceLabel">Place</span></button>
-        </div>
         <div class="form-group fg-date"><label class="form-label" id="editDateLabel">Date</label><input type="date" class="form-input" id="editDate"></div>
         <div class="form-row fg-time"><div class="form-group"><label class="form-label" id="editTimeLbl">Start Time</label><input type="time" class="form-input" id="editTime" required></div><div class="form-group"><label class="form-label" id="editEndTimeLbl">End Time</label><input type="time" class="form-input" id="editEndTime"></div></div>
         <div class="form-group fg-title"><label class="form-label" id="editTitleLabel">Event Name</label><input type="text" class="form-input" id="editTitle" required placeholder="Place or event name"></div>
-        <div class="form-group fg-sub"><label class="form-label" id="editSubLabel">Description</label><input type="text" class="form-input" id="editSubtitle" placeholder="Place description"></div>
-        <div class="form-group fg-map"><label class="form-label" id="editMapLbl">Google Maps Link <span style="color:var(--text-secondary);font-weight:400">(for map display)</span></label><input type="text" class="form-input" id="editMapsUrl" placeholder="https://maps.app.goo.gl/..." oninput="parseEditMapsUrl(this.value)" onpaste="setTimeout(function(){parseEditMapsUrl(document.getElementById('editMapsUrl').value)},150)" onchange="parseEditMapsUrl(this.value)" onblur="parseEditMapsUrl(this.value)" ondrop="setTimeout(function(){parseEditMapsUrl(document.getElementById('editMapsUrl').value)},150)"></div>
         <div class="form-group fg-notes"><label class="form-label" id="editNotesLabel">Notes</label><input type="text" class="form-input" id="editNotes" placeholder="Reservations, notes, etc."></div>
-        <div class="form-group fg-link"><label class="form-label" id="editLinkLabel">Link <span style="color:var(--text-secondary);font-weight:400">(Optional)</span></label><input type="url" class="form-input" id="editLink" placeholder="https://..."></div>
-        <div class="form-group fg-cat"><label class="form-label" id="editCatLabel">Category</label><select class="form-input" id="editCategory"><option value="food">🍽️ Food</option><option value="bar">🍹 Bar/Drinks</option><option value="culture">🏛️ Culture</option><option value="hotel">🏨 Hotel</option><option value="conference">💼 Business</option><option value="transport">✈️ Transport</option><option value="other">📍 Other</option></select></div>
-        <div class="form-group fg-opt"><div class="form-checkbox-row"><input type="checkbox" id="editOptional"><label for="editOptional" id="editOptLabel">Optional event</label></div></div>
+        <div class="form-group fg-sub edit-field-hide"><label class="form-label" id="editSubLabel">Description <button type="button" class="fg-dismiss" onclick="toggleEditField('sub',false)" aria-label="Remove">×</button></label><input type="text" class="form-input" id="editSubtitle" placeholder="Place description"></div>
+        <div class="form-group fg-map edit-field-hide"><label class="form-label" id="editMapLbl">Google Maps Link <span style="color:var(--text-secondary);font-weight:400">(for map display)</span><button type="button" class="fg-dismiss" onclick="toggleEditField('map',false)" aria-label="Remove">×</button></label><input type="text" class="form-input" id="editMapsUrl" placeholder="https://maps.app.goo.gl/..." oninput="parseEditMapsUrl(this.value)" onpaste="setTimeout(function(){parseEditMapsUrl(document.getElementById('editMapsUrl').value)},150)" onchange="parseEditMapsUrl(this.value)" onblur="parseEditMapsUrl(this.value)" ondrop="setTimeout(function(){parseEditMapsUrl(document.getElementById('editMapsUrl').value)},150)"></div>
+        <div class="form-group fg-link edit-field-hide"><label class="form-label" id="editLinkLabel">Link<button type="button" class="fg-dismiss" onclick="toggleEditField('link',false)" aria-label="Remove">×</button></label><input type="url" class="form-input" id="editLink" placeholder="https://..."></div>
+        <div class="form-group fg-cat edit-field-hide"><label class="form-label" id="editCatLabel">Category<button type="button" class="fg-dismiss" onclick="toggleEditField('cat',false)" aria-label="Remove">×</button></label><select class="form-input" id="editCategory"><option value="food">🍽️ Food</option><option value="bar">🍹 Bar/Drinks</option><option value="culture">🏛️ Culture</option><option value="hotel">🏨 Hotel</option><option value="conference">💼 Business</option><option value="transport">✈️ Transport</option><option value="other">📍 Other</option></select></div>
+        <div class="form-group fg-opt edit-field-hide"><div class="form-checkbox-row"><input type="checkbox" id="editOptional"><label for="editOptional" id="editOptLabel">Optional event</label><button type="button" class="fg-dismiss" onclick="toggleEditField('opt',false)" aria-label="Remove" style="margin-left:auto">×</button></div></div>
+        <div class="edit-pill-row" id="editExtraPills">
+          <button type="button" class="edit-pill" id="pillMap" onclick="toggleEditField('map',true)">+ Map link</button>
+          <button type="button" class="edit-pill" id="pillSub" onclick="toggleEditField('sub',true)">+ Description</button>
+          <button type="button" class="edit-pill" id="pillLink" onclick="toggleEditField('link',true)">+ Link</button>
+          <button type="button" class="edit-pill" id="pillCat" onclick="toggleEditField('cat',true)">+ Category</button>
+          <button type="button" class="edit-pill" id="pillOpt" onclick="toggleEditField('opt',true)">+ Optional</button>
+        </div>
         <div class="modal-actions"><button type="button" class="btn btn-danger" id="editDeleteBtn" onclick="deleteCurrentEvent()">Delete</button><button type="button" class="btn btn-secondary" id="editCancelBtn" onclick="closeEditModal()">Cancel</button><button type="submit" class="btn btn-primary" id="editSubmitBtn">Save</button></div>
       </form>
     </div>
@@ -987,7 +1209,7 @@
     // ==================== FIREBASE ====================
     const firebaseConfig = {
       apiKey: "AIzaSyBorY6UphXhcsSVQbbjJC8AT-lyWlQ1OHY",
-      authDomain: "palo-travel.vercel.app",
+      authDomain: "faropin.com",
       projectId: "mexico-trip-c5644",
       storageBucket: "mexico-trip-c5644.firebasestorage.app",
       messagingSenderId: "580916268978",
@@ -1015,6 +1237,12 @@
       cancel: { ko:'취소', en:'Cancel' },
       delete_: { ko:'삭제', en:'Delete' },
       add: { ko:'추가', en:'Add' },
+      addAPlace: { ko:'장소 추가', en:'Add a Place' },
+      searchAPlace: { ko:'장소 검색', en:'Search a place' },
+      recommendMe: { ko:'추천받기', en:'Recommend me' },
+      recommendNull: { ko:'장소 유형을 선택하면 추천이 표시됩니다', en:'Choose a type of place to get recommendations' },
+      added: { ko:'추가됨', en:'Added' },
+      addAll: { ko:'모두 추가', en:'Add All' },
       edit: { ko:'수정', en:'Edit' },
       close: { ko:'닫기', en:'Close' },
       // Auth
@@ -1045,6 +1273,56 @@
       reselect: { ko:'다시 선택', en:'Reselect' },
       cityError: { ko:'실제 도시를 선택해 주세요', en:'Please select a city' },
       tripName: { ko:'여행 이름', en:'Trip Name' },
+      partySize: { ko:'인원', en:'Party size' },
+      exportItinerary: { ko:'일정 내보내기', en:'Export itinerary' },
+      exportItineraryTitle: { ko:'일정 내보내기', en:'Export itinerary' },
+      exportItineraryHint: { ko:'ChatGPT, Claude, Gemini에 붙여넣을 수 있는 마크다운 요약을 생성합니다', en:'Generate a markdown summary to paste into ChatGPT, Claude, or Gemini' },
+      generate: { ko:'생성', en:'Generate' },
+      regenerate: { ko:'다시 생성', en:'Regenerate' },
+      copy: { ko:'복사', en:'Copy' },
+      copied: { ko:'복사됨', en:'Copied!' },
+      download: { ko:'다운로드', en:'Download .md' },
+      bulkExport: { ko:'일괄 내보내기', en:'Export multiple' },
+      bulkExportTitle: { ko:'여러 여행 내보내기', en:'Export multiple trips' },
+      bulkExportHint: { ko:'여행을 선택해 하나의 마크다운 파일로 생성하세요', en:'Select trips to merge into one markdown file' },
+      selectAll: { ko:'전체 선택', en:'Select all' },
+      noneSelected: { ko:'선택된 여행이 없습니다', en:'No trips selected' },
+      loadingTripData: { ko:'여행 데이터를 불러오는 중…', en:'Loading trip data…' },
+      vote: { ko:'좋아요', en:'Like' },
+      voted: { ko:'좋아요함', en:'Liked' },
+      mostLoved: { ko:'인기순', en:'Most loved' },
+      addLodging: { ko:'숙소', en:'Lodging' },
+      arrival: { ko:'도착', en:'Arrival' },
+      departure: { ko:'출발', en:'Departure' },
+      lodging: { ko:'숙소', en:'Lodging' },
+      transport: { ko:'교통편', en:'Transport' },
+      editLodging: { ko:'숙소 편집', en:'Edit lodging' },
+      editTransport: { ko:'교통편 편집', en:'Edit transport' },
+      pickPlace: { ko:'장소 선택', en:'Pick a place' },
+      pickLodgingHint: { ko:'위시리스트에서 숙소를 선택하세요', en:'Select a place from your wishlist' },
+      pickTransportHint: { ko:'위시리스트에서 공항/역을 선택하세요', en:'Select an airport or station from your wishlist' },
+      noHotels: { ko:'저장된 숙소가 없습니다', en:'No lodgings saved yet' },
+      noTransportPlaces: { ko:'저장된 공항/역이 없습니다', en:'No airports or stations saved yet' },
+      showAllPlaces: { ko:'모든 장소 표시', en:'Show all places' },
+      applyToAllDays: { ko:'모든 날짜에 적용', en:'Apply to all days' },
+      applyToAllDaysHint: { ko:'다른 날 별도 설정 가능', en:'Can still override per day' },
+      time: { ko:'시간', en:'Time' },
+      mode: { ko:'수단', en:'Mode' },
+      modeFlight: { ko:'항공편', en:'Flight' },
+      modeTrain: { ko:'기차', en:'Train' },
+      modeBus: { ko:'버스', en:'Bus' },
+      modeFerry: { ko:'페리', en:'Ferry' },
+      carrierNumber: { ko:'편명', en:'Flight / train number' },
+      clear: { ko:'지우기', en:'Clear' },
+      lodgingSearchPlaceholder: { ko:'호텔 검색 또는 구글맵 링크 붙여넣기…', en:'Search a hotel or paste a Google Maps link…' },
+      transportSearchPlaceholder: { ko:'공항/역 검색…', en:'Search an airport or station…' },
+      addMapLink: { ko:'+ 지도 링크', en:'+ Map link' },
+      addDescription: { ko:'+ 설명', en:'+ Description' },
+      addLink: { ko:'+ 링크', en:'+ Link' },
+      addCategory: { ko:'+ 카테고리', en:'+ Category' },
+      addOptional: { ko:'+ 선택 이벤트', en:'+ Optional' },
+      discoverNearby: { ko:'근처 추천 장소', en:'Explore nearby:' },
+      discoverNearCity: { ko:function(c){return c+' 근처 추천:';}, en:function(c){return 'Explore near '+c+':';} },
       tripNamePlaceholder: { ko:'예: 도쿄 여행', en:'e.g. Tokyo Trip' },
       tripDates: { ko:'여행 기간', en:'Trip Dates' },
       startDate: { ko:'시작일', en:'Start' },
@@ -1227,6 +1505,22 @@
       searching: { ko:'검색 중...', en:'Searching...' },
       noSearchResults: { ko:'검색 결과 없음', en:'No results found' },
       wishMapsPlaceholder: { ko:'장소 검색 또는 구글맵 링크 붙여넣기...', en:'Search a place or paste Google Maps link...' },
+      discover: { ko:'장소 발견', en:'Discover' },
+      discoverRestaurants: { ko:'레스토랑', en:'Restaurants' },
+      discoverCafes: { ko:'카페', en:'Cafes' },
+      discoverBars: { ko:'바', en:'Bars' },
+      discoverMuseums: { ko:'관광지', en:'Attractions' },
+      discoverBakeries: { ko:'베이커리', en:'Bakeries' },
+      discoverParks: { ko:'공원', en:'Parks' },
+      discovering: { ko:'검색 중...', en:'Searching...' },
+      discoverAdded: { ko:function(n){return n+'개 장소가 추가되었습니다';}, en:function(n){return n+' place'+(n!==1?'s':'')+' added';} },
+      discoverAllExist: { ko:'모든 장소가 이미 추가되어 있습니다', en:'All places already in your list' },
+      discoverFailed: { ko:'장소 검색에 실패했습니다', en:'Failed to discover places' },
+      discoverNoCity: { ko:'여행 도시를 먼저 설정해주세요', en:'Set a trip city first' },
+      publicLink: { ko:'공개 링크', en:'Public Link' },
+      publicLinkDesc: { ko:'링크가 있는 누구나 볼 수 있습니다', en:'Anyone with the link can view' },
+      copied: { ko:'복사됨!', en:'Copied!' },
+      public_: { ko:'공개', en:'Public' },
     };
     function t(key) {
       var s = STRINGS[key];
@@ -1244,6 +1538,10 @@
       if (typeof currentTripMeta !== 'undefined' && currentTripMeta) updateHeader(currentTripMeta);
       if (document.getElementById('view-dashboard').style.display !== 'none') loadDashboard();
       updateShareBtnVisibility();
+      // Persist lang to Firestore user profile
+      if (currentUser) {
+        db.collection('users').doc(currentUser.uid).update({ lang: lang }).catch(function(){});
+      }
     }
     function refreshDayLabels() {
       if (typeof DAYS === 'undefined' || !DAYS) return;
@@ -1260,6 +1558,12 @@
       function _t(id,key){ var el=document.getElementById(id); if(el) el.textContent=t(key); }
       function _p(id,key){ var el=document.getElementById(id); if(el) el.placeholder=t(key); }
       function _a(sel,attr,key){ var el=document.querySelector(sel); if(el) el.setAttribute(attr,t(key)); }
+      // Wish modal toggle
+      _t('wishModeSearchBtn','searchAPlace');
+      _t('wishModeRecBtn','recommendMe');
+      // Share modal public link
+      _t('shareLinkToggleLabel','publicLink');
+      _t('shareLinkToggleDesc','publicLinkDesc');
       // Loading screen
       var ls = document.getElementById('loadingScreen');
       if (ls && ls.querySelector('p')) ls.querySelector('p').textContent = t('loading');
@@ -1275,6 +1579,8 @@
       if (shareMenuBtn) shareMenuBtn.querySelector('span:last-child').textContent = t('shareSettings');
       var currMenuBtn = document.getElementById('currMenuBtn');
       if (currMenuBtn) currMenuBtn.querySelector('span:last-child').textContent = t('currConverter');
+      var expMenuBtn = document.getElementById('exportItineraryMenuBtn');
+      if (expMenuBtn) expMenuBtn.querySelector('span:last-child').textContent = t('exportItinerary');
       _t('themeLabel', currentTheme==='dark'?'darkMode':'lightMode');
       var fbMenuBtn = document.querySelector('button[onclick="openFeedbackModal()"]');
       if (fbMenuBtn) { var s=fbMenuBtn.querySelector('span:last-child'); if(s) s.textContent=t('sendFeedback'); }
@@ -1331,6 +1637,7 @@
       // Trip create invite section
       var tcInviteLabel = document.getElementById('tcInviteLabel');
       if (tcInviteLabel) tcInviteLabel.innerHTML = t('travelWith')+' <span style="font-weight:400;color:var(--text-secondary);font-size:0.8em">('+t('optional')+')</span>';
+      _t('tcPartySizeLabel', 'partySize');
       _p('tcInviteEmail', 'emailPlaceholder');
       _t('tcInviteAddBtn', 'add');
       _t('tcDeleteBtn', 'delete_');
@@ -1353,10 +1660,8 @@
       _t('wishCancelBtn', 'cancel');
       // Cal add modal
       _t('calAddTitle', 'addToSchedule');
-      var calAddPlaceBtn = document.getElementById('calAddModePlace');
-      if (calAddPlaceBtn) { var svg=calAddPlaceBtn.querySelector('svg'); calAddPlaceBtn.innerHTML=''; if(svg)calAddPlaceBtn.appendChild(svg); calAddPlaceBtn.appendChild(document.createTextNode(' '+t('assignPlace'))); }
-      var calAddBlockBtn = document.getElementById('calAddModeBlock');
-      if (calAddBlockBtn) calAddBlockBtn.textContent = '📝 ' + t('timeBlock');
+      _t('calAddModePlace','assignPlace');
+      _t('calAddModeBlock','timeBlock');
       _t('calAddStartLabel', 'start');
       _t('calAddEndLbl', 'end');
       _t('calAddDurTitle', 'duration');
@@ -1378,23 +1683,29 @@
       if (copyLinkBtn) { var svg=copyLinkBtn.querySelector('svg'); var txt=copyLinkBtn.childNodes; copyLinkBtn.innerHTML=''; if(svg){copyLinkBtn.appendChild(svg);copyLinkBtn.appendChild(document.createTextNode(' '));} copyLinkBtn.appendChild(document.createTextNode(t('copyLink'))); }
       // Edit modal
       _t('editModalTitle', 'editEvent');
-      _t('editTypeEventLabel', 'timeEvent');
-      _t('editTypePlaceLabel', 'placeMode');
       _t('editDateLabel', 'dateLabel');
       _t('editTimeLbl', 'startTime');
       _t('editEndTimeLbl', 'endTime');
       _t('editTitleLabel', 'eventName');
       _p('editTitle', 'eventNamePlaceholder');
-      _t('editSubLabel', 'description');
+      var _dismissHtml = function(f){ return '<button type="button" class="fg-dismiss" onclick="toggleEditField(\''+f+'\',false)" aria-label="Remove">×</button>'; };
+      var editSubLabel = document.getElementById('editSubLabel');
+      if (editSubLabel) editSubLabel.innerHTML = t('description') + _dismissHtml('sub');
       _p('editSubtitle', 'descPlaceholder');
       var editMapLbl = document.getElementById('editMapLbl');
-      if (editMapLbl) editMapLbl.innerHTML = t('gmapsLink')+' <span style="color:var(--text-secondary);font-weight:400">('+t('gmapsForMap')+')</span>';
+      if (editMapLbl) editMapLbl.innerHTML = t('gmapsLink')+' <span style="color:var(--text-secondary);font-weight:400">('+t('gmapsForMap')+')</span>' + _dismissHtml('map');
       _t('editNotesLabel', 'notes');
       _p('editNotes', 'notesPlaceholder');
       var editLinkLabel = document.getElementById('editLinkLabel');
-      if (editLinkLabel) editLinkLabel.innerHTML = t('linkOptional')+' <span style="color:var(--text-secondary);font-weight:400">('+t('optional')+')</span>';
-      _t('editCatLabel', 'category');
+      if (editLinkLabel) editLinkLabel.innerHTML = t('linkOptional') + _dismissHtml('link');
+      var editCatLabel = document.getElementById('editCatLabel');
+      if (editCatLabel) editCatLabel.innerHTML = t('category') + _dismissHtml('cat');
       _t('editOptLabel', 'optionalEvent');
+      var pillMap = document.getElementById('pillMap'); if (pillMap) pillMap.textContent = t('addMapLink');
+      var pillSub = document.getElementById('pillSub'); if (pillSub) pillSub.textContent = t('addDescription');
+      var pillLink = document.getElementById('pillLink'); if (pillLink) pillLink.textContent = t('addLink');
+      var pillCat = document.getElementById('pillCat'); if (pillCat) pillCat.textContent = t('addCategory');
+      var pillOpt = document.getElementById('pillOpt'); if (pillOpt) pillOpt.textContent = t('addOptional');
       _t('editDeleteBtn', 'delete_');
       _t('editCancelBtn', 'cancel');
       _t('editSubmitBtn', 'save');
@@ -1476,7 +1787,7 @@
       document.getElementById('loadingScreen').style.display = 'flex';
       document.getElementById('loadingScreen').innerHTML =
         '<div style="text-align:center;max-width:320px">'+
-          '<div style="font-size:1.6rem;font-weight:800;letter-spacing:-0.04em;margin-bottom:6px">PALO</div>'+
+          '<div style="font-size:1.6rem;font-weight:800;letter-spacing:-0.04em;margin-bottom:6px">FAROPIN</div>'+
           '<div style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:28px">'+t('signInPrompt')+'</div>'+
           '<button onclick="doSignIn()" style="display:inline-flex;align-items:center;gap:8px;padding:10px 24px;border-radius:10px;border:1px solid var(--border-strong);background:var(--surface);color:var(--text);font-family:inherit;font-size:0.9rem;font-weight:600;cursor:pointer">'+
             '<svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>'+
@@ -1491,6 +1802,7 @@
           email: normalizeEmail(user.email),
           displayName: user.displayName || '',
           photoURL: user.photoURL || '',
+          lang: currentLang,
           lastSignIn: firebase.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
       } catch(e) { console.warn('Failed to write user profile:', e); }
@@ -1552,7 +1864,7 @@
     // ==================== SHARE MODAL ====================
     function copyTripLink() {
       if (!currentTripId) return;
-      var url = 'https://palo-travel.vercel.app/#trip/' + currentTripId;
+      var url = 'https://faropin.com/#trip/' + currentTripId;
       navigator.clipboard.writeText(url).then(function() {
         var btn = document.getElementById('copyLinkBtn');
         if (btn) { btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="var(--positive)"><polyline points="20 6 9 17 4 12"/></svg> '+t('copied'); setTimeout(function() { btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"/></svg> '+t('copyLink'); }, 1500); }
@@ -1582,11 +1894,44 @@
       renderShareList();
       var inviteSection = document.getElementById('shareInviteSection');
       if (inviteSection) inviteSection.style.display = isOwner() ? '' : 'none';
+      var shareLinkSection = document.getElementById('shareLinkSection');
+      if (shareLinkSection) {
+        shareLinkSection.style.display = isOwner() ? '' : 'none';
+        var toggle = document.getElementById('publicLinkToggle');
+        if (toggle) toggle.checked = !!(currentTripMeta && currentTripMeta.public);
+        var publicRow = document.getElementById('publicLinkRow');
+        if (publicRow) publicRow.style.display = (currentTripMeta && currentTripMeta.public) ? '' : 'none';
+        var linkInput = document.getElementById('publicLinkInput');
+        if (linkInput) linkInput.value = location.origin + '/#trip/' + currentTripId;
+        document.getElementById('shareLinkToggleLabel').textContent = t('publicLink');
+        document.getElementById('shareLinkToggleDesc').textContent = t('publicLinkDesc');
+      }
       var title = document.querySelector('#shareModal .modal-head h2');
       if (title) title.textContent = isOwner() ? t('shareSettings') : t('members');
       document.getElementById('shareModal').classList.add('open');
       var emailInput = document.getElementById('shareEmail');
       if (emailInput) emailInput.value = '';
+    }
+    async function setTripPublic(isPublic) {
+      if (!isOwner() || !currentTripId) return;
+      try {
+        await db.collection('trips').doc(currentTripId).update({ public: isPublic });
+        currentTripMeta.public = isPublic;
+        var publicRow = document.getElementById('publicLinkRow');
+        if (publicRow) publicRow.style.display = isPublic ? '' : 'none';
+        updateShareBtnVisibility();
+      } catch(e) {
+        console.error('Failed to set trip public:', e);
+        var toggle = document.getElementById('publicLinkToggle');
+        if (toggle) toggle.checked = !isPublic;
+      }
+    }
+    function copyPublicLink() {
+      var url = location.origin + '/#trip/' + currentTripId;
+      navigator.clipboard.writeText(url).then(function() {
+        var btn = document.getElementById('copyPublicLinkBtn');
+        if (btn) { var orig = btn.textContent; btn.textContent = t('copied'); setTimeout(function(){ btn.textContent = orig; }, 1800); }
+      });
     }
     function closeShareModal() {
       document.getElementById('shareModal').classList.remove('open');
@@ -1682,6 +2027,25 @@
         document.getElementById('shareEmail').value = '';
         renderShareList();
         updateShareBtnVisibility();
+        // Fire-and-forget invite email
+        try {
+          var m = currentTripMeta || {};
+          fetch(WORKER_BASE + '/api/email/invite', {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({
+              toEmail: email,
+              hostName: currentUser.displayName || currentUser.email,
+              tripName: m.name || '',
+              tripEmoji: m.emoji || '',
+              tripCity: m.city || '',
+              tripStartDate: m.startDate || '',
+              tripEndDate: m.endDate || '',
+              tripId: currentTripId,
+              lang: currentLang
+            })
+          });
+        } catch(e) {}
       } catch(err) { console.error('Failed to add share user:', err); alert(t('inviteFailed')); }
     }
     async function removeShareUser(key) {
@@ -1716,9 +2080,14 @@
       var access = (currentTripMeta && currentTripMeta.access) || {};
       var memberCount = Object.keys(access).length;
       if (menuBtn) menuBtn.style.display = (currentTripId && (isOwner() || memberCount > 1)) ? '' : 'none';
+      var expBtn = document.getElementById('exportItineraryMenuBtn');
+      if (expBtn) expBtn.style.display = currentTripId ? '' : 'none';
       if (!btn) return;
       if (!currentTripId || !currentUser) { btn.style.display = 'none'; return; }
-      if (memberCount <= 1 && isOwner()) {
+      if (currentTripMeta && currentTripMeta.public) {
+        btn.style.display = 'inline-flex';
+        btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"/></svg> '+t('public_');
+      } else if (memberCount <= 1 && isOwner()) {
         btn.style.display = 'inline-flex';
         btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></svg> '+t('private_');
       } else if (memberCount > 1) {
@@ -1735,17 +2104,44 @@
         _authResolved = true;
         if (user) {
           document.querySelector('.viz-menu').style.display='';
-          writeUserProfile(user);
+          await writeUserProfile(user);
+          // Send welcome email (once per user)
+          (async function() {
+            try {
+              var uDoc = await db.collection('users').doc(user.uid).get();
+              if (uDoc.exists && uDoc.data().welcomeEmailSent) return;
+              // Set flag BEFORE sending to prevent duplicate sends on race/refresh
+              await db.collection('users').doc(user.uid).set({ welcomeEmailSent: true }, { merge: true });
+              await fetch(WORKER_BASE + '/api/email/welcome', {
+                method: 'POST',
+                headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({ email: user.email, displayName: user.displayName || '', lang: currentLang })
+              });
+            } catch(e) { console.warn('Welcome email failed:', e); }
+          })();
           await migrateOwnership();
           resolvePendingInvites(user);
           await migrateIfNeeded();
           initRouter();
         } else {
+          // Check if URL is a public trip before showing login
+          var pubHash = location.hash.replace('#','');
+          if (pubHash.startsWith('trip/')) {
+            try {
+              var pubSnap = await db.collection('trips').doc(pubHash.slice(5)).get();
+              if (pubSnap.exists && pubSnap.data().public === true) {
+                _isPublicView = true;
+                initRouter();
+                return;
+              }
+            } catch(e) { /* fall through to login */ }
+          }
           showLoginScreen();
         }
       } else {
         // Subsequent auth changes (sign-in after being on login screen, or sign-out)
         if (user) {
+          _isPublicView = false;
           document.querySelector('.viz-menu').style.display='';
           writeUserProfile(user);
           await migrateOwnership();
@@ -1887,15 +2283,62 @@
     function catLabel(c){return t(_catKeys[c]||'catOther');}
     function catIcon(cat,size){return icon(cat==='other'?'pin':cat,size||14);}
     function catLabel(cat){var map={food:'catFood',bar:'catBar',culture:'catCulture',hotel:'catHotel',conference:'catConference',transport:'catTransport',other:'catOther'};return t(map[cat]||'catOther');}
+    // ==================== VOTES ====================
+    function voteCount(w){return w&&w.votes?Object.keys(w.votes).length:0;}
+    function hasUserVoted(w){return !!(w&&w.votes&&currentUser&&w.votes[currentUser.uid]);}
+    function toggleVote(wishId){
+      if(!currentUser||_isPublicView)return;
+      var w=WISHLIST.find(function(x){return x.id===wishId;});if(!w)return;
+      if(!w.votes)w.votes={};
+      if(w.votes[currentUser.uid])delete w.votes[currentUser.uid];
+      else w.votes[currentUser.uid]={name:currentUser.displayName||currentUser.email||'',photo:currentUser.photoURL||'',at:Date.now()};
+      renderWishlist();
+      scheduleSave();
+    }
+    function voterList(w){
+      if(!w||!w.votes)return [];
+      return Object.keys(w.votes).map(function(uid){
+        var v=w.votes[uid];
+        // Legacy support: old schema stored the string 'up'
+        if(typeof v==='string')return {uid:uid,name:'',photo:''};
+        return {uid:uid,name:(v&&v.name)||'',photo:(v&&v.photo)||''};
+      });
+    }
+    function sortByVotes(list){
+      return list.slice().sort(function(a,b){
+        var dv=voteCount(b)-voteCount(a);if(dv)return dv;
+        return (b.addedAt||0)-(a.addedAt||0);
+      });
+    }
+    // ==================== LODGING + TRANSPORT RESOLVERS ====================
+    function resolveLodging(day){
+      if(!day||!day.lodgingWishId)return null;
+      return WISHLIST.find(function(w){return w.id===day.lodgingWishId;})||null;
+    }
+    function wishIsLodgingCandidate(w){return w&&w.category==='hotel';}
+    function truncateName(s,n){s=s||'';return s.length>n?s.slice(0,n-1)+'…':s;}
+    function renderDayChips(day){
+      var editable=canEdit()&&!_isPublicView;
+      var chips=[];
+      var lod=resolveLodging(day);
+      if(lod){
+        chips.push('<button class="day-chip" onclick="event.stopPropagation();openLodgingModal(\''+day.id+'\')" title="'+(lod.name||'').replace(/"/g,'&quot;')+'">🏨 <span class="day-chip-name">'+truncateName(lod.name,20)+'</span></button>');
+      } else if(editable){
+        chips.push('<button class="day-chip empty" onclick="event.stopPropagation();openLodgingModal(\''+day.id+'\')">+ 🏨 '+t('addLodging')+'</button>');
+      }
+      return chips.length?'<div class="cal-day-chips">'+chips.join('')+'</div>':'';
+    }
     var HOUR_PX=64,START_HR=8,END_HR=24,TOTAL_HRS=16;
     var DAYS=[],WISHLIST=[];
-    var currentTripId=null,currentTripMeta=null;
+    var currentTripId=null,currentTripMeta=null,_isPublicView=false;
     var currentView='calendar',editingDayId=null,editingEvId=null,addingDayId=null;
     var mapFilter='all',leafletMap=null,mapMarkers=[],tileLayer=null,mapRoutes=[],_routeBuildId=0;
     var mapMobDay=0; // mobile map: index of currently selected day
     var calPage=0; // calendar page index (mobile: single day, desktop: group of days)
     var CAL_COL_MIN=160; // minimum column width in px for desktop calendar
-    var wishCatFilter='all',wishStatusFilter='all',editingWishId=null;
+    var wishCatFilter='all',wishStatusFilter='all',editingWishId=null,wishSortByVotes=false;
+    var wishViewMode=(localStorage.getItem('palo-wish-view')==='list')?'list':'grid';
+    function setWishViewMode(m){wishViewMode=m==='list'?'list':'grid';try{localStorage.setItem('palo-wish-view',wishViewMode);}catch(e){}renderWishlist();}
     var calPickDayId=null,calPickTime=null;
 
     // ==================== FIREBASE PERSISTENCE ====================
@@ -2126,12 +2569,12 @@
       if (!trip) {
         if (flagEl) { var fe0=flagEl.querySelector('.flag-emoji'); if (fe0) fe0.textContent=''; }
         if (nameEl) nameEl.removeAttribute('data-flag');
-        if (nameEl) { nameEl.childNodes[0].textContent = 'PALO'; }
+        if (nameEl) { nameEl.childNodes[0].textContent = 'FAROPIN'; }
         if (datesEl) datesEl.textContent = '';
         if (tabsEl) tabsEl.style.display = 'none';
         if (currBtn) currBtn.style.display = 'none';
         if (switcher) switcher.classList.remove('has-trip');
-        document.title = 'PALO';
+        document.title = 'FAROPIN';
       } else {
         if (currBtn) currBtn.style.display = '';
         if (flagEl) { var fe1=flagEl.querySelector('.flag-emoji'); if (fe1) fe1.textContent = trip.emoji || '🌍'; }
@@ -2140,7 +2583,7 @@
         if (datesEl) datesEl.textContent = tripDateLabel(trip);
         if (tabsEl) tabsEl.style.display = '';
         if (switcher) switcher.classList.add('has-trip');
-        document.title = (trip.emoji||'🌍') + ' ' + (trip.name||t('trip'));
+        document.title = 'FAROPIN - ' + (trip.emoji?trip.emoji+' ':'') + (trip.name||t('trip'));
       }
     }
     function tripDateLabel(trip) {
@@ -2600,6 +3043,70 @@
             if (changed) { lsSaveTripList(trips); renderDashboard(trips); }
           })();
         }
+        // One-time fix: undo access-backfill-v1 cross-contamination
+        // The broken migration added ALL shared users to ALL trips. Undo by removing
+        // users who don't belong: for each trip with 3+ members, look up non-owner UIDs,
+        // identify the wrongly-added one, and remove them.
+        var _accessUndoKey = 'access-undo-v2';
+        if (!localStorage.getItem(_accessUndoKey) && currentUser) {
+          (async function() {
+            var ownerUid = currentUser.uid;
+            var ownerEmail = normalizeEmail(currentUser.email);
+            // First pass: collect all non-owner UIDs and look up their emails
+            var allUids = {};
+            trips.forEach(function(trip) {
+              if (!trip.access) return;
+              Object.keys(trip.access).forEach(function(k) {
+                if (k !== ownerUid && !k.startsWith('pending_')) allUids[k] = true;
+              });
+            });
+            var uidToEmail = {};
+            for (var uid in allUids) {
+              try { var ud = await db.collection('users').doc(uid).get(); if (ud.exists) uidToEmail[uid] = normalizeEmail(ud.data().email); } catch(e) {}
+            }
+            // Second pass: for each trip with too many members, remove the wrong one
+            var changed = false;
+            for (var i = 0; i < trips.length; i++) {
+              var trip = trips[i];
+              if (!trip.id || !trip.access) continue;
+              var freshSnap = await db.collection('trips').doc(trip.id).get();
+              if (!freshSnap.exists) continue;
+              var access = freshSnap.data().access || {};
+              var emails = freshSnap.data().accessEmails || [];
+              var nonOwner = Object.keys(access).filter(function(k) { return k !== ownerUid && !k.startsWith('pending_'); });
+              if (nonOwner.length <= 1) continue; // already clean
+              // Figure out which UID to KEEP for this trip:
+              // Each trip originally had exactly 1 shared user. The migration added extras.
+              // Use trip name to determine the correct user.
+              var isJuneTrip = /june/i.test(trip.name);
+              var cleanAccess = {}; cleanAccess[ownerUid] = access[ownerUid] || 'owner';
+              var cleanEmails = [ownerEmail];
+              // Keep pending entries
+              Object.keys(access).forEach(function(k) { if (k.startsWith('pending_')) cleanAccess[k] = access[k]; });
+              // Keep only the correct shared user
+              nonOwner.forEach(function(uid) {
+                var email = uidToEmail[uid] || '';
+                var isJuneUser = /junep/i.test(email);
+                var keep = isJuneTrip ? isJuneUser : !isJuneUser;
+                if (keep) {
+                  cleanAccess[uid] = access[uid];
+                  if (email && cleanEmails.indexOf(email) === -1) cleanEmails.push(email);
+                }
+              });
+              if (Object.keys(cleanAccess).length < Object.keys(access).length) {
+                try {
+                  await db.collection('trips').doc(trip.id).update({ access: cleanAccess, accessEmails: cleanEmails });
+                  trip.access = cleanAccess;
+                  trip.accessEmails = cleanEmails;
+                  changed = true;
+                  console.log('[access-undo] fixed', trip.name, ':', Object.keys(access).length, '→', Object.keys(cleanAccess).length);
+                } catch(e) { console.error('[access-undo] failed for', trip.name, e); }
+              }
+            }
+            localStorage.setItem(_accessUndoKey, '1');
+            if (changed) { lsSaveTripList(trips); renderDashboard(trips); }
+          })();
+        }
       } catch(e) {
         var cached = lsLoadTripList();
         renderDashboard(cached || []);
@@ -2610,7 +3117,9 @@
       // Render CTAs
       var ctaEl = document.getElementById('dashCtas');
       if (ctaEl) {
-        ctaEl.innerHTML = '<button onclick="openTripCreate()" class="dash-cta-btn"><span style="font-size:1.1rem;line-height:1">+</span> '+t('addNewTrip')+'</button>';
+        ctaEl.innerHTML = '<button onclick="openTripCreate()" class="dash-cta-btn"><span style="font-size:1.1rem;line-height:1">+</span> '+t('addNewTrip')+'</button>'+
+          '<button onclick="openBulkExportModal()" class="dash-cta-btn" id="dashMoreBtn" style="margin-left:8px">'+
+            '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg> '+t('bulkExport')+'</button>';
       }
       // Split into planned (upcoming/ongoing) vs past
       var todayStr = new Date().toISOString().slice(0,10);
@@ -2712,6 +3221,7 @@
       resetCityField();
       dpInitFromValues('', '');
       document.getElementById('tcTz').value = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+      document.getElementById('tcPartySize').value = '1';
       _tcInvites = [];
       renderTcInvites();
       document.getElementById('tcInviteEmail').value = '';
@@ -2740,6 +3250,8 @@
         }
         dpInitFromValues(td.startDate || '', td.endDate || '');
         document.getElementById('tcTz').value = td.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+        var _ps = parseInt(td.partySize, 10);
+        document.getElementById('tcPartySize').value = (_ps && _ps > 0) ? String(_ps) : String((td.accessEmails && td.accessEmails.length) || 1);
         document.getElementById('tcInviteGroup').style.display = 'none';
         document.getElementById('tripCreateModal').classList.add('open');
         _updateTcSubmit();
@@ -2764,6 +3276,9 @@
       var start = document.getElementById('tcStart').value;
       var end = document.getElementById('tcEnd').value;
       var tz = document.getElementById('tcTz').value || (tcCityData && tcCityData.timezone) || 'UTC';
+      var partySize = parseInt(document.getElementById('tcPartySize').value, 10);
+      if (!partySize || partySize < 1) partySize = 1;
+      if (partySize > 99) partySize = 99;
       if (!name || !start || !end) return;
       if (new Date(end) < new Date(start)) { alert(t('endBeforeStart')); return; }
       // Auto-derive emoji from country code; fall back to globe
@@ -2776,7 +3291,7 @@
       var cityFields = tcCityData ? { city: tcCityData.name, cityDisplayName: tcCityData.displayName, cityLat: tcCityData.lat, cityLng: tcCityData.lng, cityCountry: tcCityData.country, cityCountryCode: tcCityData.countryCode || '' } : {};
       if (tripEditId) {
         try {
-          var updatedMeta = Object.assign({ emoji, name, startDate: start, endDate: end, timezone: tz, coverColor: color }, cityFields);
+          var updatedMeta = Object.assign({ emoji, name, startDate: start, endDate: end, timezone: tz, coverColor: color, partySize: partySize }, cityFields);
           var editRef = db.collection('trips').doc(tripEditId).collection('data').doc('main');
           var existingDays, existingWishlist;
           if (tripEditId === currentTripId) {
@@ -2810,7 +3325,7 @@
           loadDashboard();
         } catch(e) { console.error('Failed to update trip:', e); }
       } else {
-        await createTrip(Object.assign({ emoji, name, startDate: start, endDate: end, timezone: tz, coverColor: color }, cityFields));
+        await createTrip(Object.assign({ emoji, name, startDate: start, endDate: end, timezone: tz, coverColor: color, partySize: partySize }, cityFields));
       }
     }
 
@@ -2833,7 +3348,14 @@
       var fullMeta = Object.assign({}, meta, { id: tripId, createdAt: firebase.firestore.Timestamp.now(), archived: false }, ownerFields);
       try {
         await db.collection('trips').doc(tripId).set(fullMeta);
-        await db.collection('trips').doc(tripId).collection('data').doc('main').set({ days: days, wishlist: [] });
+        // Best-effort: seed wishlist with the primary airport for the destination city.
+        // Capped at ~3.5s so slow Places responses never block trip creation.
+        var initialWishlist = [];
+        try {
+          var seed = await _seedAirportWishlistItem(meta.city, meta.cityLat, meta.cityLng, 3500);
+          if (seed) initialWishlist.push(seed);
+        } catch(_e) {}
+        await db.collection('trips').doc(tripId).collection('data').doc('main').set({ days: days, wishlist: initialWishlist });
         var cached = lsLoadTripList() || [];
         cached.unshift(fullMeta);
         lsSaveTripList(cached);
@@ -2841,6 +3363,35 @@
         _tcInvites = [];
         navigateTo('#trip/' + tripId);
       } catch(e) { console.error('Failed to create trip:', e); alert(t('createTripFailed')); }
+    }
+    // Resolves to a wishlist-item object (category:'transport') for the top airport match, or null on timeout/error.
+    async function _seedAirportWishlistItem(city, lat, lng, timeoutMs) {
+      if (!city) return null;
+      try {
+        var body = { input: city + ' airport', sessionToken: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now())) };
+        if (lat != null && lng != null) body.locationBias = { lat: lat, lng: lng, radius: 50000 };
+        var ac = new AbortController();
+        var tHandle = setTimeout(function(){ ac.abort(); }, timeoutMs || 3500);
+        var r = await fetch(WORKER_BASE + '/api/places/autocomplete', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body), signal: ac.signal });
+        var data = await r.json();
+        clearTimeout(tHandle);
+        var top = (data && data.suggestions && data.suggestions[0]) || null;
+        if (!top) return null;
+        var dres = await fetch(WORKER_BASE + '/api/places/details?placeId=' + encodeURIComponent(top.placeId) + '&sessionToken=' + encodeURIComponent(body.sessionToken));
+        var d = await dres.json();
+        if (!d || !d.name) return null;
+        var addedBy = currentUser ? (currentUser.displayName || currentUser.email.split('@')[0]) : '';
+        var addedByPhoto = currentUser && currentUser.photoURL ? currentUser.photoURL : '';
+        return {
+          id: 'wl_' + genId(), name: d.name, notes: d.address || '', category: 'transport',
+          wishType: 'place', mapsUrl: d.mapsUrl || '', lat: d.lat || null, lng: d.lng || null,
+          visited: false, fromItinerary: false, dayLabel: '', calDayId: null, calEventId: null,
+          addedBy: addedBy, addedByPhoto: addedByPhoto, addedByUid: currentUser ? currentUser.uid : null, addedAt: Date.now(),
+          googlePlaceId: d.placeId || '', photoUrl: d.photoUrl || '', websiteUrl: d.websiteUrl || '', primaryType: d.primaryType || '',
+          openingHours: d.openingHours || null, editorialSummary: d.editorialSummary || '', priceLevel: d.priceLevel, phoneNumber: d.phoneNumber || '', rating: d.rating || null, userRatingCount: d.userRatingCount || null,
+          address: d.address || ''
+        };
+      } catch(e) { return null; }
     }
     function generateDaysForRange(startDate, endDate, color) {
       var days = [], dn = STRINGS.dpDow[currentLang];
@@ -3052,6 +3603,8 @@
       if(v==='wishlist')renderWishlist();
       if(v==='map'){renderMapUI();setTimeout(initMap,200);}
       updateFab(v);
+      if(currentTripId&&currentUser&&(v==='calendar'||v==='wishlist')){setLV(v);}
+      updateTabBadges();
     }
     function updateFab(v){
       v=v||currentView;
@@ -3062,11 +3615,43 @@
       if(fab){fab.style.display=(!showAdd||(v==='map'&&!isDesktop)||isDesktop)?'none':'';}
       if(navBtn){navBtn.style.display=(showAdd&&isDesktop)?'':'none';}
     }
+    // ==================== ACTIVITY BADGES ====================
+    function lvKey(tab){return 'lv_'+currentTripId+'_'+tab;}
+    function getLV(tab){return parseInt(localStorage.getItem(lvKey(tab))||'0',10);}
+    function setLV(tab){localStorage.setItem(lvKey(tab),Date.now().toString());}
+    function updateTabBadges(){
+      if(!currentTripId||!currentUser)return;
+      var uid=currentUser.uid;
+      var lvCal=getLV('calendar'),lvWish=getLV('wishlist');
+      var calCount=0;
+      DAYS.forEach(function(d){d.events.forEach(function(ev){
+        if(ev.addedByUid&&ev.addedByUid!==uid&&ev.addedAt&&ev.addedAt>lvCal)calCount++;
+      });});
+      var wishCount=0;
+      WISHLIST.forEach(function(w){
+        if(w.addedByUid&&w.addedByUid!==uid&&w.addedAt&&w.addedAt>lvWish)wishCount++;
+      });
+      var tabs=document.querySelectorAll('.view-tab');
+      _setBadge(tabs[0],calCount);
+      _setBadge(tabs[2],wishCount);
+    }
+    function _setBadge(tabEl,count){
+      if(!tabEl)return;
+      var existing=tabEl.querySelector('.tab-badge');
+      if(count<=0){if(existing)existing.remove();return;}
+      if(!existing){existing=document.createElement('span');existing.className='tab-badge';tabEl.appendChild(existing);}
+      existing.textContent=count>9?'9+':String(count);
+    }
+    function _isNewItem(item){
+      return currentUser&&item.addedByUid&&item.addedByUid!==currentUser.uid&&item.addedAt&&item.addedAt>(Date.now()-86400000);
+    }
+
     function rerender(){
       if(currentView==='calendar')renderCal();
       else if(currentView==='wishlist')renderWishlist();
       else if(currentView==='map'){renderMapUI();if(leafletMap)rebuildMarkers();}
       scheduleSave();
+      updateTabBadges();
     }
 
     // ==================== CALENDAR ====================
@@ -3130,6 +3715,7 @@
         '<div class="cal-day-nav-info">'+
           '<div class="cal-day-nav-date"><span class="cal-day-dot" style="background:'+day.color+'"></span>'+day.date+'</div>'+
           (weatherChip(day)?'<div class="cal-day-nav-theme">'+weatherChip(day)+'</div>':'')+
+          renderDayChips(day)+
         '</div>'+
         '<div class="cal-day-nav-dots">'+dots+'</div>'+
         '<button class="cal-nav-btn" onclick="goToMapDay(\''+day.id+'\')" title="'+t('viewMap')+'">'+icon('map',14)+'</button>'+
@@ -3154,7 +3740,7 @@
       el.style.setProperty('--day-count', days.length||1);
       var h='<div class="cal-header-time"></div>';
       days.forEach(function(day){
-        h+='<div class="cal-day-header" style="border-left-color:'+day.color+'40"><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><div class="cal-day-date" style="margin:0"><span class="cal-day-dot" style="background:'+day.color+'"></span><span>'+day.date+'</span></div>'+weatherChip(day)+'<div style="display:flex;gap:5px;margin-left:auto"><button class="cal-day-add" onclick="event.stopPropagation();goToMapDay(\''+day.id+'\')" title="'+t('viewMap')+'" style="padding:3px 7px">'+icon('map',12)+'</button></div></div></div>';
+        h+='<div class="cal-day-header" style="border-left-color:'+day.color+'40"><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><div class="cal-day-date" style="margin:0"><span class="cal-day-dot" style="background:'+day.color+'"></span><span>'+day.date+'</span></div>'+weatherChip(day)+'<div style="display:flex;gap:5px;margin-left:auto"><button class="cal-day-add" onclick="event.stopPropagation();goToMapDay(\''+day.id+'\')" title="'+t('viewMap')+'" style="padding:3px 7px">'+icon('map',12)+'</button></div></div>'+renderDayChips(day)+'</div>';
       });
       el.innerHTML=h;
     }
@@ -3182,6 +3768,7 @@
           h+='<div class="cal-event-time" style="color:'+evFg+'">'+fmtTime(ev.time)+(ev.endTime?'–'+fmtTime(ev.endTime):'')+'</div>';
           h+='<div class="cal-event-title" style="color:'+evFg+';overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+ev.title+(ev.notes?' <span style="opacity:0.55;font-style:italic;font-weight:400"> · '+ev.notes+'</span>':'')+'</div>';
           if(height>58&&ev.subtitle)h+='<div class="cal-event-sub">'+ev.subtitle+'</div>';
+          if(_isNewItem(ev))h+='<span class="item-new-dot"></span>';
           if(ev.optional)h+='<span class="cal-badge">optional</span>';
           if(ev.link)h+='<span class="cal-badge" style="background:rgba(59,130,246,0.2);color:#3b82f6;cursor:pointer" onclick="event.stopPropagation();window.open(\''+ev.link.replace(/'/g,"\\'")+'\',\'_blank\')">'+icon('link',10)+' '+t('link')+'</span>';
           h+='</div>';
@@ -3405,7 +3992,7 @@
       } else {
         DAYS.forEach(function(day){
           if(mapFilter!=='all'&&mapFilter!==day.id)return;
-          h+='<div class="map-group"><div class="map-group-title" style="background:'+day.color+'20;color:'+day.color+';display:flex;align-items:center;justify-content:space-between"><span style="display:flex;align-items:center;gap:5px"><span style="width:7px;height:7px;border-radius:50%;background:'+day.color+';display:inline-block;"></span>'+day.date+' · '+day.theme+mapWeatherChip(day)+'</span><button onclick="goToCalDay(\''+day.id+'\')" title="'+t('viewInCalendar')+'" style="background:none;border:none;cursor:pointer;padding:0 2px;opacity:0.75;display:flex;align-items:center">'+icon('calendar',13)+'</button></div>';
+          h+='<div class="map-group"><div class="map-group-title" style="background:'+day.color+'20;color:'+day.color+';display:flex;align-items:center;justify-content:space-between"><span style="display:flex;align-items:center;gap:5px"><span style="width:7px;height:7px;border-radius:50%;background:'+day.color+';display:inline-block;"></span>'+day.date+' · '+day.theme+mapWeatherChip(day)+'</span><button onclick="goToCalDay(\''+day.id+'\')" title="'+t('viewInCalendar')+'" style="background:none;border:none;cursor:pointer;padding:0 2px;color:var(--text-secondary);display:flex;align-items:center">'+icon('calendar',13)+'</button></div>';
           sortEvs(day.events).forEach(function(ev){
             if(!ev.lat)return;
             var ic=catIcon(ev.category,16);
@@ -3526,30 +4113,34 @@
     function focusMarker(dayId,evId){var ev=getEv(dayId,evId);if(!ev||!ev.lat||!leafletMap)return;leafletMap.setView([ev.lat,ev.lng],16,{animate:true});mapMarkers.forEach(function(m){if(m._evData&&m._evData.evId===evId)m.openPopup();});}
 
     // ==================== EDIT MODAL ====================
-    function setEditMode(mode) {
-      var form = document.getElementById('editForm');
-      form.classList.toggle('mode-place', mode === 'place');
-      form.classList.toggle('mode-event', mode === 'event');
-      document.querySelectorAll('.edit-type-btn').forEach(function(b){ b.classList.toggle('active', b.dataset.type === mode); });
-      var timeInput = document.getElementById('editTime');
-      var timeLbl = document.getElementById('editTimeLbl');
-      var mapLbl = document.getElementById('editMapLbl');
-      if (mode === 'place') {
-        timeInput.required = false;
-        timeLbl.textContent = t('timeOptional');
-        mapLbl.innerHTML = t('gmapsLink');
-        setTimeout(function(){ document.getElementById('editMapsUrl').focus(); }, 80);
+    function toggleEditField(field, show) {
+      var groupMap = { sub:'fg-sub', map:'fg-map', link:'fg-link', cat:'fg-cat', opt:'fg-opt' };
+      var inputMap = { sub:'editSubtitle', map:'editMapsUrl', link:'editLink', cat:'editCategory', opt:'editOptional' };
+      var pillMap  = { sub:'pillSub', map:'pillMap', link:'pillLink', cat:'pillCat', opt:'pillOpt' };
+      var group = document.querySelector('.'+groupMap[field]);
+      var pill = pillMap[field] ? document.getElementById(pillMap[field]) : null;
+      if (!group) return;
+      if (show) {
+        group.classList.remove('edit-field-hide');
+        if (pill) pill.style.display = 'none';
+        var inp = document.getElementById(inputMap[field]); if (inp && inp.focus) setTimeout(function(){ inp.focus(); }, 60);
       } else {
-        timeInput.required = true;
-        timeLbl.textContent = t('startTime');
-        mapLbl.innerHTML = t('gmapsLink')+' <span style="color:var(--text-secondary);font-weight:400">('+t('gmapsForMap')+')</span>';
-        setTimeout(function(){ document.getElementById('editTitle').focus(); }, 80);
+        group.classList.add('edit-field-hide');
+        if (pill) pill.style.display = '';
+        var inp2 = document.getElementById(inputMap[field]);
+        if (inp2) {
+          if (inp2.type === 'checkbox') inp2.checked = false;
+          else if (inp2.tagName === 'SELECT') inp2.value = 'other';
+          else { inp2.value = ''; delete inp2.dataset.lat; delete inp2.dataset.lng; }
+        }
       }
     }
-    function openAdd(dayId, timeStr, mode) {
+    function _resetEditFields() {
+      ['sub','map','link','cat','opt'].forEach(function(f){ toggleEditField(f, false); });
+    }
+    function openAdd(dayId, timeStr) {
       if (!canEdit()) return;
       editingDayId = dayId; editingEvId = null;
-      mode = mode || (timeStr ? 'event' : 'place');
       var startMin = timeStr ? toMin(timeStr) : 9*60;
       var endMin = Math.min(startMin + 60, END_HR*60);
       document.getElementById('editModalTitle').textContent = t('add');
@@ -3557,18 +4148,21 @@
       document.getElementById('editSubmitBtn').textContent = t('add');
       document.getElementById('editTime').value = minToStr(startMin);
       document.getElementById('editEndTime').value = minToStr(endMin);
+      document.getElementById('editTime').required = true;
       document.getElementById('editTitle').value = '';
-      document.getElementById('editSubtitle').value = '';
       document.getElementById('editNotes').value = '';
-      document.getElementById('editLink').value = '';
-      document.getElementById('editCategory').value = 'other';
-      document.getElementById('editOptional').checked = false;
-      var mu = document.getElementById('editMapsUrl'); mu.value = ''; delete mu.dataset.lat; delete mu.dataset.lng;
       document.getElementById('editPlaceHeader').style.display='none';
-      document.getElementById('editTypeSeg').style.display='';
-      document.getElementById('editForm').classList.remove('mode-wishlist');
-      setEditMode(mode);
+      var editForm = document.getElementById('editForm');
+      editForm.classList.remove('mode-wishlist');
+      _resetEditFields();
+      // Populate date picker, constrained to trip window
+      var dateInput = document.getElementById('editDate');
+      var curDay = getDay(dayId);
+      dateInput.value = (curDay && curDay.isoDate) || '';
+      if (currentTripMeta && currentTripMeta.startDate) dateInput.min = currentTripMeta.startDate; else dateInput.removeAttribute('min');
+      if (currentTripMeta && currentTripMeta.endDate) dateInput.max = currentTripMeta.endDate; else dateInput.removeAttribute('max');
       document.getElementById('editModal').classList.add('open');
+      setTimeout(function(){ document.getElementById('editTitle').focus(); }, 80);
     }
     function openEdit(dayId,evId){
       if (!canEdit()) return;
@@ -3583,12 +4177,20 @@
       dateInput.value=(curDay&&curDay.isoDate)||'';
       if(currentTripMeta&&currentTripMeta.startDate)dateInput.min=currentTripMeta.startDate;else dateInput.removeAttribute('min');
       if(currentTripMeta&&currentTripMeta.endDate)dateInput.max=currentTripMeta.endDate;else dateInput.removeAttribute('max');
+      _resetEditFields();
       document.getElementById('editTime').value=ev.time||'';document.getElementById('editEndTime').value=ev.endTime||'';
+      document.getElementById('editTime').required=true;
       document.getElementById('editTitle').value=ev.title||'';document.getElementById('editSubtitle').value=ev.subtitle||'';
       document.getElementById('editNotes').value=ev.notes||'';document.getElementById('editLink').value=ev.link||'';
-      document.getElementById('editCategory').value=ev.category||'food';document.getElementById('editOptional').checked=ev.optional||false;
+      document.getElementById('editCategory').value=ev.category||'other';document.getElementById('editOptional').checked=ev.optional||false;
       var mu=document.getElementById('editMapsUrl');mu.value=ev.mapsUrl||'';delete mu.dataset.lat;delete mu.dataset.lng;
       if(ev.lat!=null)mu.dataset.lat=ev.lat;if(ev.lng!=null)mu.dataset.lng=ev.lng;
+      // Auto-reveal populated optional fields
+      if(ev.subtitle) toggleEditField('sub', true);
+      if(ev.mapsUrl||ev.lat!=null||ev.lng!=null) toggleEditField('map', true);
+      if(ev.link) toggleEditField('link', true);
+      if(ev.category && ev.category !== 'other') toggleEditField('cat', true);
+      if(ev.optional) toggleEditField('opt', true);
       // Check if this event is linked to a wishlist item
       var wl=WISHLIST.find(function(x){return x.calEventId===evId;});
       if(wl){
@@ -3608,15 +4210,12 @@
           actBtns+'</div>';
         ph.style.display='';
         var dBtn=document.getElementById('editDeleteBtn'); if(dBtn) dBtn.textContent=t('removeFromSchedule');
-        document.getElementById('editTypeSeg').style.display='none';
         document.getElementById('editModalTitle').textContent=t('editTime');
         var form=document.getElementById('editForm');
-        form.classList.remove('mode-place','mode-event');
         form.classList.add('mode-wishlist');
       } else {
         document.getElementById('editPlaceHeader').style.display='none';
-        document.getElementById('editTypeSeg').style.display='';
-        setEditMode(ev.type === 'place' ? 'place' : 'event');
+        document.getElementById('editForm').classList.remove('mode-wishlist');
       }
       document.getElementById('editModal').classList.add('open');
     }
@@ -3663,7 +4262,6 @@
       var mu=document.getElementById('editMapsUrl');
       var form=document.getElementById('editForm');
       var isWishlist=form.classList.contains('mode-wishlist');
-      var isPlace=form.classList.contains('mode-place');
       var newDate=document.getElementById('editDate').value;
       if(isWishlist && editingEvId){
         // Wishlist-linked: update time, notes, and optionally move day
@@ -3676,7 +4274,7 @@
         closeEditModal();rerender();return;
       }
       var fields={
-        type: isPlace ? 'place' : 'event',
+        type: 'event',
         time:document.getElementById('editTime').value,
         endTime:document.getElementById('editEndTime').value,
         title:document.getElementById('editTitle').value,
@@ -3693,6 +4291,8 @@
         // Create new event
         var day=getDay(editingDayId);if(!day)return;
         fields.id='ev_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,6);
+        fields.addedByUid=currentUser?currentUser.uid:null;
+        fields.addedAt=Date.now();
         day.events.push(fields);
       } else {
         // Update existing event
@@ -3721,36 +4321,83 @@
       var filtered=WISHLIST.filter(function(w){
         return(wishCatFilter==='all'||w.category===wishCatFilter)&&(isHtF||wishStatusFilter==='all'||(wishStatusFilter==='scheduled'&&w.visited)||(wishStatusFilter==='unscheduled'&&!w.visited));
       });
+      if(wishSortByVotes)filtered=sortByVotes(filtered);
       var total=WISHLIST.length,done=WISHLIST.filter(function(w){return w.visited;}).length;
       var isHt=currentTripMeta&&currentTripMeta.type==='hometown';
       var h='';
-      if(canEdit()){h+='<div class="wl-quick-add"><input type="text" class="wl-quick-input" id="wlQuickUrl" placeholder="'+t('quickAddPlaceholder')+'" oninput="onQuickSearchInput(this)" onpaste="setTimeout(function(){var el=document.getElementById(\'wlQuickUrl\');if(el&&isGmapsUrl(el.value))quickAddPlace();},100)" onkeydown="onPlaceSearchKeydown(event,\'quickPlaceDropdown\')"><div class="place-search-dropdown" id="quickPlaceDropdown" style="display:none"></div></div>';}
-      h+='<div class="wl-toolbar"><div class="wl-toolbar-top"><span class="wl-title" style="display:inline-flex;align-items:center;gap:5px">'+icon('star',16)+' '+t('places')+'</span>'+(isHt?'<span class="wl-count">'+total+'</span>':'<span class="wl-count">'+STRINGS.scheduledCount[currentLang](done,total)+'</span>')+'</div><div class="wl-filter-rows"><div class="wl-filter-group">';
-      h+=wlCatBtn('all',t('all'),wishCatFilter)+wlCatBtn('food',icon('food',13)+' '+t('catFood'),wishCatFilter)+wlCatBtn('bar',icon('bar',13)+' '+t('catBar'),wishCatFilter)+wlCatBtn('culture',icon('culture',13)+' '+t('catCulture'),wishCatFilter);
+      var showAddPanel = canEdit();
+      var showDiscover = canEdit()&&currentTripMeta&&currentTripMeta.city;
+      if(showAddPanel||showDiscover){
+        h+='<div class="wl-add-panel">';
+        if(showAddPanel){h+='<div class="wl-quick-add"><input type="text" class="wl-quick-input" id="wlQuickUrl" placeholder="'+t('quickAddPlaceholder')+'" oninput="onQuickSearchInput(this)" onpaste="setTimeout(function(){var el=document.getElementById(\'wlQuickUrl\');if(el&&isGmapsUrl(el.value))quickAddPlace();},100)" onkeydown="onPlaceSearchKeydown(event,\'quickPlaceDropdown\')"><div class="place-search-dropdown" id="quickPlaceDropdown" style="display:none"></div></div>';}
+        if(showDiscover){
+          var discoverLabel = currentTripMeta&&currentTripMeta.city ? STRINGS.discoverNearCity[currentLang](currentTripMeta.city) : t('discoverNearby');
+          h+='<div class="wl-discover"><div class="wl-discover-label">'+icon('globe',12)+' '+discoverLabel+'</div><div class="wl-discover-btns">';
+          h+='<button class="wl-discover-btn" onclick="discoverPlaces(\'restaurants\')">🍽️ '+t('discoverRestaurants')+'</button>';
+          h+='<button class="wl-discover-btn" onclick="discoverPlaces(\'cafes\')">☕ '+t('discoverCafes')+'</button>';
+          h+='<button class="wl-discover-btn" onclick="discoverPlaces(\'bars\')">🍸 '+t('discoverBars')+'</button>';
+          h+='<button class="wl-discover-btn" onclick="discoverPlaces(\'museums\')">🏛️ '+t('discoverMuseums')+'</button>';
+          h+='<button class="wl-discover-btn" onclick="discoverPlaces(\'bakeries\')">🧁 '+t('discoverBakeries')+'</button>';
+          h+='<button class="wl-discover-btn" onclick="discoverPlaces(\'parks\')">🌳 '+t('discoverParks')+'</button>';
+          h+='</div></div>';
+        }
+        h+='</div>';
+      }
+      var viewToggleH='<div class="wl-view-toggle" role="group" aria-label="View mode">'+
+        '<button type="button" class="wl-view-btn'+(wishViewMode==='grid'?' active':'')+'" onclick="setWishViewMode(\'grid\')" title="Grid" aria-label="Grid view"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></button>'+
+        '<button type="button" class="wl-view-btn'+(wishViewMode==='list'?' active':'')+'" onclick="setWishViewMode(\'list\')" title="List" aria-label="List view"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg></button>'+
+      '</div>';
+      h+='<div class="wl-toolbar"><div class="wl-toolbar-top"><span class="wl-title" style="display:inline-flex;align-items:center;gap:5px">'+icon('star',16)+' '+t('places')+(isHt?'<span class="wl-count" style="margin-left:6px">'+total+'</span>':'<span class="wl-count" style="margin-left:6px">'+STRINGS.scheduledCount[currentLang](done,total)+'</span>')+'</span>'+viewToggleH+'</div><div class="wl-filter-rows"><div class="wl-filter-group">';
+      h+=wlCatBtn('all',t('all'),wishCatFilter)+wlCatBtn('food',icon('food',13)+' '+t('catFood'),wishCatFilter)+wlCatBtn('bar',icon('bar',13)+' '+t('catBar'),wishCatFilter)+wlCatBtn('culture',icon('culture',13)+' '+t('catCulture'),wishCatFilter)+wlCatBtn('hotel',icon('hotel',13)+' '+t('catHotel'),wishCatFilter)+wlCatBtn('transport',icon('transport',13)+' '+t('catTransport'),wishCatFilter);
       if(!isHt){
         h+='</div><div class="wl-filter-group">';
         h+=wlSBtn('all',t('all'),wishStatusFilter)+wlSBtn('unscheduled',t('unscheduled'),wishStatusFilter)+wlSBtn('scheduled',t('scheduled'),wishStatusFilter);
+        h+='<button class="wl-filter status-btn'+(wishSortByVotes?' active':'')+'" onclick="toggleWishSortByVotes()" title="'+t('mostLoved')+'">'+
+          '<svg width="12" height="12" viewBox="0 0 24 24" fill="'+(wishSortByVotes?'currentColor':'none')+'" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.633 10.5c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 012.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 00.322-1.672V3a.75.75 0 01.75-.75A2.25 2.25 0 0116.5 4.5c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 01-2.649 7.521c-.388.482-.987.729-1.605.729H13.48c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 00-1.423-.23H5.904M14.25 9h2.25M5.904 18.75c.083.205.173.405.27.602.197.4-.078.898-.523.898h-.908c-.889 0-1.713-.518-1.972-1.368a12 12 0 01-.521-3.507c0-1.553.295-3.036.831-4.398C3.387 10.203 4.167 9.75 5 9.75h1.053c.472 0 .745.556.5.96a8.958 8.958 0 00-1.302 4.665c0 1.194.232 2.333.654 3.375z"/></svg> '+t('mostLoved')+'</button>';
       }
-      h+='</div></div></div><div class="wl-grid">';
+      h+='</div></div></div>';
+      h+='<div class="wl-grid '+wishViewMode+'">';
       if(filtered.length===0)h+='<div class="wl-empty"><div class="wl-empty-icon" style="display:flex;justify-content:center">'+icon('star',32)+'</div><div>'+t('noWlItems')+'<br><span style="font-size:0.85rem">'+t('noWlItemsHint')+'</span></div></div>';
       filtered.forEach(function(w){
         var cat=CAT[w.category]||CAT.other,cic=catIcon(w.category,16);
         var st='';var dayLabel='';
         if(w.calDayId&&w.calEventId){var ev=getEv(w.calDayId,w.calEventId);if(ev){st=fmtTime(ev.time)+(ev.endTime?' – '+fmtTime(ev.endTime):'');dayLabel=w.dayLabel||'';}}
         h+='<div class="wl-card'+(w.visited?' visited':'')+'">';
+        if(_isNewItem(w))h+='<span class="item-new-dot"></span>';
         if (w.photoUrl) h+='<img class="wl-card-photo" src="'+w.photoUrl+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">';
         var authorEl = '';
         if (w.addedBy) {
-          if (w.addedByPhoto) {
-            authorEl = '<img class="wl-author-avatar" src="'+w.addedByPhoto+'" title="'+w.addedBy+'" referrerpolicy="no-referrer">';
-          } else {
-            authorEl = '<div class="wl-author-initials" title="'+w.addedBy+'">'+w.addedBy.slice(0,1).toUpperCase()+'</div>';
-          }
+          var safeName = String(w.addedBy).replace(/"/g,'&quot;');
+          var avatarH = w.addedByPhoto
+            ? '<img class="wl-author-avatar" src="'+w.addedByPhoto+'" referrerpolicy="no-referrer" alt="">'
+            : '<div class="wl-author-initials">'+w.addedBy.slice(0,1).toUpperCase()+'</div>';
+          authorEl = '<span class="wl-author" title="'+safeName+'">'+avatarH+'<span class="wl-author-name">'+w.addedBy+'</span></span>';
         }
-        h+='<div class="wl-card-top"><div class="wl-card-info"><div class="wl-card-name">'+w.name+'</div>'+(w.notes?'<div class="wl-card-sub">'+w.notes+'</div>':'')+'</div>'+authorEl+'</div>';
+        // Build vote button (shown next to author)
+        var voteBtnH = '';
+        if(!_isPublicView){
+          var vCount=voteCount(w),vUsers=voterList(w),iVoted=hasUserVoted(w);
+          var avStack='';
+          vUsers.slice(0,3).forEach(function(u){
+            if(u.photo)avStack+='<span title="'+(u.name||'').replace(/"/g,'&quot;')+'"><img src="'+u.photo+'" referrerpolicy="no-referrer" alt=""></span>';
+            else avStack+='<span title="'+(u.name||'').replace(/"/g,'&quot;')+'">'+((u.name||'?').slice(0,1).toUpperCase())+'</span>';
+          });
+          if(vUsers.length>3)avStack+='<span class="wl-vote-overflow">+'+(vUsers.length-3)+'</span>';
+          var btnEnabled=!!currentUser;
+          voteBtnH='<span class="wl-vote-inline">'+
+            (avStack?'<span class="wl-vote-avatars">'+avStack+'</span>':'')+
+            '<button class="wl-vote-btn'+(iVoted?' voted':'')+'" '+(btnEnabled?'onclick="event.stopPropagation();toggleVote(\''+w.id+'\')"':'disabled')+' title="'+t(iVoted?'voted':'vote')+'">'+
+              '<svg width="12" height="12" viewBox="0 0 24 24" fill="'+(iVoted?'currentColor':'none')+'" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.633 10.5c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 012.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 00.322-1.672V3a.75.75 0 01.75-.75A2.25 2.25 0 0116.5 4.5c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 01-2.649 7.521c-.388.482-.987.729-1.605.729H13.48c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 00-1.423-.23H5.904M14.25 9h2.25M5.904 18.75c.083.205.173.405.27.602.197.4-.078.898-.523.898h-.908c-.889 0-1.713-.518-1.972-1.368a12 12 0 01-.521-3.507c0-1.553.295-3.036.831-4.398C3.387 10.203 4.167 9.75 5 9.75h1.053c.472 0 .745.556.5.96a8.958 8.958 0 00-1.302 4.665c0 1.194.232 2.333.654 3.375z"/></svg>'+
+              (vCount>0?' '+vCount:'')+
+            '</button>'+
+          '</span>';
+        }
+        var authorTopEl = (authorEl||voteBtnH) ? '<span class="wl-author-slot wl-author-top">'+authorEl+voteBtnH+'</span>' : '';
+        var authorMetaEl = (authorEl||voteBtnH) ? '<span class="wl-author-slot wl-author-meta">'+authorEl+voteBtnH+'</span>' : '';
+        h+='<div class="wl-card-top"><div class="wl-card-info"><div class="wl-card-name">'+w.name+'</div>'+(w.notes?'<div class="wl-card-sub">'+w.notes+'</div>':'')+'</div>'+authorTopEl+'</div>';
         h+=placeDetailsHtml(w, true);
-        // Category + Edit Place row
-        h+='<div class="wl-card-bottom"><span style="font-size:0.8rem;color:var(--text-secondary);display:inline-flex;align-items:center;gap:4px">'+cic+' '+catLabel(w.category)+'</span>';
+        // Category + (author in list view) + Edit Place row
+        h+='<div class="wl-card-bottom"><span class="wl-cat-label" style="font-size:0.8rem;color:var(--text-secondary);display:inline-flex;align-items:center;gap:4px">'+cic+' '+catLabel(w.category)+authorMetaEl+'</span>';
         if(canEdit()) h+='<button class="wl-visited-toggle" onclick="event.stopPropagation();editWishItem(\''+w.id+'\')">'+icon('pencil',11)+' '+t('editPlace')+'</button>';
         h+='</div>';
         // Schedule row
@@ -3759,7 +4406,7 @@
             h+='<div class="wl-card-bottom"><span style="font-size:0.8rem;color:var(--text-secondary);display:inline-flex;align-items:center;gap:4px">'+icon('calendar',12)+' '+dayLabel+(dayLabel&&st?' · ':'')+st+'</span>';
             h+='<button class="wl-visited-toggle adjust" onclick="event.stopPropagation();openSchedModal(\''+w.id+'\')">'+icon('pencil',11)+' '+t('editSchedule')+'</button></div>';
           } else {
-            h+='<div class="wl-card-bottom"><button class="wl-visited-toggle" onclick="event.stopPropagation();openSchedModal(\''+w.id+'\')" style="width:100%;justify-content:center">'+icon('calendar',11)+' '+t('addToScheduleBtn')+'</button></div>';
+            h+='<div class="wl-card-bottom" style="justify-content:flex-end"><button class="wl-visited-toggle" onclick="event.stopPropagation();openSchedModal(\''+w.id+'\')">'+icon('calendar',11)+' '+t('addToScheduleBtn')+'</button></div>';
           }
           h+='<hr style="border:none;border-top:1px solid var(--border);margin:6px 0 2px">';
         }
@@ -3777,6 +4424,7 @@
     function wlSBtn(v,l,a){return'<button class="wl-filter status-btn'+(a===v?' active':'')+'" onclick="setWlStatusFilter(\''+v+'\')">'+l+'</button>';}
     function setWlCatFilter(f){wishCatFilter=f;renderWishlist();}
     function setWlStatusFilter(f){wishStatusFilter=f;renderWishlist();}
+    function toggleWishSortByVotes(){wishSortByVotes=!wishSortByVotes;renderWishlist();}
     function removeTimeFromWish(wishId){
       var w=WISHLIST.find(function(x){return x.id===wishId;});if(!w||!w.calDayId||!w.calEventId)return;
       var day=DAYS.find(function(d){return d.id===w.calDayId;});
@@ -3948,7 +4596,15 @@
         if (dropdownId !== 'wishPlaceDropdown') {
           var container = dd ? dd.parentElement : null;
           var input = container ? container.querySelector('input') : null;
-          if (input) { input.value = ''; input.placeholder = t('quickAddPlaceholder'); }
+          if (input) { input.value = ''; }
+        }
+        // Lodging chip flow: create wishlist item with forced category and select it
+        if (dropdownId === 'lodgingPlaceDropdown') {
+          var newId = _addPlaceForChip(d, 'hotel');
+          _lodgingSelectedWishId = newId;
+          renderLodgingPickList();
+          updateLodgingSaveBtn();
+          return;
         }
         // Always open the add-place modal with fields pre-filled
         if (dropdownId !== 'wishPlaceDropdown') openWishAdd();
@@ -3965,14 +4621,142 @@
         id: 'wl_' + genId(), name: d.name || '', notes: d.address || '', category: d.category || 'other',
         wishType: 'place', mapsUrl: d.mapsUrl || '', lat: d.lat || null, lng: d.lng || null,
         visited: false, fromItinerary: false, dayLabel: '', calDayId: null, calEventId: null,
-        addedBy: addedBy, addedByPhoto: addedByPhoto,
+        addedBy: addedBy, addedByPhoto: addedByPhoto, addedByUid: currentUser ? currentUser.uid : null, addedAt: Date.now(),
         googlePlaceId: d.placeId || '', photoUrl: d.photoUrl || '', websiteUrl: d.websiteUrl || '', primaryType: d.primaryType || '',
-        openingHours: d.openingHours || null, editorialSummary: d.editorialSummary || '', priceLevel: d.priceLevel, phoneNumber: d.phoneNumber || ''
+        openingHours: d.openingHours || null, editorialSummary: d.editorialSummary || '', priceLevel: d.priceLevel, phoneNumber: d.phoneNumber || '', rating: d.rating || null, userRatingCount: d.userRatingCount || null
       };
       WISHLIST.push(newW);
       wishStatusFilter = 'all';
       rerender();
     }
+
+    // Create a wishlist item from Places details for lodging/transport chip flow (forced category)
+    function _addPlaceForChip(d, forcedCategory) {
+      var addedBy = currentUser ? (currentUser.displayName || currentUser.email.split('@')[0]) : '';
+      var addedByPhoto = currentUser && currentUser.photoURL ? currentUser.photoURL : '';
+      var newW = {
+        id: 'wl_' + genId(), name: d.name || '', notes: d.address || '', category: forcedCategory,
+        wishType: 'place', mapsUrl: d.mapsUrl || '', lat: d.lat || null, lng: d.lng || null,
+        visited: false, fromItinerary: false, dayLabel: '', calDayId: null, calEventId: null,
+        addedBy: addedBy, addedByPhoto: addedByPhoto, addedByUid: currentUser ? currentUser.uid : null, addedAt: Date.now(),
+        googlePlaceId: d.placeId || '', photoUrl: d.photoUrl || '', websiteUrl: d.websiteUrl || '', primaryType: d.primaryType || '',
+        openingHours: d.openingHours || null, editorialSummary: d.editorialSummary || '', priceLevel: d.priceLevel, phoneNumber: d.phoneNumber || '', rating: d.rating || null, userRatingCount: d.userRatingCount || null,
+        address: d.address || ''
+      };
+      WISHLIST.push(newW);
+      scheduleSave();
+      return newW.id;
+    }
+
+    function _guessTransportMode(d) {
+      var s = ((d && d.primaryType) || '').toLowerCase() + ' ' + ((d && d.name) || '').toLowerCase();
+      if (/airport|aero/.test(s)) return 'flight';
+      if (/train|railway|gare|bahnhof|station/.test(s)) return 'train';
+      if (/bus|terminal/.test(s)) return 'bus';
+      if (/ferry|port|harbor|harbour/.test(s)) return 'ferry';
+      return null;
+    }
+
+    var _discoverResults = [];
+    async function discoverPlaces(category) {
+      if (!canEdit()) return;
+      if (!currentTripMeta || !currentTripMeta.city) { alert(t('discoverNoCity')); return; }
+      // Open modal with loading state
+      _discoverResults = [];
+      var titleMap = { restaurants:'discoverRestaurants', cafes:'discoverCafes', bars:'discoverBars', museums:'discoverMuseums', bakeries:'discoverBakeries', parks:'discoverParks' };
+      var emojiMap = { restaurants:'🍽️', cafes:'☕', bars:'🍸', museums:'🏛️', bakeries:'🧁', parks:'🌳' };
+      document.getElementById('discoverModalTitle').textContent = (emojiMap[category]||'') + ' ' + t(titleMap[category]||'discover');
+      document.getElementById('discoverModalBody').innerHTML = '<div class="disc-loading">'+t('discovering')+'</div>';
+      document.getElementById('discoverModalFooter').style.display = 'none';
+      document.getElementById('discoverModal').classList.add('open');
+      try {
+        var existingPlaceIds = WISHLIST.filter(function(w){return w.googlePlaceId;}).map(function(w){return w.googlePlaceId;});
+        var res = await fetch(WORKER_BASE + '/api/places/discover', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({
+            category: category,
+            lat: currentTripMeta.cityLat,
+            lng: currentTripMeta.cityLng,
+            cityName: currentTripMeta.city,
+            existingPlaceIds: existingPlaceIds
+          })
+        });
+        var data = await res.json();
+        if (data.error) { document.getElementById('discoverModalBody').innerHTML = '<div class="disc-loading">'+t('discoverFailed')+'</div>'; return; }
+        var places = (data.places || []).filter(function(p){
+          return !WISHLIST.some(function(w){ return w.googlePlaceId && w.googlePlaceId === p.placeId; });
+        });
+        if (places.length === 0) { document.getElementById('discoverModalBody').innerHTML = '<div class="disc-loading">'+t('discoverAllExist')+'</div>'; return; }
+        _discoverResults = places;
+        renderDiscoverList();
+      } catch(e) {
+        console.error('[discoverPlaces]', e);
+        document.getElementById('discoverModalBody').innerHTML = '<div class="disc-loading">'+t('discoverFailed')+'</div>';
+      }
+    }
+    function renderDiscoverList() {
+      var h = '';
+      var anyLeft = false;
+      _discoverResults.forEach(function(d, i) {
+        var already = WISHLIST.some(function(w){ return w.googlePlaceId && w.googlePlaceId === d.placeId; });
+        if (!already) anyLeft = true;
+        var photo = d.photoUrl ? '<img class="disc-item-photo" src="'+d.photoUrl+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">' : '<div class="disc-item-photo-empty">'+icon('pin',18)+'</div>';
+        // Meta line: rating + price
+        var meta = '';
+        if (d.rating) { meta += '<span style="color:var(--text-primary);font-weight:600">'+d.rating+'</span> <span style="color:#facc15">★</span>'; if (d.userRatingCount) meta += ' <span style="color:var(--text-secondary)">('+d.userRatingCount.toLocaleString()+')</span>'; }
+        if (d.priceLevel != null && d.priceLevel > 0) { if (meta) meta += ' · '; meta += '<span style="color:var(--text-secondary)">'+('$'.repeat(d.priceLevel))+'</span>'; }
+        var sub = d.editorialSummary || d.address || '';
+        var btn = already ? '<button class="disc-item-add added">'+t('added')+'</button>' : '<button class="disc-item-add" onclick="discoverAddOne('+i+',this)">'+t('add')+'</button>';
+        h += '<div class="disc-item">'+photo+'<div class="disc-item-info"><div class="disc-item-name">'+d.name+'</div>'+(meta?'<div class="disc-item-sub">'+meta+'</div>':'')+(sub?'<div class="disc-item-sub" style="margin-top:1px">'+sub+'</div>':'')+'</div>'+btn+'</div>';
+      });
+      document.getElementById('discoverModalBody').innerHTML = h;
+      var footer = document.getElementById('discoverModalFooter');
+      footer.style.display = anyLeft ? '' : 'none';
+      document.getElementById('discoverAddAllBtn').textContent = t('addAll');
+    }
+    function discoverAddOne(idx, btnEl) {
+      var d = _discoverResults[idx];
+      if (!d) return;
+      if (WISHLIST.some(function(w){ return w.googlePlaceId && w.googlePlaceId === d.placeId; })) return;
+      var addedBy = currentUser ? (currentUser.displayName || currentUser.email.split('@')[0]) : '';
+      var addedByPhoto = currentUser && currentUser.photoURL ? currentUser.photoURL : '';
+      WISHLIST.push({
+        id: 'wl_' + genId(), name: d.name || '', notes: d.address || '', category: d.category || 'other',
+        wishType: 'place', mapsUrl: d.mapsUrl || '', lat: d.lat || null, lng: d.lng || null,
+        visited: false, fromItinerary: false, dayLabel: '', calDayId: null, calEventId: null,
+        addedBy: addedBy, addedByPhoto: addedByPhoto, addedByUid: currentUser ? currentUser.uid : null, addedAt: Date.now(),
+        googlePlaceId: d.placeId || '', photoUrl: d.photoUrl || '', websiteUrl: d.websiteUrl || '', primaryType: d.primaryType || '',
+        openingHours: d.openingHours || null, editorialSummary: d.editorialSummary || '', priceLevel: d.priceLevel, phoneNumber: d.phoneNumber || '', rating: d.rating || null, userRatingCount: d.userRatingCount || null
+      });
+      if (btnEl) { btnEl.textContent = t('added'); btnEl.classList.add('added'); }
+      // Check if any remain unadded
+      var anyLeft = _discoverResults.some(function(p){ return !WISHLIST.some(function(w){ return w.googlePlaceId && w.googlePlaceId === p.placeId; }); });
+      if (!anyLeft) document.getElementById('discoverModalFooter').style.display = 'none';
+      wishStatusFilter = 'all';
+      rerender();
+    }
+    function discoverAddAll() {
+      var addedBy = currentUser ? (currentUser.displayName || currentUser.email.split('@')[0]) : '';
+      var addedByPhoto = currentUser && currentUser.photoURL ? currentUser.photoURL : '';
+      var count = 0;
+      _discoverResults.forEach(function(d) {
+        if (WISHLIST.some(function(w){ return w.googlePlaceId && w.googlePlaceId === d.placeId; })) return;
+        WISHLIST.push({
+          id: 'wl_' + genId(), name: d.name || '', notes: d.address || '', category: d.category || 'other',
+          wishType: 'place', mapsUrl: d.mapsUrl || '', lat: d.lat || null, lng: d.lng || null,
+          visited: false, fromItinerary: false, dayLabel: '', calDayId: null, calEventId: null,
+          addedBy: addedBy, addedByPhoto: addedByPhoto, addedByUid: currentUser ? currentUser.uid : null, addedAt: Date.now(),
+          googlePlaceId: d.placeId || '', photoUrl: d.photoUrl || '', websiteUrl: d.websiteUrl || '', primaryType: d.primaryType || '',
+          openingHours: d.openingHours || null, editorialSummary: d.editorialSummary || '', priceLevel: d.priceLevel, phoneNumber: d.phoneNumber || '', rating: d.rating || null, userRatingCount: d.userRatingCount || null
+        });
+        count++;
+      });
+      wishStatusFilter = 'all';
+      rerender();
+      renderDiscoverList();
+    }
+    function closeDiscoverModal() { document.getElementById('discoverModal').classList.remove('open'); _discoverResults = []; }
 
     function _populateWishModalFromSearch(d) {
       var nf = document.getElementById('wishName');
@@ -3993,6 +4777,8 @@
         wuEl.dataset.editorialSummary = d.editorialSummary || '';
         wuEl.dataset.priceLevel = d.priceLevel != null ? d.priceLevel : '';
         wuEl.dataset.phoneNumber = d.phoneNumber || '';
+        wuEl.dataset.rating = d.rating != null ? d.rating : '';
+        wuEl.dataset.userRatingCount = d.userRatingCount != null ? d.userRatingCount : '';
       }
       // Show checkmark in hint
       var hint = document.getElementById('wishMapsHint');
@@ -4035,6 +4821,7 @@
       var parts = [];
       if (w.editorialSummary) parts.push('<div class="place-detail-summary">' + escH(w.editorialSummary) + '</div>');
       var meta = [];
+      if (w.rating) { var r = '<span style="font-weight:600">' + w.rating + '</span> <span style="color:#facc15">★</span>'; if (w.userRatingCount) r += ' <span style="opacity:0.6">(' + w.userRatingCount.toLocaleString() + ')</span>'; meta.push(r); }
       var price = fmtPrice(w.priceLevel);
       if (price) meta.push('<span class="place-detail-price">' + price + '</span>');
       var hours = getTodayHours(w.openingHours);
@@ -4088,7 +4875,7 @@
       if(!lat){var cm=url.match(/@(-?\d+\.?\d*),(-?\d+\.?\d*)/)||url.match(/!3d(-?\d+\.?\d+)!4d(-?\d+\.?\d+)/);if(cm){lat=parseFloat(cm[1]);lng=parseFloat(cm[2]);}}
       var addedBy=currentUser?(currentUser.displayName||currentUser.email.split('@')[0]):'';
       var addedByPhoto=currentUser&&currentUser.photoURL?currentUser.photoURL:'';
-      var newW={id:'wl_'+genId(),name:displayName,notes:address||'',category:cat,wishType:'place',mapsUrl:url,lat:lat||null,lng:lng||null,visited:false,fromItinerary:false,dayLabel:'',calDayId:null,calEventId:null,addedBy:addedBy,addedByPhoto:addedByPhoto};
+      var newW={id:'wl_'+genId(),name:displayName,notes:address||'',category:cat,wishType:'place',mapsUrl:url,lat:lat||null,lng:lng||null,visited:false,fromItinerary:false,dayLabel:'',calDayId:null,calEventId:null,addedBy:addedBy,addedByPhoto:addedByPhoto,addedByUid:currentUser?currentUser.uid:null,addedAt:Date.now()};
       WISHLIST.push(newW);
       if(!lat&&url)_resolveWishCoords(newW);
       else if(!lat&&displayName)geocodeWishItem(newW);
@@ -4108,14 +4895,18 @@
     function openWishAdd(){
       if (!canEdit()) return;
       editingWishId=null;_wishUrlResolving=false;_lastParsedGmapsUrl='';
-      var wuEl=document.getElementById('wishMapsUrl');wuEl.value='';wuEl.placeholder=t('wishMapsPlaceholder');delete wuEl.dataset.lat;delete wuEl.dataset.lng;delete wuEl.dataset.placeId;delete wuEl.dataset.photoUrl;delete wuEl.dataset.websiteUrl;delete wuEl.dataset.primaryType;delete wuEl.dataset.openingHours;delete wuEl.dataset.editorialSummary;delete wuEl.dataset.priceLevel;delete wuEl.dataset.phoneNumber;
+      var wuEl=document.getElementById('wishMapsUrl');wuEl.value='';wuEl.placeholder=t('wishMapsPlaceholder');delete wuEl.dataset.lat;delete wuEl.dataset.lng;delete wuEl.dataset.placeId;delete wuEl.dataset.photoUrl;delete wuEl.dataset.websiteUrl;delete wuEl.dataset.primaryType;delete wuEl.dataset.openingHours;delete wuEl.dataset.editorialSummary;delete wuEl.dataset.priceLevel;delete wuEl.dataset.phoneNumber;delete wuEl.dataset.rating;delete wuEl.dataset.userRatingCount;
       document.getElementById('wishName').value='';
       document.getElementById('wishNotes').value='';document.getElementById('wishCategory').value='other';
       var hint=document.getElementById('wishMapsHint');if(hint)hint.textContent=t('gmapsHint');
       var preview=document.getElementById('wishPhotoPreview');if(preview)preview.innerHTML='';
       document.getElementById('wishDeleteBtn').style.display='none';
       var btn=document.getElementById('wishSaveBtn');btn.textContent=t('add');btn.disabled=true;btn.style.opacity='0.4';btn.style.cursor='not-allowed';
-      document.getElementById('wishModalTitle').textContent=t('add');
+      document.getElementById('wishModalTitle').textContent=t('addAPlace');
+      document.getElementById('wishModeSeg').style.display=(currentTripMeta&&currentTripMeta.city)?'':'none';
+      _wishRecommendResults = [];
+      _wishRecommendActiveCat = null;
+      setWishMode('search');
       document.getElementById('wishModal').classList.add('open');
       setTimeout(function(){ document.getElementById('wishMapsUrl').focus(); }, 60);
     }
@@ -4127,10 +4918,125 @@
       document.getElementById('wishMapsUrl').value=w.mapsUrl||'';document.getElementById('wishName').value=w.name||'';
       document.getElementById('wishNotes').value=w.notes||'';document.getElementById('wishCategory').value=w.category||'food';
       document.getElementById('wishDeleteBtn').style.display='';
+      document.getElementById('wishModeSeg').style.display='none';
+      document.getElementById('wishSearchPane').style.display='';
+      document.getElementById('wishRecommendPane').style.display='none';
       var btn=document.getElementById('wishSaveBtn');btn.textContent=t('save');btn.disabled=false;btn.style.opacity='';btn.style.cursor='';
       document.getElementById('wishModal').classList.add('open');
     }
     function closeWishModal(){document.getElementById('wishModal').classList.remove('open');editingWishId=null;}
+    var _wishRecommendResults = [];
+    var _wishRecommendCache = {};
+    var _wishRecommendActiveCat = null;
+    function setWishMode(mode) {
+      document.getElementById('wishSearchPane').style.display = mode === 'search' ? '' : 'none';
+      document.getElementById('wishRecommendPane').style.display = mode === 'recommend' ? '' : 'none';
+      var btns = document.querySelectorAll('#wishModeSeg .edit-type-btn');
+      btns[0].classList.toggle('active', mode === 'search');
+      btns[1].classList.toggle('active', mode === 'recommend');
+      if (mode === 'recommend') {
+        var cats = document.getElementById('wishRecommendCats');
+        cats.innerHTML = '<button type="button" class="wl-discover-btn" onclick="wishDiscoverPlaces(\'restaurants\')">🍽️ '+t('discoverRestaurants')+'</button>'
+          +'<button type="button" class="wl-discover-btn" onclick="wishDiscoverPlaces(\'cafes\')">☕ '+t('discoverCafes')+'</button>'
+          +'<button type="button" class="wl-discover-btn" onclick="wishDiscoverPlaces(\'bars\')">🍸 '+t('discoverBars')+'</button>'
+          +'<button type="button" class="wl-discover-btn" onclick="wishDiscoverPlaces(\'museums\')">🏛️ '+t('discoverMuseums')+'</button>'
+          +'<button type="button" class="wl-discover-btn" onclick="wishDiscoverPlaces(\'bakeries\')">🧁 '+t('discoverBakeries')+'</button>'
+          +'<button type="button" class="wl-discover-btn" onclick="wishDiscoverPlaces(\'parks\')">🌳 '+t('discoverParks')+'</button>';
+        if (!_wishRecommendResults.length) {
+          document.getElementById('wishRecommendBody').innerHTML = '<div class="wish-recommend-null">'+t('recommendNull')+'</div>';
+          document.getElementById('wishRecommendFooter').style.display = 'none';
+        }
+      }
+    }
+    async function wishDiscoverPlaces(category) {
+      if (!canEdit()) return;
+      if (!currentTripMeta || !currentTripMeta.city) { alert(t('discoverNoCity')); return; }
+      _wishRecommendActiveCat = category;
+      // highlight active category button
+      var btns = document.querySelectorAll('#wishRecommendCats .wl-discover-btn');
+      btns.forEach(function(b){ b.style.fontWeight = b.onclick.toString().indexOf("'"+category+"'") > -1 ? '700' : ''; });
+      // Check cache (keyed by tripId + category)
+      var cacheKey = (currentTripId || '') + ':' + category;
+      if (_wishRecommendCache[cacheKey]) {
+        _wishRecommendResults = _wishRecommendCache[cacheKey];
+        renderWishRecommendList();
+        return;
+      }
+      _wishRecommendResults = [];
+      document.getElementById('wishRecommendBody').innerHTML = '<div class="disc-loading">'+t('discovering')+'</div>';
+      document.getElementById('wishRecommendFooter').style.display = 'none';
+      try {
+        var existingPlaceIds = WISHLIST.filter(function(w){return w.googlePlaceId;}).map(function(w){return w.googlePlaceId;});
+        var res = await fetch(WORKER_BASE + '/api/places/discover', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ category: category, lat: currentTripMeta.cityLat, lng: currentTripMeta.cityLng, cityName: currentTripMeta.city, existingPlaceIds: existingPlaceIds })
+        });
+        var data = await res.json();
+        if (data.error) { document.getElementById('wishRecommendBody').innerHTML = '<div class="disc-loading">'+t('discoverFailed')+'</div>'; return; }
+        var places = (data.places || []).filter(function(p){ return !WISHLIST.some(function(w){ return w.googlePlaceId && w.googlePlaceId === p.placeId; }); });
+        if (places.length === 0) { document.getElementById('wishRecommendBody').innerHTML = '<div class="disc-loading">'+t('discoverAllExist')+'</div>'; return; }
+        _wishRecommendResults = places;
+        _wishRecommendCache[cacheKey] = places;
+        renderWishRecommendList();
+      } catch(e) {
+        console.error('[wishDiscoverPlaces]', e);
+        document.getElementById('wishRecommendBody').innerHTML = '<div class="disc-loading">'+t('discoverFailed')+'</div>';
+      }
+    }
+    function renderWishRecommendList() {
+      var h = '';
+      var anyLeft = false;
+      _wishRecommendResults.forEach(function(d, i) {
+        var already = WISHLIST.some(function(w){ return w.googlePlaceId && w.googlePlaceId === d.placeId; });
+        if (!already) anyLeft = true;
+        var photo = d.photoUrl ? '<img class="disc-item-photo" src="'+d.photoUrl+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">' : '<div class="disc-item-photo-empty">'+icon('pin',18)+'</div>';
+        var meta = '';
+        if (d.rating) { meta += '<span style="font-weight:600">'+d.rating+'</span> <span style="color:#facc15">★</span>'; if (d.userRatingCount) meta += ' <span style="color:var(--text-secondary)">('+d.userRatingCount.toLocaleString()+')</span>'; }
+        if (d.priceLevel != null && d.priceLevel > 0) { if (meta) meta += ' · '; meta += '<span style="color:var(--text-secondary)">'+('$'.repeat(d.priceLevel))+'</span>'; }
+        var sub = d.editorialSummary || d.address || '';
+        var btn = already ? '<button class="disc-item-add added">'+t('added')+'</button>' : '<button class="disc-item-add" onclick="wishDiscoverAddOne('+i+',this)">'+t('add')+'</button>';
+        h += '<div class="disc-item">'+photo+'<div class="disc-item-info"><div class="disc-item-name">'+d.name+'</div>'+(meta?'<div class="disc-item-sub">'+meta+'</div>':'')+(sub?'<div class="disc-item-sub" style="margin-top:1px">'+sub+'</div>':'')+'</div>'+btn+'</div>';
+      });
+      document.getElementById('wishRecommendBody').innerHTML = h;
+      document.getElementById('wishRecommendFooter').style.display = anyLeft ? '' : 'none';
+      document.getElementById('wishRecommendAddAllBtn').textContent = t('addAll');
+    }
+    function wishDiscoverAddOne(idx, btnEl) {
+      var d = _wishRecommendResults[idx];
+      if (!d || WISHLIST.some(function(w){ return w.googlePlaceId && w.googlePlaceId === d.placeId; })) return;
+      var addedBy = currentUser ? (currentUser.displayName || currentUser.email.split('@')[0]) : '';
+      var addedByPhoto = currentUser && currentUser.photoURL ? currentUser.photoURL : '';
+      WISHLIST.push({
+        id: 'wl_' + genId(), name: d.name || '', notes: d.address || '', category: d.category || 'other',
+        wishType: 'place', mapsUrl: d.mapsUrl || '', lat: d.lat || null, lng: d.lng || null,
+        visited: false, fromItinerary: false, dayLabel: '', calDayId: null, calEventId: null,
+        addedBy: addedBy, addedByPhoto: addedByPhoto, addedByUid: currentUser ? currentUser.uid : null, addedAt: Date.now(),
+        googlePlaceId: d.placeId || '', photoUrl: d.photoUrl || '', websiteUrl: d.websiteUrl || '', primaryType: d.primaryType || '',
+        openingHours: d.openingHours || null, editorialSummary: d.editorialSummary || '', priceLevel: d.priceLevel, phoneNumber: d.phoneNumber || '', rating: d.rating || null, userRatingCount: d.userRatingCount || null
+      });
+      if (btnEl) { btnEl.textContent = t('added'); btnEl.classList.add('added'); }
+      var anyLeft = _wishRecommendResults.some(function(p){ return !WISHLIST.some(function(w){ return w.googlePlaceId && w.googlePlaceId === p.placeId; }); });
+      if (!anyLeft) document.getElementById('wishRecommendFooter').style.display = 'none';
+      rerender();
+    }
+    function wishDiscoverAddAll() {
+      var addedBy = currentUser ? (currentUser.displayName || currentUser.email.split('@')[0]) : '';
+      var addedByPhoto = currentUser && currentUser.photoURL ? currentUser.photoURL : '';
+      _wishRecommendResults.forEach(function(d) {
+        if (WISHLIST.some(function(w){ return w.googlePlaceId && w.googlePlaceId === d.placeId; })) return;
+        WISHLIST.push({
+          id: 'wl_' + genId(), name: d.name || '', notes: d.address || '', category: d.category || 'other',
+          wishType: 'place', mapsUrl: d.mapsUrl || '', lat: d.lat || null, lng: d.lng || null,
+          visited: false, fromItinerary: false, dayLabel: '', calDayId: null, calEventId: null,
+          addedBy: addedBy, addedByPhoto: addedByPhoto, addedByUid: currentUser ? currentUser.uid : null, addedAt: Date.now(),
+          googlePlaceId: d.placeId || '', photoUrl: d.photoUrl || '', websiteUrl: d.websiteUrl || '', primaryType: d.primaryType || '',
+          openingHours: d.openingHours || null, editorialSummary: d.editorialSummary || '', priceLevel: d.priceLevel, phoneNumber: d.phoneNumber || '', rating: d.rating || null, userRatingCount: d.userRatingCount || null
+        });
+      });
+      rerender();
+      renderWishRecommendList();
+    }
     function saveWishItem(e){
       e.preventDefault();
       var url=document.getElementById('wishMapsUrl').value.trim(),name=document.getElementById('wishName').value.trim()||url;
@@ -4148,7 +5054,7 @@
       } else {
         var addedBy = currentUser ? (currentUser.displayName || currentUser.email.split('@')[0]) : '';
         var addedByPhoto = currentUser && currentUser.photoURL ? currentUser.photoURL : '';
-        var newW={id:'wl_'+genId(),name:name,notes:notes,category:cat,wishType:'place',mapsUrl:url,lat:lat,lng:lng,visited:false,fromItinerary:false,dayLabel:'',calDayId:null,calEventId:null,addedBy:addedBy,addedByPhoto:addedByPhoto};
+        var newW={id:'wl_'+genId(),name:name,notes:notes,category:cat,wishType:'place',mapsUrl:url,lat:lat,lng:lng,visited:false,fromItinerary:false,dayLabel:'',calDayId:null,calEventId:null,addedBy:addedBy,addedByPhoto:addedByPhoto,addedByUid:currentUser?currentUser.uid:null,addedAt:Date.now()};
         // Pick up Google Places fields if available
         if(wuEl.dataset.placeId) newW.googlePlaceId=wuEl.dataset.placeId;
         if(wuEl.dataset.photoUrl) newW.photoUrl=wuEl.dataset.photoUrl;
@@ -4158,6 +5064,8 @@
         if(wuEl.dataset.editorialSummary) newW.editorialSummary=wuEl.dataset.editorialSummary;
         if(wuEl.dataset.priceLevel) newW.priceLevel=parseInt(wuEl.dataset.priceLevel);
         if(wuEl.dataset.phoneNumber) newW.phoneNumber=wuEl.dataset.phoneNumber;
+        if(wuEl.dataset.rating) newW.rating=parseFloat(wuEl.dataset.rating);
+        if(wuEl.dataset.userRatingCount) newW.userRatingCount=parseInt(wuEl.dataset.userRatingCount);
         WISHLIST.push(newW);
         wishStatusFilter='all';
         if(!lat&&url) _resolveWishCoords(newW);
@@ -4219,6 +5127,7 @@
     var calAddDayId=null,calAddStartMin=540,calAddMode='place',calAddWishId=null;
     function durLabel(min){return STRINGS.durFn[currentLang](min);}
     function openCalAdd(dayId,timeStr){
+      if(!canEdit())return;
       calAddDayId=dayId;
       calAddStartMin=timeStr?toMin(timeStr):9*60;
       calAddMode='place';calAddWishId=null;
@@ -4278,14 +5187,14 @@
         var w=WISHLIST.find(function(x){return x.id===calAddWishId;});if(!w)return;
         var nid='wl_ev_'+genId();
         var placeNotes=(document.getElementById('calAddPlaceNotes')||{}).value||'';
-        day.events.push({id:nid,title:w.name,subtitle:w.notes||'',category:w.category||'other',time:s,endTime:e,notes:placeNotes,optional:false,mapsUrl:w.mapsUrl||'',lat:w.lat||null,lng:w.lng||null});
+        day.events.push({id:nid,title:w.name,subtitle:w.notes||'',category:w.category||'other',time:s,endTime:e,notes:placeNotes,optional:false,mapsUrl:w.mapsUrl||'',lat:w.lat||null,lng:w.lng||null,addedByUid:currentUser?currentUser.uid:null,addedAt:Date.now()});
         w.calDayId=calAddDayId;w.calEventId=nid;w.visited=true;w.dayLabel=day.date;
         if(!w.lat&&w.name)geocodeWishItem(w);
       } else {
         var title=document.getElementById('calAddBlockTitle').value.trim();
         if(!title)return;
         var notes=document.getElementById('calAddBlockNotes').value.trim();
-        day.events.push({id:'ev_'+genId(),title:title,subtitle:'',category:'other',time:s,endTime:e,notes:notes,optional:false,mapsUrl:'',lat:null,lng:null});
+        day.events.push({id:'ev_'+genId(),title:title,subtitle:'',category:'other',time:s,endTime:e,notes:notes,optional:false,mapsUrl:'',lat:null,lng:null,addedByUid:currentUser?currentUser.uid:null,addedAt:Date.now()});
       }
       closeCalAdd();rerender();
     }
@@ -4389,7 +5298,7 @@
         if(ev){if(w.calDayId!==schedDayId){od.events=od.events.filter(function(x){return x.id!==w.calEventId;});ev.id='wl_ev_'+genId();day.events.push(ev);w.calDayId=schedDayId;w.calEventId=ev.id;}ev.time=s;ev.endTime=e;ev.notes=schedNotes;}
       } else {
         var nid='wl_ev_'+genId();
-        day.events.push({id:nid,title:w.name,subtitle:w.notes||'',category:w.category||'other',time:s,endTime:e,notes:schedNotes,optional:false,mapsUrl:w.mapsUrl||'',lat:w.lat||null,lng:w.lng||null});
+        day.events.push({id:nid,title:w.name,subtitle:w.notes||'',category:w.category||'other',time:s,endTime:e,notes:schedNotes,optional:false,mapsUrl:w.mapsUrl||'',lat:w.lat||null,lng:w.lng||null,addedByUid:currentUser?currentUser.uid:null,addedAt:Date.now()});
         w.calDayId=schedDayId;w.calEventId=nid;w.visited=true;
       }
       w.dayLabel=day.date;closeSchedModal();rerender();
@@ -4464,7 +5373,7 @@
         return;
       }
       try{
-        var r=await fetch('https://api.frankfurter.app/latest?from='+currLocalCode+'&to=USD');
+        var r=await fetch('https://api.frankfurter.dev/v1/latest?from='+currLocalCode+'&to=USD');
         var d=await r.json();
         currRate=d.rates.USD;
         currConvert('local');
@@ -4488,6 +5397,390 @@
       setTimeout(function(){var el=document.getElementById('currLocal');if(el){el.focus();el.select();}},100);
     }
     function closeCurrConverter(){document.getElementById('currModal').classList.remove('open');}
+
+    // ==================== LODGING MODAL ====================
+    var _lodgingDayId=null,_lodgingSelectedWishId=null;
+    function openLodgingModal(dayId){
+      if(!canEdit())return;
+      _lodgingDayId=dayId;
+      var day=DAYS.find(function(d){return d.id===dayId;});if(!day)return;
+      _lodgingSelectedWishId=day.lodgingWishId||null;
+      document.getElementById('lodgingModalTitle').textContent=t('editLodging');
+      document.getElementById('lodgingPickLabel').textContent=t('pickPlace');
+      document.getElementById('lodgingShowAllLabel').textContent=t('showAllPlaces');
+      document.getElementById('lodgingApplyAllLabel').textContent=t('applyToAllDays');
+      document.getElementById('lodgingCancelBtn').textContent=t('cancel');
+      document.getElementById('lodgingSaveBtn').textContent=t('save');
+      document.getElementById('lodgingClearBtn').textContent=t('clear');
+      document.getElementById('lodgingShowAll').checked=false;
+      document.getElementById('lodgingApplyAll').checked=false;
+      var lsi=document.getElementById('lodgingSearchInput');if(lsi){lsi.value='';lsi.placeholder=t('lodgingSearchPlaceholder');}
+      var ldd=document.getElementById('lodgingPlaceDropdown');if(ldd)ldd.style.display='none';
+      document.getElementById('lodgingClearBtn').style.display=day.lodgingWishId?'':'none';
+      document.getElementById('lodgingDayLabel').textContent=day.date||'';
+      renderLodgingPickList();
+      updateLodgingSaveBtn();
+      document.getElementById('lodgingModal').classList.add('open');
+    }
+    function closeLodgingModal(){document.getElementById('lodgingModal').classList.remove('open');_lodgingDayId=null;}
+    function renderLodgingPickList(){
+      var el=document.getElementById('lodgingPickList');if(!el)return;
+      var showAll=document.getElementById('lodgingShowAll').checked;
+      var items=WISHLIST.filter(function(w){return showAll||wishIsLodgingCandidate(w);});
+      if(!items.length){el.innerHTML='<div style="padding:18px;text-align:center;color:var(--text-secondary);font-size:0.85rem">'+t(showAll?'noWlItems':'noHotels')+'</div>';return;}
+      el.innerHTML=items.map(function(w){
+        var selected=w.id===_lodgingSelectedWishId;
+        return '<label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;transition:background 0.15s'+(selected?';background:color-mix(in srgb, var(--accent) 14%, transparent)':'')+'" onmouseover="if(!this.querySelector(\'input\').checked)this.style.background=\'var(--surface-hover)\'" onmouseout="if(!this.querySelector(\'input\').checked)this.style.background=\'\'">'+
+          '<input type="radio" name="lodgingPick" value="'+w.id+'" onchange="_lodgingSelectedWishId=\''+w.id+'\';renderLodgingPickList();updateLodgingSaveBtn()"'+(selected?' checked':'')+' style="accent-color:var(--accent)">'+
+          '<span style="font-size:1rem">'+catIcon(w.category,14)+'</span>'+
+          '<div style="flex:1;min-width:0"><div style="font-size:0.88rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+(w.name||'')+'</div>'+
+          (w.address?'<div style="font-size:0.75rem;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+w.address+'</div>':'')+
+          '</div>'+
+        '</label>';
+      }).join('');
+    }
+    function updateLodgingSaveBtn(){
+      var btn=document.getElementById('lodgingSaveBtn');
+      var ok=!!_lodgingSelectedWishId;
+      btn.disabled=!ok;btn.style.opacity=ok?'':'0.4';btn.style.cursor=ok?'':'not-allowed';
+    }
+    function saveLodging(){
+      if(!_lodgingDayId||!_lodgingSelectedWishId)return;
+      var applyAll=document.getElementById('lodgingApplyAll').checked;
+      if(applyAll){DAYS.forEach(function(d){d.lodgingWishId=_lodgingSelectedWishId;});}
+      else{var d=DAYS.find(function(x){return x.id===_lodgingDayId;});if(d)d.lodgingWishId=_lodgingSelectedWishId;}
+      closeLodgingModal();
+      renderCal();
+      scheduleSave();
+    }
+    function clearDayLodging(){
+      if(!_lodgingDayId)return;
+      var d=DAYS.find(function(x){return x.id===_lodgingDayId;});if(d)d.lodgingWishId=null;
+      closeLodgingModal();
+      renderCal();
+      scheduleSave();
+    }
+
+    function onChipSearchInput(el,dropdownId){
+      var val=(el.value||'').trim();
+      var dd=document.getElementById(dropdownId);if(!dd)return;
+      if(!val||val.length<2){dd.style.display='none';_placesResults=[];return;}
+      if(isGmapsUrl(val)||/^https?:\/\//.test(val)){dd.style.display='none';return;}
+      clearTimeout(_placesSearchTimer);
+      _placesSearchTimer=setTimeout(function(){searchPlaces(val,dropdownId);},300);
+    }
+
+    // ==================== ITINERARY EXPORT ====================
+    function openItineraryModal(){
+      document.getElementById('vizMenuDropdown').classList.remove('open');
+      if(!currentTripId||!currentTripMeta){return;}
+      document.getElementById('itineraryModalTitle').textContent=t('exportItineraryTitle');
+      document.getElementById('itineraryHint').textContent=t('exportItineraryHint');
+      document.getElementById('itineraryCloseBtn').textContent=t('close');
+      document.getElementById('itineraryGenBtn').textContent=t('generate');
+      document.getElementById('itineraryCopyBtn').textContent=t('copy');
+      document.getElementById('itineraryDownloadBtn').textContent=t('download');
+      document.getElementById('itineraryCodeWrap').style.display='none';
+      document.getElementById('itineraryCopyBtn').style.display='none';
+      document.getElementById('itineraryDownloadBtn').style.display='none';
+      document.getElementById('itineraryGenBtn').textContent=t('generate');
+      document.getElementById('itineraryCode').textContent='';
+      document.getElementById('itineraryModal').classList.add('open');
+    }
+    function closeItineraryModal(){document.getElementById('itineraryModal').classList.remove('open');}
+    function generateItinerary(){
+      var md=buildItineraryMarkdown();
+      document.getElementById('itineraryCode').textContent=md;
+      document.getElementById('itineraryCodeWrap').style.display='';
+      document.getElementById('itineraryCopyBtn').style.display='';
+      document.getElementById('itineraryDownloadBtn').style.display='';
+      document.getElementById('itineraryGenBtn').textContent=t('regenerate');
+    }
+    function copyItinerary(){
+      var md=document.getElementById('itineraryCode').textContent||'';
+      var btn=document.getElementById('itineraryCopyBtn');
+      var orig=t('copy');
+      var done=function(){btn.textContent=t('copied');setTimeout(function(){btn.textContent=orig;},1400);};
+      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(md).then(done).catch(function(){_fallbackCopy(md);done();});}
+      else{_fallbackCopy(md);done();}
+    }
+    function _fallbackCopy(text){try{var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.left='-9999px';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);}catch(e){}}
+    function downloadItinerary(){
+      var md=document.getElementById('itineraryCode').textContent||'';
+      var safe=((currentTripMeta&&currentTripMeta.name)||'trip').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'trip';
+      var blob=new Blob([md],{type:'text/markdown;charset=utf-8'});
+      var url=URL.createObjectURL(blob);
+      var a=document.createElement('a');a.href=url;a.download=safe+'-itinerary.md';document.body.appendChild(a);a.click();document.body.removeChild(a);
+      setTimeout(function(){URL.revokeObjectURL(url);},500);
+    }
+    function _itnFmtDate(iso){
+      if(!iso)return '';
+      var d=new Date(iso+'T00:00:00');
+      var dow=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()];
+      var mon=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()];
+      return dow+', '+mon+' '+d.getDate()+', '+d.getFullYear();
+    }
+    function _itnDaysBetween(s,e){if(!s||!e)return 0;var a=new Date(s+'T00:00:00'),b=new Date(e+'T00:00:00');return Math.round((b-a)/86400000)+1;}
+    function _itnPriceStr(l){if(l==null||l==='')return '';return ['Free','$','$$','$$$','$$$$'][l]||'';}
+    function _itnCatLabel(c){var m={food:'Food',bar:'Bar',culture:'Culture',hotel:'Hotel',conference:'Conference',transport:'Transport',other:'Other'};return m[c]||'Other';}
+    function _itnWeatherStr(iso){var w=weatherData&&weatherData[iso];if(!w)return '';return w.icon+' '+w.tempMax+'°/'+w.tempMin+'°';}
+    function buildItineraryMarkdown(metaArg,daysArg,wishlistArg,weatherArg,opts){
+      var meta=metaArg||currentTripMeta||{};
+      var DAYS_=daysArg||DAYS||[];
+      var WISHLIST_=wishlistArg||WISHLIST||[];
+      var weatherMap=weatherArg||(metaArg?null:weatherData)||{};
+      var headingLevel=(opts&&opts.headingLevel)||1;
+      var H=function(n){return new Array(n+1).join('#');};
+      var city=meta.city||'';
+      var flag=meta.emoji||'';
+      var cc=meta.cityCountryCode||'';
+      var start=meta.startDate||'';
+      var end=meta.endDate||'';
+      var nDays=_itnDaysBetween(start,end);
+      var party=parseInt(meta.partySize,10);if(!party||party<1)party=(meta.accessEmails&&meta.accessEmails.length)||1;
+      var tz=meta.timezone||'';
+      var today=new Date().toISOString().slice(0,10);
+      var forecastCutoff=new Date(Date.now()+15*86400000).toISOString().slice(0,10);
+      var out=[];
+      // Header
+      out.push(H(headingLevel)+' Trip to '+(city||meta.name||'Unknown')+(cc?', '+cc:'')+(flag?' '+flag:''));
+      if(start&&end) out.push('**Dates:** '+_itnFmtDate(start)+' → '+_itnFmtDate(end)+' ('+nDays+' day'+(nDays===1?'':'s')+')');
+      out.push('**Party size:** '+party+' '+(party===1?'person':'people'));
+      if(tz) out.push('**Timezone:** '+tz);
+      out.push('');
+      // Weather
+      var weatherRows=[];
+      DAYS_.forEach(function(d){
+        var iso=d.isoDate;if(!iso)return;
+        var w=weatherMap&&weatherMap[iso];if(!w)return;
+        var historical=(iso>forecastCutoff&&iso>=today);
+        weatherRows.push({iso:iso,str:w.icon+' '+w.tempMax+'° / '+w.tempMin+'°',historical:historical});
+      });
+      if(weatherRows.length){
+        out.push(H(headingLevel+1)+' Weather');
+        out.push('| Date | Conditions |');
+        out.push('|------|------------|');
+        weatherRows.forEach(function(r){
+          out.push('| '+_itnFmtDate(r.iso)+' | '+r.str+(r.historical?' _(historical avg)_':'')+' |');
+        });
+        out.push('');
+      }
+      // Overview
+      var totalEvents=0,scheduledPlaces=0;
+      DAYS_.forEach(function(d){(d.events||[]).forEach(function(){totalEvents++;});});
+      WISHLIST_.forEach(function(w){if(w.calDayId&&w.calEventId)scheduledPlaces++;});
+      var unscheduled=WISHLIST_.filter(function(w){return !(w.calDayId&&w.calEventId);});
+      var catCounts={};
+      WISHLIST_.forEach(function(w){var c=w.category||'other';catCounts[c]=(catCounts[c]||0)+1;});
+      out.push(H(headingLevel+1)+' Overview');
+      out.push('- '+totalEvents+' scheduled event'+(totalEvents===1?'':'s')+' across '+nDays+' day'+(nDays===1?'':'s'));
+      out.push('- '+WISHLIST_.length+' saved place'+(WISHLIST_.length===1?'':'s')+' ('+scheduledPlaces+' scheduled, '+unscheduled.length+' unscheduled)');
+      var catKeys=Object.keys(catCounts);
+      if(catKeys.length){
+        var catStr=catKeys.map(function(k){return _itnCatLabel(k).toLowerCase()+': '+catCounts[k];}).join(', ');
+        out.push('- Categories: '+catStr);
+      }
+      out.push('');
+      // Itinerary
+      out.push(H(headingLevel+1)+' Itinerary');
+      out.push('');
+      // Lodging + transport sections (pre-itinerary)
+      var lodgingItems=[];
+      DAYS_.forEach(function(d){
+        if(!d.lodgingWishId)return;
+        var w=WISHLIST_.find(function(x){return x.id===d.lodgingWishId;});
+        if(w)lodgingItems.push({day:d,wish:w});
+      });
+      if(lodgingItems.length){
+        var uniqHotels={};
+        lodgingItems.forEach(function(it){(uniqHotels[it.wish.id]=uniqHotels[it.wish.id]||{wish:it.wish,nights:[]}).nights.push(it.day.isoDate);});
+        out.push(H(headingLevel+1)+' Lodgings');
+        Object.keys(uniqHotels).forEach(function(k){
+          var e=uniqHotels[k];
+          var nights=e.nights.slice().sort();
+          out.push('- **🏨 '+e.wish.name+'**'+(e.wish.address?' — '+e.wish.address:'')+' (nights: '+nights.join(', ')+')');
+        });
+        out.push('');
+      }
+      DAYS_.forEach(function(d,di){
+        var header=H(headingLevel+2)+' Day '+(di+1)+' — '+_itnFmtDate(d.isoDate||'');
+        if(d.theme) header+=' · '+d.theme;
+        var w=weatherMap&&weatherMap[d.isoDate];
+        var wStr=w?(w.icon+' '+w.tempMax+'°/'+w.tempMin+'°'):'';
+        if(wStr) header+=' · '+wStr;
+        // Lodging prefix
+        var lod=d.lodgingWishId?WISHLIST_.find(function(x){return x.id===d.lodgingWishId;}):null;
+        if(lod) header+=' · 🏨 '+lod.name;
+        out.push(header);
+        var evs=(d.events||[]).slice().sort(function(a,b){
+          var ta=(a.time||'zz'),tb=(b.time||'zz');return ta<tb?-1:ta>tb?1:0;
+        });
+        if(!evs.length){out.push('- _(no events scheduled)_');out.push('');return;}
+        evs.forEach(function(ev){
+          var isPlace=ev.id&&ev.id.indexOf('wl_ev_')===0;
+          var wl=WISHLIST_.find(function(w){return w.calEventId===ev.id;});
+          var timeStr=ev.time?(ev.time+(ev.endTime?'–'+ev.endTime:'')):'(no time)';
+          var catStr=ev.category?' *('+_itnCatLabel(ev.category).toLowerCase()+')*':(wl&&wl.category?' *('+_itnCatLabel(wl.category).toLowerCase()+')*':'');
+          var title=ev.title||(wl&&wl.name)||'(untitled)';
+          var optStr=ev.optional?' _[optional]_':'';
+          out.push('- **'+timeStr+'** '+title+catStr+optStr);
+          var sub=ev.subtitle||(wl&&wl.address)||'';
+          if(sub) out.push('  - '+sub);
+          if(wl&&wl.editorialSummary) out.push('  - _'+wl.editorialSummary+'_');
+          if(wl){
+            var bits=[];
+            if(wl.rating) bits.push('Rating: '+wl.rating+(wl.userRatingCount?' ('+wl.userRatingCount.toLocaleString()+')':''));
+            var ps=_itnPriceStr(wl.priceLevel);if(ps) bits.push(ps);
+            if(wl.phoneNumber) bits.push(wl.phoneNumber);
+            if(bits.length) out.push('  - '+bits.join(' · '));
+          }
+          if(ev.notes) out.push('  - Notes: "'+ev.notes.replace(/"/g,'\\"')+'"');
+          var url=ev.mapsUrl||(wl&&wl.mapsUrl)||'';
+          if(url) out.push('  - [Maps]('+url+')');
+        });
+        out.push('');
+      });
+      // Unscheduled places grouped by category
+      if(unscheduled.length){
+        out.push(H(headingLevel+1)+' Unscheduled Places (Wishlist)');
+        out.push('');
+        var byCat={};
+        unscheduled.forEach(function(w){var c=w.category||'other';(byCat[c]=byCat[c]||[]).push(w);});
+        var order=['food','bar','culture','hotel','transport','conference','other'];
+        order.forEach(function(cat){
+          if(!byCat[cat])return;
+          out.push(H(headingLevel+2)+' '+_itnCatLabel(cat));
+          byCat[cat].forEach(function(w){
+            out.push('- **'+(w.name||'(untitled)')+'**'+(w.address?' — '+w.address:''));
+            var bits=[];
+            if(w.rating) bits.push('Rating: '+w.rating+(w.userRatingCount?' ('+w.userRatingCount.toLocaleString()+')':''));
+            var ps=_itnPriceStr(w.priceLevel);if(ps) bits.push(ps);
+            if(w.phoneNumber) bits.push(w.phoneNumber);
+            if(bits.length) out.push('  - '+bits.join(' · '));
+            if(w.editorialSummary) out.push('  - _'+w.editorialSummary+'_');
+            if(w.notes) out.push('  - Notes: "'+w.notes.replace(/"/g,'\\"')+'"');
+            var url=w.mapsUrl||(w.websiteUrl||'');
+            if(url) out.push('  - [Link]('+url+')');
+          });
+          out.push('');
+        });
+      }
+      if(!(opts&&opts.skipPromptStub)){
+        out.push(H(headingLevel+1)+' Notes for the LLM');
+        out.push('This is a travel itinerary exported from Faropin. Trip for '+party+' '+(party===1?'person':'people')+(tz?' · times are local ('+tz+')':'')+'. Help me: [add your question here]');
+        out.push('');
+      }
+      return out.join('\n');
+    }
+
+    // ==================== BULK ITINERARY EXPORT ====================
+    var _bulkTrips=[],_bulkSelected={};
+    function openBulkExportModal(){
+      _bulkSelected={};
+      document.getElementById('bulkExportModalTitle').textContent=t('bulkExportTitle');
+      document.getElementById('bulkExportHint').textContent=t('bulkExportHint');
+      document.getElementById('bulkSelectAllLabel').textContent=t('selectAll');
+      document.getElementById('bulkCloseBtn').textContent=t('close');
+      document.getElementById('bulkGenBtn').textContent=t('generate');
+      document.getElementById('bulkCopyBtn').textContent=t('copy');
+      document.getElementById('bulkDownloadBtn').textContent=t('download');
+      document.getElementById('bulkCodeWrap').style.display='none';
+      document.getElementById('bulkCopyBtn').style.display='none';
+      document.getElementById('bulkDownloadBtn').style.display='none';
+      document.getElementById('bulkCode').textContent='';
+      document.getElementById('bulkSelectAll').checked=false;
+      _bulkTrips=(lsLoadTripList()||[]).slice().sort(function(a,b){return (b.startDate||'').localeCompare(a.startDate||'');});
+      renderBulkTripList();
+      updateBulkSelectedCount();
+      document.getElementById('bulkExportModal').classList.add('open');
+    }
+    function closeBulkExportModal(){document.getElementById('bulkExportModal').classList.remove('open');}
+    function renderBulkTripList(){
+      var el=document.getElementById('bulkTripList');if(!el)return;
+      if(!_bulkTrips.length){el.innerHTML='<div style="padding:20px;text-align:center;color:var(--text-secondary);font-size:0.85rem">'+t('noTripsYet')+'</div>';return;}
+      el.innerHTML=_bulkTrips.map(function(tr){
+        var id='bulk_'+tr.id;
+        var dateStr=(tr.startDate&&tr.endDate)?(tr.startDate+' → '+tr.endDate):'';
+        var checked=_bulkSelected[tr.id]?' checked':'';
+        return '<label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;transition:background 0.15s" onmouseover="this.style.background=\'var(--surface-hover)\'" onmouseout="this.style.background=\'\'">'+
+          '<input type="checkbox" id="'+id+'" onchange="bulkToggleTrip(\''+tr.id+'\',this.checked)" style="accent-color:var(--accent);width:16px;height:16px"'+checked+'>'+
+          '<span style="font-size:1.1rem">'+(tr.emoji||'🌍')+'</span>'+
+          '<div style="flex:1;min-width:0">'+
+            '<div style="font-size:0.9rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+(tr.name||'(untitled)')+'</div>'+
+            (tr.city||dateStr?'<div style="font-size:0.75rem;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+(tr.city||'')+(tr.city&&dateStr?' · ':'')+dateStr+'</div>':'')+
+          '</div>'+
+        '</label>';
+      }).join('');
+    }
+    function bulkToggleTrip(tripId,checked){
+      if(checked)_bulkSelected[tripId]=true;else delete _bulkSelected[tripId];
+      updateBulkSelectedCount();
+      var allChecked=_bulkTrips.length>0&&_bulkTrips.every(function(tr){return _bulkSelected[tr.id];});
+      document.getElementById('bulkSelectAll').checked=allChecked;
+    }
+    function bulkToggleAll(checked){
+      _bulkSelected={};
+      if(checked)_bulkTrips.forEach(function(tr){_bulkSelected[tr.id]=true;});
+      renderBulkTripList();
+      updateBulkSelectedCount();
+    }
+    function updateBulkSelectedCount(){
+      var n=Object.keys(_bulkSelected).length;
+      document.getElementById('bulkSelectedCount').textContent=n?n+' selected':'';
+      var btn=document.getElementById('bulkGenBtn');
+      btn.disabled=!n;btn.style.opacity=n?'':'0.4';btn.style.cursor=n?'':'not-allowed';
+    }
+    async function _loadTripForExport(tripId){
+      // Prefer localStorage cache, fall back to Firestore
+      var cached=lsLoadTripData(tripId);
+      if(cached&&(cached.days||cached.wishlist))return {days:cached.days||[],wishlist:cached.wishlist||[]};
+      try{
+        var snap=await db.collection('trips').doc(tripId).collection('data').doc('main').get();
+        if(snap.exists){var d=snap.data()||{};return {days:d.days||[],wishlist:d.wishlist||[]};}
+      }catch(e){console.warn('Bulk export: failed to load',tripId,e);}
+      return {days:[],wishlist:[]};
+    }
+    async function generateBulkItinerary(){
+      var selected=_bulkTrips.filter(function(tr){return _bulkSelected[tr.id];});
+      if(!selected.length)return;
+      var btn=document.getElementById('bulkGenBtn');
+      var origTxt=btn.textContent;
+      btn.disabled=true;btn.style.opacity='0.6';btn.textContent=t('loadingTripData');
+      try{
+        var results=await Promise.all(selected.map(function(tr){return _loadTripForExport(tr.id).then(function(data){return {meta:tr,days:data.days,wishlist:data.wishlist};});}));
+        var parts=[];
+        parts.push('# Faropin Trip Export');
+        parts.push('_'+results.length+' trip'+(results.length===1?'':'s')+' · generated '+new Date().toISOString().slice(0,10)+'_');
+        parts.push('');
+        results.forEach(function(r,i){
+          parts.push(buildItineraryMarkdown(r.meta,r.days,r.wishlist,null,{headingLevel:2,skipPromptStub:true}));
+          if(i<results.length-1){parts.push('---');parts.push('');}
+        });
+        parts.push('## Notes for the LLM');
+        parts.push('These are '+results.length+' travel itineraries exported from Faropin. Help me: [add your question here]');
+        parts.push('');
+        document.getElementById('bulkCode').textContent=parts.join('\n');
+        document.getElementById('bulkCodeWrap').style.display='';
+        document.getElementById('bulkCopyBtn').style.display='';
+        document.getElementById('bulkDownloadBtn').style.display='';
+        btn.textContent=t('regenerate');
+      }catch(e){console.error('Bulk generate failed:',e);btn.textContent=origTxt;}
+      finally{btn.disabled=false;btn.style.opacity='';}
+    }
+    function copyBulkItinerary(){
+      var md=document.getElementById('bulkCode').textContent||'';
+      var btn=document.getElementById('bulkCopyBtn');var orig=t('copy');
+      var done=function(){btn.textContent=t('copied');setTimeout(function(){btn.textContent=orig;},1400);};
+      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(md).then(done).catch(function(){_fallbackCopy(md);done();});}
+      else{_fallbackCopy(md);done();}
+    }
+    function downloadBulkItinerary(){
+      var md=document.getElementById('bulkCode').textContent||'';
+      var blob=new Blob([md],{type:'text/markdown;charset=utf-8'});
+      var url=URL.createObjectURL(blob);
+      var a=document.createElement('a');a.href=url;a.download='faropin-trips-'+new Date().toISOString().slice(0,10)+'.md';document.body.appendChild(a);a.click();document.body.removeChild(a);
+      setTimeout(function(){URL.revokeObjectURL(url);},500);
+    }
     function refreshCurrRates(){currRate=null;document.getElementById('currRateInfo').textContent=t('currLoading');loadCurrRates();}
 
     // ==================== MENU ====================
@@ -4498,7 +5791,7 @@
       if(ev.target===document.getElementById('wishModal'))closeWishModal();
     });
     document.addEventListener('keydown',function(ev){
-      if(ev.key==='Escape'){document.getElementById('vizMenuDropdown').classList.remove('open');closeEditModal();closeWishModal();closeCalPickModal();closeSchedModal();closeCurrConverter();closeTripCreate();}
+      if(ev.key==='Escape'){document.getElementById('vizMenuDropdown').classList.remove('open');closeEditModal();closeWishModal();closeCalPickModal();closeSchedModal();closeCurrConverter();closeTripCreate();closeItineraryModal();closeBulkExportModal();closeLodgingModal();}
     });
 
     // ==================== COBE GLOBE ====================
