@@ -83,6 +83,7 @@
     .app-header { position:sticky; top:0; z-index:200; background:var(--bg); border-bottom:1px solid var(--border); padding:0 20px; height:56px; display:flex; align-items:center; gap:14px; backdrop-filter:blur(16px); }
     body.on-dashboard .app-header { border-bottom-color:transparent; }
     body.on-dashboard .viz-menu-toggle { display:none; }
+    body.on-dashboard .app-logo-flag { display:none !important; }
     .dash-header-actions { display:none; margin-left:auto; align-items:center; gap:8px; }
     body.on-dashboard .dash-header-actions { display:flex; }
     .dash-header-btn { width:36px; height:36px; border-radius:10px; border:1px solid var(--border); background:var(--surface); color:var(--text); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background var(--dur-small), border-color var(--dur-small); }
@@ -153,8 +154,9 @@
     }
     .app-logo-name-flag:empty { display:none; }
     .app-logo-name-flag { font-size:1.05rem; line-height:1; }
+    @media (max-width:768px) { .app-logo-name-flag { display:none !important; } }
     /* LEFT PANEL (desktop-only, gated by body.left-panel-open) */
-    .left-panel { display:none; position:fixed; top:8px; left:20px; bottom:20px; width:280px; z-index:150; padding:18px 16px; overflow-y:auto; overflow-x:hidden; opacity:0; transform:translateX(-12px); transition:opacity var(--dur-medium) var(--ease-out), transform var(--dur-medium) var(--ease-out); }
+    .left-panel { display:none; position:fixed; top:8px; left:20px; bottom:20px; width:280px; z-index:250; padding:8px 8px; overflow-y:auto; overflow-x:hidden; opacity:0; transform:translateX(-12px); transition:opacity var(--dur-medium) var(--ease-out), transform var(--dur-medium) var(--ease-out); }
     @media (min-width:769px) {
       body.in-trip .left-panel { display:flex; flex-direction:column; gap:12px; pointer-events:none; }
       body.in-trip.left-panel-open .left-panel { opacity:1; transform:translateX(0); pointer-events:auto; }
@@ -165,13 +167,12 @@
       body.in-trip .app-header .nav-tabs-group { transition:left var(--dur-medium) var(--ease-out); }
       body.in-trip.left-panel-open .app-header .nav-tabs-group { left:calc(50% + 156px); }
     }
-    .lp-brand { font-size:1.05rem; font-weight:700; letter-spacing:-0.01em; margin-bottom:8px; padding-left:4px; }
-    .lp-trip-head { display:flex; flex-direction:column; gap:2px; padding:10px 12px 12px; position:relative; }
-    .lp-trip-name { font-size:0.9rem; font-weight:600; color:var(--text); padding-right:60px; line-height:1.3; }
-    .lp-trip-dates { font-size:0.72rem; color:var(--text-secondary); padding-right:60px; }
-    .lp-edit-btn { position:absolute; top:10px; right:10px; padding:5px 12px; border-radius:999px; border:1px solid var(--border); background:var(--surface); color:var(--text); font-family:inherit; font-size:0.72rem; cursor:pointer; transition:border-color var(--dur-small), background var(--dur-small); }
-    .lp-edit-btn:hover { border-color:var(--border-strong); background:var(--surface-hover); }
-    .lp-card { background:var(--surface-hover); border:1px solid var(--border); border-radius:14px; padding:14px; display:flex; flex-direction:column; gap:10px; }
+    .lp-card { background:var(--surface-hover); border:1px solid var(--border); border-radius:14px; padding:12px; display:flex; flex-direction:column; gap:8px; }
+    .lp-card .curr-fields { gap:6px; margin-bottom:6px; }
+    .lp-card .curr-field { padding:8px 10px; border-radius:8px; }
+    .lp-card .curr-field input { font-size:1rem; }
+    .lp-card .curr-divider { font-size:0.65rem; }
+    .lp-card .curr-footer { font-size:0.65rem; }
     .lp-card-title { font-size:0.68rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.04em; }
     .lp-button { width:100%; padding:11px 14px; border-radius:12px; border:1px solid var(--border); background:var(--surface); color:var(--text); font-family:inherit; font-size:0.82rem; font-weight:500; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:border-color var(--dur-small), background var(--dur-small); text-align:center; }
     .lp-button:hover { border-color:var(--border-strong); background:var(--surface-hover); }
@@ -179,8 +180,17 @@
     .lp-toggle-row { display:flex; gap:6px; }
     .lp-toggle { flex:1; padding:8px 4px; border-radius:10px; border:1px solid var(--border); background:var(--surface); color:var(--text-secondary); font-family:inherit; font-size:0.68rem; font-weight:500; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; transition:border-color var(--dur-small), background var(--dur-small), color var(--dur-small); min-height:52px; line-height:1.15; }
     .lp-toggle:hover { border-color:var(--border-strong); color:var(--text); background:var(--surface-hover); }
+    .lp-share-row { width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:10px; background:var(--surface); color:var(--text); font-family:inherit; font-size:0.82rem; cursor:pointer; text-align:left; display:flex; align-items:center; gap:8px; transition:background var(--dur-small), border-color var(--dur-small); }
+    .lp-share-row:hover { background:var(--surface-hover); border-color:var(--border-strong); }
+    .lp-share-row:disabled { opacity:0.4; cursor:not-allowed; }
+    .lp-share-row:disabled:hover { background:transparent; }
     .lp-footer { font-size:0.68rem; color:var(--text-secondary); opacity:0.6; text-align:center; padding:8px 0 2px; }
-    .lp-wx-list { display:flex; flex-direction:column; gap:5px; max-height:210px; overflow-y:auto; }
+    .lp-wx-toggle { width:100%; border:none; background:none; color:var(--text); font-family:inherit; font-size:0.82rem; font-weight:500; cursor:pointer; display:flex; align-items:center; gap:8px; padding:0; text-align:left; }
+    .lp-wx-toggle-chevron { transition:transform var(--dur-small); display:inline-flex; margin-left:auto; }
+    .lp-wx-toggle-chevron.open { transform:rotate(180deg); }
+    .lp-wx-avg { font-size:0.78rem; color:var(--text-secondary); margin-left:auto; white-space:nowrap; }
+    .lp-wx-list { display:none; flex-direction:column; gap:5px; max-height:210px; overflow-y:auto; margin-top:6px; }
+    .lp-wx-list.open { display:flex; }
     .lp-wx-row { display:flex; align-items:center; gap:8px; font-size:0.78rem; }
     .lp-wx-icon { width:18px; text-align:center; }
     .lp-wx-date { flex:1; color:var(--text-secondary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -188,11 +198,11 @@
     /* Hide viz-menu on desktop when panel is the canonical chrome */
     @media (min-width:769px) { body.in-trip .viz-menu { display:none; } }
     /* PROFILE CHIP (desktop only, in-trip) */
-    .profile-chip-wrap { display:none; position:fixed; top:12px; right:20px; z-index:210; }
+    .profile-chip-wrap { display:none; position:fixed; top:10px; right:20px; z-index:210; }
     @media (min-width:769px) { body.in-trip .profile-chip-wrap { display:block; } }
-    .profile-chip { display:flex; align-items:center; gap:8px; padding:4px 6px 4px 12px; border-radius:999px; border:1px solid var(--border); background:var(--canvas-bg); color:var(--text); font-family:inherit; font-size:0.82rem; font-weight:600; cursor:pointer; transition:border-color var(--dur-small), background var(--dur-small); }
+    .profile-chip { display:flex; align-items:center; gap:0; padding:4px; border-radius:999px; border:1px solid var(--border); background:var(--canvas-bg); color:var(--text); font-family:inherit; font-size:0.82rem; font-weight:600; cursor:pointer; transition:border-color var(--dur-small), background var(--dur-small); }
     .profile-chip:hover { border-color:var(--border-strong); background:var(--surface-hover); }
-    .profile-chip-name { max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .profile-chip-name { display:none; }
     .profile-chip-avatar { width:28px; height:28px; border-radius:50%; background:var(--accent); color:var(--accent-fg); display:flex; align-items:center; justify-content:center; font-size:0.72rem; font-weight:700; overflow:hidden; flex-shrink:0; }
     .profile-chip-avatar img { width:100%; height:100%; object-fit:cover; }
     .profile-popover { position:absolute; top:48px; right:0; min-width:220px; background:var(--surface); border:1px solid var(--border); border-radius:11px; padding:6px; opacity:0; visibility:hidden; transform:translateY(-4px) scale(0.97); transition:opacity var(--dur-small) var(--ease-out), transform var(--dur-small) var(--ease-out), visibility var(--dur-small); transform-origin:top right; }
@@ -362,8 +372,8 @@
     .wl-grid.list .wl-author-top { display:none; }
     .wl-grid.list .wl-author-meta { display:inline-flex; align-items:center; }
     .wl-author-slot img, .wl-author-slot .wl-author-initials { vertical-align:middle; }
-    .wl-grid.list .wl-card:has(.wl-card-photo) { display:grid; grid-template-columns:60px 1fr; column-gap:12px; align-items:center; padding:8px 12px; }
-    .wl-grid.list .wl-card:has(.wl-card-photo) > .wl-card-photo { grid-row:1 / -1; grid-column:1; width:60px; height:60px; border-radius:8px; margin:0; object-fit:cover; }
+    .wl-grid.list .wl-card:has(.wl-card-photo) { display:grid; grid-template-columns:60px 1fr; column-gap:12px; align-items:start; padding:8px 12px; }
+    .wl-grid.list .wl-card:has(.wl-card-photo) > .wl-card-photo { grid-row:1 / span 2; grid-column:1; width:60px; height:60px; border-radius:8px; margin:0; object-fit:cover; margin-top:2px; }
     .wl-grid.list .wl-card:has(.wl-card-photo) > *:not(.wl-card-photo) { grid-column:2; min-width:0; }
     .toggle-switch { position:relative; display:inline-block; width:40px; height:22px; flex-shrink:0; }
     .toggle-switch input { opacity:0; width:0; height:0; }
@@ -508,7 +518,9 @@
     .cal-pick-cat { font-size:0.68rem; padding:2px 7px; border-radius:8px; flex-shrink:0; }
     /* VIZ MENU */
     .viz-menu { position:fixed; top:0; right:12px; z-index:9999; height:56px; display:flex; align-items:center; gap:8px; }
-    .share-status-btn { height:40px; padding:0 16px; border-radius:16px; border:1px solid var(--border); background:var(--canvas-bg,var(--surface)); color:var(--text-secondary); font-size:0.82rem; font-weight:500; font-family:inherit; cursor:pointer; display:none; align-items:center; gap:5px; backdrop-filter:blur(2px); transition:background var(--dur-small), color var(--dur-small); white-space:nowrap; }
+    .share-status-btn { height:40px; padding:0 16px; border-radius:16px; border:1px solid var(--border); background:var(--canvas-bg,var(--surface)); color:var(--text-secondary); font-size:0.82rem; font-weight:500; font-family:inherit; cursor:pointer; display:none; align-items:center; gap:5px; backdrop-filter:blur(2px); transition:background var(--dur-small), color var(--dur-small); white-space:nowrap; position:fixed; top:12px; z-index:210; }
+    @media (min-width:769px) { body.in-trip .share-status-btn { display:none !important; } }
+    @media (max-width:768px) { .share-status-btn { right:56px; } }
     .share-status-btn:hover { background:var(--surface-hover); color:var(--text); }
     .viz-menu-toggle { width:36px; height:36px; border-radius:50%; background:var(--canvas-bg,var(--surface)); border:1px solid var(--border); color:var(--text); cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(12px); transition:background var(--dur-small),border-color var(--dur-small); }
     .viz-menu-toggle:hover { background:var(--surface-hover); border-color:var(--border-strong); }
@@ -817,8 +829,8 @@
   </div>
 
   <a href="#main-content" style="position:absolute;left:-9999px;top:auto;z-index:10000;padding:8px 14px;background:var(--accent);color:var(--accent-fg);text-decoration:none;border-radius:5px;" onfocus="this.style.left='14px';this.style.top='14px';" onblur="this.style.left='-9999px';">Skip to content</a>
+  <button class="share-status-btn" id="shareStatusBtn" onclick="openShareModal()"></button>
   <div class="viz-menu" role="navigation" aria-label="Settings">
-    <button class="share-status-btn" id="shareStatusBtn" onclick="openShareModal()"></button>
     <button class="viz-menu-toggle" onclick="toggleMenu()" aria-label="Menu">
       <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
         <line x1="3" y1="5" x2="17" y2="5"/><line x1="3" y1="10" x2="17" y2="10"/><line x1="3" y1="15" x2="17" y2="15"/>
@@ -865,24 +877,36 @@
     </div>
   </div>
   <aside class="left-panel" id="leftPanel" aria-label="Trip tools">
-    <div class="lp-brand">Faropin</div>
-    <div class="lp-trip-head">
-      <div class="lp-trip-name" id="lpTripName"></div>
-      <div class="lp-trip-dates" id="lpTripDates"></div>
-      <button class="lp-edit-btn" id="lpEditBtn" onclick="if(currentTripId)openTripEdit(currentTripId)">Edit</button>
+    <div class="lp-card" id="lpWeatherCard">
+      <div class="lp-wx-toggle" id="lpWxToggleBtn" onclick="_lpWxOpen=!_lpWxOpen;document.getElementById('lpWxList').classList.toggle('open',_lpWxOpen);document.getElementById('lpWxChevron').classList.toggle('open',_lpWxOpen);">
+        <span class="lp-card-title" id="lpWxTitle" style="margin:0"></span>
+        <span class="lp-wx-avg" id="lpWxAvg"></span>
+        <span id="lpWxChevron" class="lp-wx-toggle-chevron"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+      </div>
+      <div id="lpWxList" class="lp-wx-list"></div>
     </div>
-    <div class="lp-card" id="lpCurrencyCard"></div>
-    <div class="lp-card" id="lpWeatherCard"></div>
-    <button class="lp-button" id="lpExportBtn" onclick="openItineraryModal()">Export itinerary</button>
+    <div class="lp-card" id="lpCurrencyCard" style="display:none"></div>
+    <div class="lp-card" id="lpShareCard">
+      <div class="lp-card-title" id="lpShareTitle">Share</div>
+      <button class="lp-share-row" id="lpShareRow" onclick="openShareModal()"></button>
+      <button class="lp-share-row" id="lpCopyLinkRow" onclick="copyPublicLink()"></button>
+    </div>
+    <div class="lp-card" id="lpSettingsCard">
+      <div class="lp-card-title" id="lpSettingsTitle">Settings</div>
+      <button class="lp-share-row" id="lpExportRow" onclick="openItineraryModal()"></button>
+      <button class="lp-share-row" id="lpEditTripRow" onclick="if(currentTripId)openTripEdit(currentTripId)"></button>
+    </div>
     <div class="lp-spacer"></div>
+    <div class="lp-footer">Built by Jihoon</div>
     <div class="lp-toggle-row">
       <button class="lp-toggle" id="lpThemeToggle" onclick="cycleTheme()"></button>
       <button class="lp-toggle" id="lpLangToggle" onclick="setLang(currentLang==='ko'?'en':'ko')"></button>
       <button class="lp-toggle" id="lpUnitToggle" onclick="toggleWeatherUnit()"></button>
     </div>
-    <button class="lp-button" id="lpFeedbackBtn" onclick="openFeedbackModal()">Feedback</button>
-    <button class="lp-button" id="lpHowToBtn" onclick="openHowToUseModal()">How to use</button>
-    <div class="lp-footer">Built by Jihoon</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <button class="lp-button" id="lpFeedbackBtn" onclick="openFeedbackModal()">Feedback</button>
+      <button class="lp-button" id="lpHowToBtn" onclick="openHowToUseModal()">How to use</button>
+    </div>
   </aside>
   <header class="app-header animate">
     <div class="app-logo trip-switcher" id="appLogo" style="display:flex;align-items:center;gap:8px">
@@ -1384,7 +1408,14 @@
       tripName: { ko:'여행 이름', en:'Trip Name' },
       partySize: { ko:'인원', en:'Party size' },
       exportItinerary: { ko:'일정 내보내기', en:'Export itinerary' },
-      weatherSummary: { ko:'날씨 요약', en:'Weather Summary' },
+      exportItineraryAiHint: { ko:'itinerary.md로 내보내기', en:'Export as itinerary.md' },
+      nTravelers: { ko:'명 여행자 · 공유', en:'travelers · Share' },
+      shareLabel: { ko:'공유', en:'Share' },
+      copyLink: { ko:'링크 복사', en:'Copy link' },
+      publicOnly: { ko:'공개 전용', en:'Public only' },
+      settings: { ko:'설정', en:'Settings' },
+      linkCopied: { ko:'링크 복사됨', en:'Link copied!' },
+      weatherSummary: { ko:'날씨', en:'Weather' },
       howToUse: { ko:'사용법', en:'How to use' },
       howToUseTitle: { ko:'Faropin 사용법', en:'How to use Faropin' },
       howToSec1Title: { ko:'장소 추가하기', en:'Add places' },
@@ -2414,17 +2445,27 @@
       renderLeftPanel();
       fetchWeather();
     }
+    var _lpWxOpen = false;
     function renderLpWeather(){
-      var el=document.getElementById('lpWeatherCard');if(!el)return;
-      var header='<div class="lp-card-title">'+t('weatherSummary')+'</div>';
-      if(!DAYS||!DAYS.length){el.innerHTML=header+'<div style="font-size:0.72rem;color:var(--text-secondary)">—</div>';return;}
+      var titleEl=document.getElementById('lpWxTitle');
+      var avgEl=document.getElementById('lpWxAvg');
+      var listEl=document.getElementById('lpWxList');
+      if(!titleEl||!avgEl||!listEl)return;
+      titleEl.textContent=t('weatherSummary');
+      var days=DAYS||[];
+      var sumH=0,sumL=0,cnt=0;
+      days.forEach(function(d){var w=weatherData[dayIsoDate(d)];if(w){sumH+=w.tempMax;sumL+=w.tempMin;cnt++;}});
+      avgEl.textContent=cnt?Math.round(sumH/cnt)+'° / '+Math.round(sumL/cnt)+'°':'—';
       var rows='';
-      DAYS.forEach(function(d){
+      if(!days.length){rows='<div style="font-size:0.72rem;color:var(--text-secondary);padding:4px 0">—</div>';}
+      else{days.forEach(function(d){
         var w=weatherData[dayIsoDate(d)];
         if(!w){rows+='<div class="lp-wx-row"><span class="lp-wx-icon">·</span><span class="lp-wx-date">'+(d.date||'')+'</span><span class="lp-wx-temp" style="opacity:0.4">—</span></div>';return;}
         rows+='<div class="lp-wx-row"><span class="lp-wx-icon">'+w.icon+'</span><span class="lp-wx-date">'+(d.date||'')+'</span><span class="lp-wx-temp">'+w.tempMax+'° <span style="opacity:0.6">/ '+w.tempMin+'°</span></span></div>';
-      });
-      el.innerHTML=header+'<div class="lp-wx-list">'+rows+'</div>';
+      });}
+      listEl.innerHTML=rows;
+      listEl.classList.toggle('open', _lpWxOpen);
+      var chev=document.getElementById('lpWxChevron'); if(chev) chev.classList.toggle('open', _lpWxOpen);
     }
     function renderLpCurrency(){
       var el=document.getElementById('lpCurrencyCard');if(!el)return;
@@ -2437,8 +2478,14 @@
           '<div class="curr-field"><span class="curr-field-label">🇺🇸 USD</span><input type="number" id="currUSD" min="0" oninput="currConvert(\'usd\')"></div>'+
         '</div>'+
         '<div class="curr-footer"><span class="curr-rate-info" id="currRateInfo">'+t('currLoading')+'</span><button class="curr-refresh" id="currRefreshBtn" onclick="refreshCurrRates()">↻ '+t('currRefresh')+'</button></div>';
-      if(typeof currRate==='undefined'||currRate==null){try{loadCurrRates();}catch(e){}}
-      else { currConvert('local'); }
+      try{loadCurrRates();}catch(e){}
+    }
+    function copyPublicLink(){
+      if(!currentTripId||!currentTripMeta||!currentTripMeta.public)return;
+      var url='https://faropin.com/#trip/'+currentTripId;
+      if(navigator.clipboard&&navigator.clipboard.writeText){
+        navigator.clipboard.writeText(url).then(function(){showSaveToast(t('linkCopied'),'');}).catch(function(){_fallbackCopy(url);showSaveToast(t('linkCopied'),'');});
+      } else { _fallbackCopy(url); showSaveToast(t('linkCopied'),''); }
     }
     function openHowToUseModal(){
       document.getElementById('howToUseTitle').textContent=t('howToUseTitle');
@@ -2777,13 +2824,28 @@
     }
     function renderLeftPanel(){
       var trip = currentTripMeta;
-      var lpName = document.getElementById('lpTripName');
-      var lpDates = document.getElementById('lpTripDates');
-      var lpEdit = document.getElementById('lpEditBtn');
-      if(lpName) lpName.textContent = trip ? ((trip.emoji?trip.emoji+' ':'')+(trip.name||trip.city||'')) : '';
-      if(lpDates) lpDates.textContent = trip ? (tripDateLabel(trip)||'') : '';
-      if(lpEdit) { lpEdit.textContent = t('edit'); lpEdit.style.display = (canEdit()?'':'none'); }
-      var lpExport = document.getElementById('lpExportBtn'); if(lpExport) lpExport.textContent = t('exportItinerary');
+      // Share card
+      // Share section
+      var lpShareTitle = document.getElementById('lpShareTitle'); if(lpShareTitle) lpShareTitle.textContent = t('shareLabel');
+      var lpShareRow = document.getElementById('lpShareRow');
+      if(lpShareRow){
+        var access = (trip && trip.access) || {};
+        var memberCount = Object.keys(access).length;
+        var label = memberCount > 1 ? memberCount + ' ' + t('nTravelers') : t('shareSettings');
+        lpShareRow.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg> '+label;
+      }
+      var lpCopyLink = document.getElementById('lpCopyLinkRow');
+      if(lpCopyLink){
+        var isPublic = trip && trip.public;
+        lpCopyLink.disabled = !isPublic;
+        lpCopyLink.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75"/></svg> '+t('copyLink')+(isPublic?'':'<span style="font-size:0.68rem;color:var(--text-secondary);margin-left:auto">'+t('publicOnly')+'</span>');
+      }
+      // Settings section
+      var lpSettingsTitle = document.getElementById('lpSettingsTitle'); if(lpSettingsTitle) lpSettingsTitle.textContent = t('settings');
+      var lpExportRow = document.getElementById('lpExportRow');
+      if(lpExportRow) lpExportRow.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg> <span style="flex:1">'+t('exportItinerary')+'<br><span style="font-size:0.68rem;color:var(--text-secondary);font-weight:400">'+t('exportItineraryAiHint')+'</span></span>';
+      var lpEditRow = document.getElementById('lpEditTripRow');
+      if(lpEditRow) { lpEditRow.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zM19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/></svg> '+t('editTrip'); lpEditRow.style.display = (canEdit()?'':'none'); }
       var lpFb = document.getElementById('lpFeedbackBtn'); if(lpFb) lpFb.textContent = t('sendFeedback');
       var lpHow = document.getElementById('lpHowToBtn'); if(lpHow) lpHow.textContent = t('howToUse');
       var lpTheme = document.getElementById('lpThemeToggle');
@@ -5576,11 +5638,11 @@
     var currRate = null, currLocalCode = 'USD';
     async function loadCurrRates(){
       currLocalCode = currCodeForTrip();
-      document.getElementById('currLocalLabel').textContent = currFlagForCode(currLocalCode);
+      var lbl=document.getElementById('currLocalLabel'); if(lbl) lbl.textContent = currFlagForCode(currLocalCode);
       if (currLocalCode === 'USD') {
         currRate = 1;
         currConvert('local');
-        document.getElementById('currRateInfo').textContent = '1 USD = 1 USD';
+        var ri=document.getElementById('currRateInfo'); if(ri) ri.textContent = '1 USD = 1 USD';
         return;
       }
       try{
@@ -5588,10 +5650,10 @@
         var d=await r.json();
         currRate=d.rates.USD;
         currConvert('local');
-        document.getElementById('currRateInfo').textContent='1 '+currLocalCode+' = '+currRate.toFixed(4)+' USD · '+d.date;
+        var ri=document.getElementById('currRateInfo'); if(ri) ri.textContent='1 '+currLocalCode+' = '+currRate.toFixed(4)+' USD · '+d.date;
       }catch(e){
         currRate=null;
-        document.getElementById('currRateInfo').textContent=t('currFailed');
+        var ri=document.getElementById('currRateInfo'); if(ri) ri.textContent=t('currFailed');
       }
     }
     function currConvert(from){
@@ -5681,15 +5743,11 @@
       document.getElementById('itineraryModalTitle').textContent=t('exportItineraryTitle');
       document.getElementById('itineraryHint').textContent=t('exportItineraryHint');
       document.getElementById('itineraryCloseBtn').textContent=t('close');
-      document.getElementById('itineraryGenBtn').textContent=t('generate');
       document.getElementById('itineraryCopyBtn').textContent=t('copy');
       document.getElementById('itineraryDownloadBtn').textContent=t('download');
-      document.getElementById('itineraryCodeWrap').style.display='none';
-      document.getElementById('itineraryCopyBtn').style.display='none';
-      document.getElementById('itineraryDownloadBtn').style.display='none';
-      document.getElementById('itineraryGenBtn').textContent=t('generate');
-      document.getElementById('itineraryCode').textContent='';
       document.getElementById('itineraryModal').classList.add('open');
+      // Auto-generate immediately
+      generateItinerary();
     }
     function closeItineraryModal(){document.getElementById('itineraryModal').classList.remove('open');}
     function generateItinerary(){
