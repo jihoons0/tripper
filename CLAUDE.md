@@ -105,27 +105,27 @@ Header chrome under `body.in-trip`:
 - **Desktop search button** (`.nav-add-btn`) — 36px circle with search icon, matches flag/hamburger style. Calls `openWishAdd()`. Hidden on mobile, dashboard, and for non-edit users. Visible on all tabs including Places. Visibility controlled by `updateFab()`.
 - **Flag button** (`.app-logo-flag`) — 36px circle on the left. On **desktop** it toggles the left panel (`toggleLeftPanel()`), showing a hamburger icon when closed and a side-panel-collapse icon when open; the flag emoji is displayed inline before the trip title instead (`.app-logo-name-flag` span). On **mobile** the button keeps its legacy behavior: click navigates to dashboard (`goToDashboard()`) and the flag emoji swaps to a home icon on hover.
 - **Trip name + chevron** — chevron next to the name still triggers `toggleTripDropdown(event)`. The trip switcher's dropdown has an "All Trips" entry that routes to the dashboard — primary dashboard affordance now that the flag no longer goes there on desktop.
-- **Profile chip** (`.profile-chip-wrap`, desktop only) — fixed top-right (`top:12px; right:20px`). Shows avatar + display name; click opens `.profile-popover` with account info + Sign out. Replaces the viz-menu dropdown on desktop.
+- **Profile chip** (`.profile-chip-wrap`, desktop only) — fixed top-right (`top:10px; right:20px`). Shows avatar only (name hidden). Click opens `.profile-popover` with account info + Sign out. Replaces the viz-menu dropdown on desktop.
 - **Viz-menu / hamburger** (`.viz-menu-toggle`) — still rendered in the DOM for mobile fallback; hidden on desktop via `@media (min-width:769px) { body.in-trip .viz-menu { display:none; } }`.
-- **Share button** (`.share-status-btn`) — restyled to match the tablist (40h / 16r).
+- **Share button** (`.share-status-btn`) — moved outside `.viz-menu` to its own fixed-position element. Hidden on desktop in-trip (lives in the left panel instead). Visible on mobile.
+- **Flag button hidden on dashboard** — `body.on-dashboard .app-logo-flag { display:none !important }` prevents stray hamburger/collapse icons on the dashboard view.
 - **Mobile (≤768px)**: flag button and nav-add-btn hidden, trip emoji prepended to the name via `.app-logo-name[data-flag]::before`. `data-flag` attribute is set in `updateHeader()`. Viz-menu hamburger is the canonical entry for settings on mobile; no left panel.
 
 ### Left Panel (`#leftPanel`, desktop only)
 
-When `body.in-trip` on desktop (≥769px), a fixed 280px left panel hosts trip-level tools. Slides in from the left with fade + translate via the `body.left-panel-open` class. Header padding-left and `#main-content` margin-left transition in sync to reveal the panel.
+When `body.in-trip` on desktop (≥769px), a fixed 280px left panel (`z-index:250`, above the header at 200) hosts trip-level tools. Slides in from the left with fade + translate via the `body.left-panel-open` class. Header padding-left and `#main-content` margin-left transition in sync to reveal the panel. Trip name + dates stay in the main header bar (not duplicated in the panel).
 
 Contents top-to-bottom:
-- **Faropin brand** — static text
-- **Trip head** — trip name + dates + Edit button (`openTripEdit(currentTripId)`)
-- **Currency converter** (inline card) — replaces the deleted `#currModal`; reuses `loadCurrRates()` / `currConvert()` / `refreshCurrRates()`
-- **Weather summary card** — per-day forecast rows (`renderLpWeather()` reads `weatherData` and `DAYS`; respects `weatherUnit`)
-- **Export itinerary** button — opens `#itineraryModal`
-- **Toggle row** — Theme (`cycleTheme()`), Language (`setLang()`), Weather unit (`toggleWeatherUnit()`)
-- **Feedback** button — opens `#feedbackModal`
-- **How to use** button — opens `#howToUseModal` (static 4-section help, en + ko)
+- **Weather** accordion (`.lp-card`) — section label "Weather" (`.lp-card-title` style), avg high/low on the right, chevron on far-right pointing down (rotates 180° when open). Toggle is a static HTML `div#lpWxToggleBtn` with inline `onclick`; `renderLpWeather()` only updates text + list rows (never rebuilds the toggle). Per-day rows show emoji + date + high°/low°. Default closed (`_lpWxOpen = false`).
+- **Currency converter** (`.lp-card`, currently `display:none`) — inline card replacing the deleted `#currModal`; reuses `loadCurrRates()` / `currConvert()` / `refreshCurrRates()`. Hidden pending redesign.
+- **Share** card (`.lp-card`) — section label "Share". Two button rows: `👥 N travelers · Share` (opens `#shareModal`) and `📋 Copy link` (calls `copyPublicLink()`, disabled when trip is not public with "Public only" hint).
+- **Settings** card (`.lp-card`) — section label "Settings". Two button rows: `</> Export itinerary` with "Export as itinerary.md" subtitle (opens `#itineraryModal` and auto-generates markdown immediately) and `✏️ Edit trip` (opens `openTripEdit(currentTripId)`, gated by `canEdit()`).
+- **Spacer** — flex:1
+- **Feedback + How to use** — 2-column grid row (each a `.lp-button`)
 - **"Built by Jihoon"** footer
+- **Toggle row** — Theme (`cycleTheme()`), Language (`setLang()`), Weather unit (`toggleWeatherUnit()`)
 
-State: `leftPanelOpen` (bool, `localStorage['palo-left-panel']`, default true desktop). `toggleLeftPanel()` flips + persists + reapplies class. `applyLeftPanelState()` reconciles the class on trip entry / resize / dashboard return. `renderLeftPanel()` populates trip head + i18n labels and calls `renderLpWeather()` + `renderLpCurrency()`; called from `updateHeader()`, `applyTheme()`, and any path that changes user-visible state.
+State: `leftPanelOpen` (bool, `localStorage['palo-left-panel']`, default true desktop). `toggleLeftPanel()` flips + persists + reapplies class. `applyLeftPanelState()` reconciles the class on trip entry / resize / dashboard return. `renderLeftPanel()` populates share/settings labels + i18n and calls `renderLpWeather()` + `renderLpCurrency()`; called from `updateHeader()`, `applyTheme()`, and any path that changes user-visible state.
 
 ### Weather unit toggle (C/F)
 

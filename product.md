@@ -83,10 +83,12 @@ Three tabs per trip: **Calendar → Map → Places**. On desktop the views rende
 - Bilingual templates (en/ko), styled with Faropin thumbnail header
 
 ### Trip Chrome (desktop)
-- **Left side panel** (280px, toggleable): Faropin brand, trip name + dates + Edit, inline currency converter, per-day weather summary, Export itinerary, theme / language / °C–°F toggles, Feedback, How to use, "Built by Jihoon" footer. Slides in from the left; header and main content animate to make space.
-- **Flag button** toggles the panel (hamburger icon when closed, side-panel-collapse icon when open). The trip's flag emoji is displayed inline before the trip title instead.
-- **Profile chip** (top-right): avatar + display name → popover with account info + Sign out. Replaces the old hamburger dropdown on desktop.
+- **Left side panel** (280px, toggleable): Weather accordion (avg high/low, expandable per-day rows) → Currency converter (hidden, pending redesign) → Share section (N travelers + invite, copy link) → Settings section (export itinerary as itinerary.md, edit trip) → Feedback + How to use (2-col) → "Built by Jihoon" → Theme / Language / °C–°F toggles. Slides in from the left; header and main content animate to make space.
+- **Flag button** toggles the panel (hamburger icon when closed, side-panel-collapse icon when open). The trip's flag emoji is displayed inline before the trip title instead. Hidden on dashboard.
+- **Profile chip** (top-right): avatar only (no name) → popover with account info + Sign out. Replaces the old hamburger dropdown on desktop.
+- **Share button** moved into the left panel (hidden from the top header bar on desktop).
 - **Trip switcher:** trip name + chevron open the trip dropdown listing all trips reverse-chronological. "All Trips" entry routes to the dashboard (primary dashboard affordance on desktop).
+- **Export itinerary** auto-generates markdown on open (no separate Generate button click).
 - **How-to-use** static help modal: 4 sections (Add places, Schedule them, Share with friends, Export for ChatGPT), bilingual.
 
 ### Trip Chrome (mobile)
