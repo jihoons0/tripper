@@ -2,11 +2,18 @@
   "version": 2,
   "builds": [
     { "src": "api/**/*.js", "use": "@vercel/node" },
-    { "src": "index.html", "use": "@vercel/static" }
+    { "src": "index.html", "use": "@vercel/static" },
+    { "src": "og-image.jpg", "use": "@vercel/static" },
+    { "src": "robots.txt", "use": "@vercel/static" },
+    { "src": "sitemap.xml", "use": "@vercel/static" },
+    { "src": "manifest.json", "use": "@vercel/static" },
+    { "src": "favicon*.png", "use": "@vercel/static" },
+    { "src": "apple-touch-icon.png", "use": "@vercel/static" }
   ],
   "routes": [
     { "src": "/__/auth/(.*)", "dest": "https://mexico-trip-c5644.firebaseapp.com/__/auth/$1" },
     { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/(robots\\.txt|sitemap\\.xml|manifest\\.json|og-image\\.jpg|favicon.*\\.png|apple-touch-icon\\.png)", "dest": "/$1" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
 }

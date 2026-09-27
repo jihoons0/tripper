@@ -17,6 +17,8 @@ npm start     # starts Express server without watch
 
 **Note:** `server.js` exposes `/api/data`, `/api/days`, `/api/wishlist` routes backed by `data.json` — these are unused dead code. `index.html` talks to Firebase/Firestore directly.
 
+**There is no test suite, linter, or build step.** Verification is manual: run `npm run dev` and exercise the change in a browser (the Playwright MCP server is configured for this). Since the app writes straight to production Firestore from the browser, any change touching `doSave()` / `reconcileDays()` / delete paths should be tested against a throwaway trip, not a real one — see **Data Safety**.
+
 ## Deployment
 
 - **Vercel project:** `palo-travel` (team: `jihoon-suhs-projects`) — internal project name, not renamed; users never see it
@@ -28,27 +30,35 @@ npm start     # starts Express server without watch
 
 **Cloudflare Worker** (`worker.js` + `wrangler.toml`): handles Google Maps URL expansion, Google Places API proxy (autocomplete, details, discover), and email notifications. `index.html` calls the worker directly (Vercel's `/api/expand-url` is blocked by auth protection on the team plan).
 - Worker URL: `https://palo-travel-expand-url.jihoon8846.workers.dev`
-- Endpoints: `/api/expand-url`, `POST /api/places/autocomplete`, `GET /api/places/details`, `POST /api/places/discover`
+- Endpoints: `GET /api/expand-url`, `POST /api/places/autocomplete`, `GET /api/places/details`, `POST /api/places/discover`, `GET /api/places/photo`, `POST /api/email/welcome`, `POST /api/email/invite`
+- **Photo proxy:** Google photo bytes are never fetched directly from the browser. `buildPlacesPhotoProxyURL()` rewrites `photos[0].name` into a worker-origin `/api/places/photo` URL, and *that* string is what gets persisted as a wishlist item's `photoUrl` in Firestore. Changing the worker URL therefore breaks every stored photo — treat the workers.dev hostname as a data-model dependency, not just a deploy detail.
 - Cron: `0 9 * * *` — daily trip reminder emails (7d + 1d before departure)
 - Secrets: `GOOGLE_PLACES_API_KEY`, `RESEND_API_KEY`, `FIREBASE_SERVICE_ACCOUNT` (set via `wrangler secret put`)
 - Deploy: `npx wrangler deploy` (requires Cloudflare login)
 
 **Data:** Firebase/Firestore (project: `mexico-trip-c5644`), localStorage as cache.
 
-**Firestore security rules** (`firestore.rules`): per-trip access enforced via `accessEmails` + `access` map. Read/write to `trips/{tripId}` and `trips/{tripId}/data/{docId}` requires authenticated user whose lowercased email is in `resource.data.accessEmails`. Create requires `ownerId == auth.uid`. Update allowed for owner, or for shared users resolving their own `pending_<email>` invite. `users/{uid}` is world-readable (needed for email→UID lookup during sharing). Legacy `travel/**` collection still public-read.
+**Firestore security rules** (`firestore.rules`): deploy with `npx firebase deploy --only firestore:rules` (`.firebaserc` pins project `mexico-trip-c5644`). Per-trip access enforced via `accessEmails` + `access` map. Read/write to `trips/{tripId}` and `trips/{tripId}/data/{docId}` requires authenticated user whose lowercased email is in `resource.data.accessEmails`. Create requires `ownerId == auth.uid`. Update allowed for owner, or for shared users resolving their own `pending_<email>` invite. `users/{uid}` is world-readable (needed for email→UID lookup during sharing). Legacy `travel/**` collection still public-read.
 
 ## Feedback Workflow
 
-`npm run feedback` fetches bug/feature reports from Firestore `feedback/` collection into `feedback.md`. **Always read items aloud and ask permission before resolving** — never auto-resolve. Resolve with `node fetch-feedback.js resolve <id>`.
+`npm run feedback` fetches bug/feature reports from Firestore `feedback/` collection into `feedback.md`. **Always read items aloud and ask permission before resolving** — never auto-resolve. Resolve with `npm run feedback:resolve <id>` (= `node fetch-feedback.js resolve <id>`).
 
 ## File Structure
 
-- `index.html` (~5900 lines) — the entire app: HTML, CSS, and JS in one file. Use offset/limit when reading.
+- `index.html` (~6,300 lines) — the entire app: HTML, CSS, and JS in one file. Use offset/limit when reading.
 - `server.js` — Express dev server; serves static files + `/api/expand-url` for local Google Maps URL expansion
 - `api/expand-url.js` — Vercel serverless function (same expand-url logic, but bypassed in prod due to Vercel auth)
 - `worker.js` + `wrangler.toml` — Cloudflare Worker: Google Maps URL expansion + Google Places API proxy (autocomplete, details, discover) + email notifications (welcome, invite, trip reminders via Resend)
+- `fetch-feedback.js` — Node script behind `npm run feedback` / `npm run feedback:resolve`
+- `firebase.json` / `.firebaserc` — Firebase CLI config; only used to deploy `firestore.rules`
 - `categorize-wishlist.js` / `fix-categories.js` / `import-saved-places.js` — one-off Node scripts for data migration (not part of the app)
 - `product.md` / `TODO.md` / `itenary.md` — planning docs (not code)
+- `archive/01-…` … `archive/07-…` — **seven frozen full copies of `index.html`** (1k–6.3k lines each), snapshots of the app at past milestones, plus `archive/README.md` (the build story). They are never edited as part of feature work.
+
+**Grep hazard:** because of `archive/`, a repo-wide search for any app symbol returns 8 hits — one real, seven historical. Scope searches to the live app (`grep -n "renderCal(" index.html`) or exclude the folder (`--exclude-dir=archive --exclude-dir=node_modules`); `node_modules/` is also untracked-but-present since `.gitignore` only lists `.vercel`.
+
+**Static assets are opt-in:** `index.html` is the catch-all route, so any new top-level file (favicon, `og-image.jpg`, `manifest.json`, `robots.txt`, `sitemap.xml`) must be added to **both** the `builds` array and the `routes` regex in `vercel.json` or it 200s with the HTML page instead of the asset.
 
 ## Architecture
 
@@ -90,6 +100,8 @@ Hash-based: `navigateTo('#dashboard')`, `navigateTo('#trip/<tripId>')`. `DOMCont
 - **Places** (`#view-wishlist`) — card grid with category/status filters. `renderWishlist()`. Tab is labeled "Places" in the UI; the underlying view id and `WISHLIST` array still use the legacy "wishlist" name. **Search/URL bar** at top (visible when `canEdit()`) — type to search via Google Places API autocomplete or paste a Google Maps link. Selecting from autocomplete opens the add-place modal with fields pre-filled (photo, name, category, address, coords). `quickAddPlace()` / `_addQuickPlace()` / `_addPlaceFromSearch()` / `_populateWishModalFromSearch()`.
 
 Three in-trip views toggled via `switchView(v)`. Tab labels: **Calendar / Map / Places** (English). `body.in-trip` class is added/removed by `switchView()` and the dashboard route to drive the chrome (see Trip Canvas Chrome below).
+
+Tab switches animate directionally by tab order (calendar → map slides in from the right; map → calendar from the left) via `view-enter-right` / `view-enter-left`; first entry uses `view-enter` (rise). `_prevTripView` tracks the previous tab, reset in `goToDashboard()`. Under `prefers-reduced-motion` all view enters become opacity fades (`viewFade`), transitions/animations are near-instant, but the loading spinner keeps spinning (status feedback). `prefers-reduced-transparency` drops `backdrop-filter` from chrome surfaces.
 
 ### Trip Canvas Chrome (design-update)
 
@@ -154,6 +166,7 @@ Global `weatherUnit` ('c' | 'f', persisted to `localStorage['palo-weather-unit']
 - Fullscreen map; `.map-mob-tabs` (day pill buttons) + `.map-mob-sheet` (bottom sheet)
 - `mapMobDay` (0-indexed); `setMapMobDay(idx)` switches days + calls `fitMapToDay()`
 - Zoom controls and GPS button hidden
+- Bottom sheet is draggable via Pointer Events: 1:1 vertical tracking, rubber-band past bounds, velocity-projected snap to expanded/collapsed (collapsed = title row visible, cards hidden), tap toggles. `_initMapSheetDrag()` (attached once to `#mapMobSheet`), `_applyMapSheetState(animate)`, `_mapSheetCollapsed` flag — state reapplied after every `renderMapMobSheet()` since content height varies. `.map-mob-cards` has `touch-action:pan-x` so horizontal card scroll still works.
 
 ### State
 
@@ -168,11 +181,11 @@ All views render via innerHTML string concatenation. `rerender()` refreshes curr
 - `loadDashboard()` / `renderDashboard(trips)` — dashboard with hometown card, globe, CTAs, trip cards
 - `loadTripData(tripId)` — load trip from Firestore into `DAYS`/`WISHLIST`
 - `renderCal()` / `renderCalBody()` / `renderCalHeader()` / `renderCalDayNav()` — calendar
-- `setCalPage(idx)` — calendar day/page switch (mobile: single day, desktop: group of days)
+- `setCalPage(idx)` — calendar day/page switch (mobile: single day, desktop: group of days). `_calAnchor` holds the exact chosen day; `calPage` is derived per layout, so resize never resets to day 1. Persisted per trip in `localStorage['palo-calday-<tripId>']`, default = today if within the trip
 - `calDaysPerPage()` / `calTotalPages()` / `calPageDays()` / `renderCalPageNav()` — desktop calendar pagination
 - `renderWishlist()` — wishlist grid
-- `initMap()` / `rebuildMarkers()` / `fitMapToDay(idx)` — Leaflet map
-- `clearRoutes()` / `buildRoutes()` — OSRM walking routes per day; falls back to dashed lines
+- `initMap()` / `rebuildMarkers()` / `fitMapToDay(idx)` — Leaflet map. Tiles are Esri gray canvas (keyless; CARTO now requires an API key and serves watermark tiles), `maxNativeZoom:16`, auto-fallback to OSM after repeated tile errors. `initMap` refuses to build while the Map tab is hidden; `_resizeMap()` runs on window resize and left-panel toggle
+- `clearRoutes()` / `buildRoutes()` — OSRM walking routes per day (public demo server: sequential, 8s timeout, cached per coordinate string in `_routeCache`); falls back to dashed lines on any error incl. non-OK responses
 - `renderMapMobTabs()` / `renderMapMobSheet()` / `setMapMobDay(idx)` — mobile map overlay
 - `setMapFilter(id, btn)` — desktop sidebar day filter
 - `goToMapDay(dayId)` / `goToCalDay(dayId)` — cross-view navigation
@@ -249,6 +262,11 @@ Start time uses native `<input type="time">`. Duration slider (`CAL_ADD_DURS=[30
 - **Edit event modal** has a date picker (`#editDate`) constrained to the trip's `startDate`/`endDate` window — `_moveEventToDate(dayId, evId, newIsoDate)` moves events between days without loss, and updates linked wishlist `calDayId`/`dayLabel`.
 - **`addShareUser`** writes `access` as a full object (`update({access: {...}})`) instead of dot-path (`update({'access.key': val})`) because emails contain `.` which Firestore interprets as nested field paths.
 - Never add code paths that silently reduce event/wishlist counts. Any destructive action must show a confirmation dialog first.
+- **`_tripDataConfirmed` gate:** trips open cache-first (localStorage renders instantly, calendar/Places show shimmer skeletons while `_tripLoading`). `doSave()` writes nothing until the server has answered for the current trip — it sets `_saveDeferred` instead. The first server snapshot goes through `_applyFirstServerSnapshot()`: if it matches the cached baseline, local edits are kept and flushed; otherwise server wins. `doSave()` also refuses when `DATA_REF` isn't the current trip's doc, or a dated trip has zero days.
+- **Leaving a trip** (`goToDashboard` / `showDashboard` / `doSignOut`) calls `_detachTrip()`: flush pending save, then null `DATA_REF` so late async callbacks (quick-add, Places details) can't write into it. `openTrip` uses a generation token (`_openTripGen`) passed into `loadTripData`; check it after every `await`.
+- **Never swap global `DAYS` across an `await`** to reuse `reconcileDays` for another trip — use `_reconcileOtherDays(meta, days)`.
+- **`access` map writes must be whole-object** (`update({access: newMap})`), never `'access.' + key` dot-paths — email keys contain `.`. This caused duplicated guests (stale `pending_<email>` next to the resolved uid).
+- **Backups:** read-only full export via the Firestore REST API using the logged-in firebase-tools token; snapshots live in `~/Desktop/faropin-backups/` (outside the repo — contains user data).
 
 ### Authentication & Sharing
 

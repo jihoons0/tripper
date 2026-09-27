@@ -35,12 +35,13 @@
   <style>
     *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
     html { touch-action:pan-y; }
-    .leaflet-container { touch-action:none; }
+    .leaflet-container { touch-action:none; background:#e8e8e8; }
+    /* Match Esri gray-canvas tiles so subpixel seams between tiles don't show */
+    html.theme-dark .leaflet-container { background:#4f4e50; }
     :root {
       interpolate-size: allow-keywords;
       --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
       --ease-in: cubic-bezier(0.55, 0, 1, 0.45);
-      --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
       --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
       --dur-micro: 100ms;
       --dur-small: 160ms;
@@ -69,6 +70,8 @@
     @keyframes fadeInUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
     @keyframes viewEnter { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
     @keyframes viewEnterRight { from{opacity:0;transform:translateX(24px)} to{opacity:1;transform:translateX(0)} }
+    @keyframes viewEnterLeft { from{opacity:0;transform:translateX(-24px)} to{opacity:1;transform:translateX(0)} }
+    @keyframes viewFade { from{opacity:0} to{opacity:1} }
     @keyframes dashEnter { from{opacity:0;transform:translateX(-24px)} to{opacity:1;transform:translateX(0)} }
     @keyframes cardStagger { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
     @keyframes shimmer { from{background-position:-200% 0} to{background-position:200% 0} }
@@ -77,8 +80,19 @@
     .reveal.visible { opacity:1; transform:translateY(0); }
     .view-enter { animation: viewEnter var(--dur-medium) var(--ease-out) both; }
     .view-enter-right { animation: viewEnterRight var(--dur-medium) var(--ease-out) both; }
+    .view-enter-left { animation: viewEnterLeft var(--dur-medium) var(--ease-out) both; }
     .dash-enter { animation: dashEnter var(--dur-medium) var(--ease-out) both; }
-    @media (prefers-reduced-motion:reduce) { *,*::before,*::after{animation:none!important;transition:none!important} .reveal{opacity:1;transform:none} }
+    @media (prefers-reduced-motion:reduce) {
+      /* Reduced motion = no spatial motion, not no feedback: slides become fades, essential status animation stays */
+      *,*::before,*::after { animation-duration:0.01ms!important; animation-iteration-count:1!important; transition-duration:0.01ms!important; scroll-behavior:auto!important; }
+      .view-enter,.view-enter-right,.view-enter-left,.dash-enter,.animate { animation:viewFade 180ms ease both!important; }
+      .reveal { opacity:1; transform:none; }
+      .loading-screen .spinner { animation:spin 0.8s linear infinite!important; }
+    }
+    @media (prefers-reduced-transparency:reduce) {
+      .app-header,.view-tabs,.share-status-btn,.viz-menu-toggle,.modal-overlay,.map-mob-tab { backdrop-filter:none!important; }
+      .map-mob-tab { background:var(--surface)!important; }
+    }
     /* HEADER */
     .app-header { position:sticky; top:0; z-index:200; background:var(--bg); border-bottom:1px solid var(--border); padding:0 20px; height:56px; display:flex; align-items:center; gap:14px; backdrop-filter:blur(16px); }
     body.on-dashboard .app-header { border-bottom-color:transparent; }
@@ -322,13 +336,13 @@
     .cal-time-slot { height:64px; display:flex; align-items:flex-start; padding-top:3px; font-size:0.68rem; color:var(--text-secondary); text-align:right; justify-content:flex-end; padding-right:8px; white-space:nowrap; }
     .cal-day-col { position:relative; border-left:1px solid var(--border); height:calc(16 * 64px); cursor:crosshair; }
     .hour-line { position:absolute; left:0; right:0; border-top:1px dashed var(--border); pointer-events:none; }
-    .cal-ghost-slot { position:absolute; left:4px; right:4px; height:32px; border:1.5px dashed var(--accent); border-radius:6px; display:none; pointer-events:none; z-index:1; align-items:center; justify-content:center; gap:6px; background:color-mix(in srgb,var(--accent) 8%,transparent); transition:top 0.05s; }
+    .cal-ghost-slot { position:absolute; left:4px; right:4px; height:32px; border:1.5px dashed var(--accent); border-radius:6px; display:none; pointer-events:none; z-index:1; align-items:center; justify-content:center; gap:6px; background:color-mix(in srgb,var(--accent) 8%,transparent); }
     .cal-ghost-slot span { font-size:0.7rem; font-weight:600; color:var(--accent); opacity:0.9; letter-spacing:0.01em; }
     .cal-day-col:hover .cal-ghost-slot { display:flex; }
     .cal-now-line { position:absolute; left:0; right:0; height:2px; background:#ef4444; z-index:20; pointer-events:none; }
     .cal-now-line::before { content:''; position:absolute; left:-1px; top:-3px; width:8px; height:8px; border-radius:50%; background:#ef4444; }
     .cal-event { position:absolute; border-radius:6px; padding:5px 7px; cursor:pointer; overflow:hidden; transition:filter var(--dur-micro),transform var(--dur-small) var(--ease-out),box-shadow var(--dur-small); box-shadow:0 1px 3px rgba(0,0,0,0.1); }
-    .cal-event:hover { filter:brightness(1.06); transform:translateY(-1px); box-shadow:0 4px 12px rgba(0,0,0,0.18); z-index:10!important; }
+    @media (hover:hover) and (pointer:fine) { .cal-event:hover { filter:brightness(1.06); transform:translateY(-1px); box-shadow:0 4px 12px rgba(0,0,0,0.18); z-index:10!important; } }
     .cal-event:hover ~ .cal-ghost-slot { display:none!important; }
     .cal-event:active { transform:scale(0.98); }
     .cal-event.optional { opacity:0.55; outline:1.5px dashed currentColor; outline-offset:-1px; }
@@ -350,9 +364,9 @@
     .wl-count { font-size:0.8rem; color:var(--text-secondary); margin-left:8px; }
     .wl-filter { padding:4px 11px; border-radius:14px; font-size:0.76rem; font-weight:500; border:1px solid var(--border); background:transparent; cursor:pointer; font-family:inherit; color:var(--text-secondary); transition:border-color var(--dur-small), color var(--dur-small), background var(--dur-small); }
     .wl-filter.active { background:var(--accent); color:var(--accent-fg); border-color:transparent; }
-    .wl-filter:hover:not(.active) { border-color:var(--accent); color:var(--accent); }
+    @media (hover:hover) and (pointer:fine) { .wl-filter:hover:not(.active) { border-color:var(--accent); color:var(--accent); } }
     .wl-filter.status-btn.active { background:#6366f1; border-color:transparent; }
-    .wl-filter.status-btn:hover:not(.active) { border-color:#6366f1; color:#6366f1; }
+    @media (hover:hover) and (pointer:fine) { .wl-filter.status-btn:hover:not(.active) { border-color:#6366f1; color:#6366f1; } }
     .wl-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:14px; }
     .wl-grid.list { grid-template-columns:1fr; gap:8px; }
     .wl-grid.list .wl-card { padding:10px 14px; gap:4px; }
@@ -368,9 +382,9 @@
     .wl-grid.list .wl-card-bottom { justify-content:space-between; }
     .wl-grid.list .wl-card-bottom:has(.wl-visited-toggle[onclick*="editWishItem"]) .wl-visited-toggle { position:absolute; top:8px; right:14px; }
     /* Author slot: default (grid) shows the one in wl-card-top, list shows the one in the meta/category row */
-    .wl-author-meta { display:none; margin-left:6px; }
+    .wl-author-slot.wl-author-meta { display:none; margin-left:6px; }
     .wl-grid.list .wl-author-top { display:none; }
-    .wl-grid.list .wl-author-meta { display:inline-flex; align-items:center; }
+    .wl-grid.list .wl-author-slot.wl-author-meta { display:inline-flex; align-items:center; }
     .wl-author-slot img, .wl-author-slot .wl-author-initials { vertical-align:middle; }
     .wl-grid.list .wl-card:has(.wl-card-photo) { display:grid; grid-template-columns:60px 1fr; column-gap:12px; align-items:start; padding:8px 12px; }
     .wl-grid.list .wl-card:has(.wl-card-photo) > .wl-card-photo { grid-row:1 / span 2; grid-column:1; width:60px; height:60px; border-radius:8px; margin:0; object-fit:cover; margin-top:2px; }
@@ -407,7 +421,7 @@
     .wl-card.visited .wl-visited-toggle.adjust { border-color:var(--border); color:var(--text-secondary); }
     .wl-card.visited .wl-visited-toggle.adjust:hover { border-color:var(--accent); color:var(--accent); }
     .wl-vote-row { display:flex; align-items:center; gap:8px; margin:2px 0 4px; }
-    .wl-vote-btn { display:inline-flex; align-items:center; gap:5px; padding:4px 9px; border-radius:999px; border:1px solid var(--border-strong); background:transparent; color:var(--text-secondary); font-family:inherit; font-size:0.78rem; font-weight:600; cursor:pointer; transition:all var(--dur-small); }
+    .wl-vote-btn { display:inline-flex; align-items:center; gap:5px; padding:4px 9px; border-radius:999px; border:1px solid var(--border-strong); background:transparent; color:var(--text-secondary); font-family:inherit; font-size:0.78rem; font-weight:600; cursor:pointer; transition:background var(--dur-small), color var(--dur-small), border-color var(--dur-small), transform var(--dur-small); }
     .wl-vote-btn:hover { border-color:var(--accent); color:var(--text); }
     .wl-vote-btn.voted { background:color-mix(in srgb, var(--accent) 14%, transparent); border-color:var(--accent); color:var(--text); }
     .wl-vote-btn.voted svg { fill:var(--accent); stroke:var(--accent); }
@@ -439,7 +453,7 @@
     .form-checkbox-row { display:flex; align-items:center; gap:8px; }
     .form-checkbox-row input { width:15px; height:15px; cursor:pointer; accent-color:var(--accent); }
     .form-checkbox-row label { font-size:0.86rem; cursor:pointer; }
-    .fb-type-btn { flex:1; padding:8px 12px; border-radius:8px; border:1.5px solid var(--border-strong); background:var(--bg); color:var(--text); font-size:0.84rem; font-family:inherit; cursor:pointer; transition:all 0.15s; }
+    .fb-type-btn { flex:1; padding:8px 12px; border-radius:8px; border:1.5px solid var(--border-strong); background:var(--bg); color:var(--text); font-size:0.84rem; font-family:inherit; cursor:pointer; transition:background 0.15s, color 0.15s, border-color 0.15s, transform 0.15s; }
     .fb-type-btn.active { border-color:var(--accent); background:var(--accent); color:var(--accent-fg); }
     .fb-type-btn:hover:not(.active) { border-color:var(--text-secondary); }
     .modal-actions { display:flex; gap:7px; justify-content:flex-end; margin-top:22px; }
@@ -495,7 +509,7 @@
     .sched-cal-hr { position:absolute; left:0; right:0; height:44px; border-top:1px solid var(--border); display:flex; align-items:flex-start; }
     .sched-cal-hr-label { font-size:0.62rem; color:var(--text-secondary); padding:2px 0 0 0; min-width:36px; }
     .sched-ev-block { position:absolute; left:40px; right:4px; border-radius:5px; padding:3px 6px; overflow:hidden; pointer-events:none; }
-    .sched-new-block { position:absolute; left:40px; right:4px; border-radius:7px; background:var(--accent); color:var(--accent-fg); padding:5px 8px; cursor:grab; user-select:none; box-shadow:0 3px 14px rgba(0,0,0,0.25); border:2px solid rgba(128,128,128,0.3); overflow:hidden; }
+    .sched-new-block { position:absolute; left:40px; right:4px; border-radius:7px; background:var(--accent); color:var(--accent-fg); padding:5px 8px; cursor:grab; user-select:none; touch-action:none; box-shadow:0 3px 14px rgba(0,0,0,0.25); border:2px solid rgba(128,128,128,0.3); overflow:hidden; }
     .sched-new-block:active { cursor:grabbing; }
     .sched-resize-handle { position:absolute; bottom:0; right:0; padding:1px 5px; font-size:0.7rem; cursor:ns-resize; opacity:0.6; line-height:1; }
     .sched-footer { display:flex; align-items:center; justify-content:space-between; padding:12px 20px; border-top:1px solid var(--border); gap:10px; }
@@ -517,7 +531,7 @@
     .cal-pick-sub { font-size:0.75rem; color:var(--text-secondary); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-top:1px; }
     .cal-pick-cat { font-size:0.68rem; padding:2px 7px; border-radius:8px; flex-shrink:0; }
     /* VIZ MENU */
-    .viz-menu { position:fixed; top:0; right:12px; z-index:9999; height:56px; display:flex; align-items:center; gap:8px; }
+    .viz-menu { position:fixed; top:0; right:12px; z-index:950; /* above header (200), below modals (1000) */ height:56px; display:flex; align-items:center; gap:8px; }
     .share-status-btn { height:40px; padding:0 16px; border-radius:16px; border:1px solid var(--border); background:var(--canvas-bg,var(--surface)); color:var(--text-secondary); font-size:0.82rem; font-weight:500; font-family:inherit; cursor:pointer; display:none; align-items:center; gap:5px; backdrop-filter:blur(2px); transition:background var(--dur-small), color var(--dur-small); white-space:nowrap; position:fixed; top:12px; z-index:210; }
     @media (min-width:769px) { body.in-trip .share-status-btn { display:none !important; } }
     @media (max-width:768px) { .share-status-btn { right:56px; } }
@@ -592,6 +606,57 @@
     @media print { body{background:white!important;color:black!important} .viz-menu,.app-header,.modal-overlay,.loading-screen{display:none!important} .view{display:block!important} #view-map{display:none!important} .cal-scroll-outer{overflow:visible} }
     @media (max-width:375px) { .map-view{flex-direction:column;height:auto} .map-sidebar{width:100%;min-width:100%;height:240px;border-right:none;border-bottom:1px solid var(--border)} .map-main{height:400px} }
 
+
+    /* ===== MOBILE POLISH ===== */
+    :root { --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1); }
+    .cal-event.compact { padding:3px 7px; display:flex; align-items:center; gap:6px; }
+    .cal-event.compact .cal-event-time { flex-shrink:0; }
+    .cal-event.compact .cal-event-title { margin-top:0; min-width:0; }
+    .cal-event.compact .cal-badge { display:none; }
+    .leaflet-control-attribution { font-size:9px !important; line-height:1.4; }
+    /* Press feedback on everything tappable */
+    .cal-nav-btn, .map-mob-tab, .map-mob-btn, .wl-filter, .wl-visited-toggle, .wl-view-toggle button, .viz-menu-toggle, .modal-close, .btn, .dash-cta-btn {
+      transition-property: background, color, border-color, box-shadow, opacity, transform;
+      transition-duration: var(--dur-small);
+      transition-timing-function: var(--ease-out);
+    }
+    .cal-nav-btn:not(:disabled):active, .map-mob-tab:active, .map-mob-btn:active, .wl-filter:active, .wl-visited-toggle:active, .wl-view-toggle button:active, .viz-menu-toggle:active, .modal-close:active, .btn:active, .dash-cta-btn:active, .fab:active { transform:scale(0.97); transition-duration:var(--dur-micro); }
+    @media (max-width:768px) {
+      /* 40px+ tap targets */
+      body.in-trip .view-tab { height:34px; min-width:40px; padding:0 11px; }
+      .viz-menu-toggle { width:40px !important; height:40px !important; }
+      .cal-nav-btn { width:40px; height:40px; border-radius:10px; }
+      .cal-day-nav { gap:8px; }
+      .map-mob-tab { padding:9px 16px; }
+      /* Filters: one swipeable row each instead of wrapping into three */
+      .wl-filter-rows { flex-direction:column; align-items:stretch; flex-wrap:nowrap; gap:8px; }
+      .wl-filter-group { flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch; margin:0 -20px; padding:0 20px; scroll-padding:0 20px;
+        -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 20px,#000 calc(100% - 28px),transparent 100%); mask-image:linear-gradient(90deg,transparent 0,#000 20px,#000 calc(100% - 28px),transparent 100%); }
+      .wl-filter-group::-webkit-scrollbar { display:none; }
+      .wl-filter { flex-shrink:0; padding:7px 13px; font-size:0.8rem; border-radius:16px; }
+      body.in-trip .wishlist-view { padding:18px 16px 120px; }
+      /* Attribution sits under the day pills, clear of the bottom sheet */
+      .map-view .leaflet-top.leaflet-right .leaflet-control-attribution { margin:52px 8px 0 0; border-radius:6px; background:color-mix(in srgb, var(--surface) 75%, transparent); color:var(--text-secondary); }
+      /* Modals become bottom sheets: thumb-reachable, slide from where they rest */
+      .modal-overlay { align-items:flex-end; padding:0; }
+      .modal { max-width:none; border-radius:20px 20px 0 0; border-left:none; border-right:none; border-bottom:none; padding:22px 18px calc(22px + env(safe-area-inset-bottom)); max-height:92vh; max-height:92dvh;
+        transform:translateY(100%); opacity:1; transition:transform 280ms var(--ease-drawer); }
+      .modal::before { content:''; display:block; width:36px; height:4px; border-radius:2px; background:var(--border-strong); margin:-10px auto 14px; }
+      .modal-overlay.open .modal { transform:translateY(0); }
+      .map-mob-sheet { padding-bottom:calc(28px + env(safe-area-inset-bottom)); }
+      .fab { bottom:calc(24px + env(safe-area-inset-bottom)); right:20px; }
+      /* Day swipe: body follows the finger horizontally, vertical scroll untouched */
+      #calBodyRow { touch-action:pan-y; }
+      #calBodyRow.cal-swipe-enter-next { animation:calSwipeInNext 220ms var(--ease-out) both; }
+      #calBodyRow.cal-swipe-enter-prev { animation:calSwipeInPrev 220ms var(--ease-out) both; }
+    }
+    @keyframes calSwipeInNext { from { transform:translateX(28px); opacity:0.4; } to { transform:none; opacity:1; } }
+    @keyframes calSwipeInPrev { from { transform:translateX(-28px); opacity:0.4; } to { transform:none; opacity:1; } }
+    @media (prefers-reduced-motion: reduce) {
+      .modal { transition:opacity 150ms ease !important; }
+      #calBodyRow.cal-swipe-enter-next, #calBodyRow.cal-swipe-enter-prev { animation:viewFade 150ms ease both; }
+    }
+
     /* ===== MOBILE MAP OVERLAY ===== */
     .map-mob-tabs,.map-mob-sheet { display:none; }
     @media (max-width:768px) {
@@ -618,6 +683,7 @@
         background:var(--surface); border-radius:20px 20px 0 0;
         box-shadow:0 -4px 28px rgba(0,0,0,0.28);
         padding:10px 16px 28px;
+        touch-action:none; will-change:transform;
       }
       .map-mob-handle { width:36px; height:4px; border-radius:2px; background:var(--border-strong); margin:0 auto 14px; }
       .map-mob-label { font-size:0.62rem; font-weight:700; letter-spacing:0.12em; color:var(--text-secondary); text-transform:uppercase; margin-bottom:3px; }
@@ -635,6 +701,7 @@
         display:flex; gap:10px;
         overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none;
         padding-bottom:2px;
+        touch-action:pan-x;
       }
       .map-mob-cards::-webkit-scrollbar { display:none; }
       .map-mob-card {
@@ -809,7 +876,7 @@
         display:flex; align-items:center; justify-content:center; transition:border-color var(--dur-small), color var(--dur-small), opacity var(--dur-small); flex-shrink:0;
       }
       .cal-nav-btn:disabled { opacity:0.3; cursor:default; }
-      .cal-nav-btn:not(:disabled):hover { border-color:var(--accent); color:var(--accent); }
+      @media (hover:hover) and (pointer:fine) { .cal-nav-btn:not(:disabled):hover { border-color:var(--accent); color:var(--accent); } }
       .cal-page-nav { display:none !important; }
       .cal-header-scroll { display:none; }
       .cal-scroll-outer { overflow-x:hidden; }
@@ -1354,6 +1421,14 @@
       leftPanelOpen=!leftPanelOpen;
       try{localStorage.setItem('palo-left-panel',leftPanelOpen?'1':'0');}catch(e){}
       applyLeftPanelState();
+      // Panel slide changes the map width; Leaflet must re-measure or tiles go grey.
+      setTimeout(_resizeMap,350);
+    }
+    function _resizeMap(){
+      if(typeof leafletMap==='undefined'||!leafletMap)return;
+      var hh=(document.querySelector('.app-header')||{offsetHeight:57}).offsetHeight;
+      document.getElementById('leaflet-map').style.height=(window.innerHeight-hh)+'px';
+      leafletMap.invalidateSize(true);
     }
     function applyLeftPanelState(){
       if(window.innerWidth>768 && document.body.classList.contains('in-trip') && leftPanelOpen){
@@ -1589,6 +1664,9 @@
       // Save
       saved: { ko:'저장됨', en:'Saved' },
       saveFailed: { ko:'저장 실패', en:'Save failed' },
+      slowLoading: { ko:'연결이 느려요 — 서버와 동기화 중…', en:'Slow connection — still syncing…' },
+      loadFailed: { ko:'여행을 불러오지 못했어요', en:"Couldn't load trip" },
+      syncedFromServer: { ko:'다른 기기의 최신 데이터로 업데이트됐어요', en:'Updated with latest data from server' },
       // Currency
       currConverter: { ko:'환율 계산기', en:'Currency Converter' },
       currLoading: { ko:'환율 불러오는 중…', en:'Loading rates…' },
@@ -1946,6 +2024,7 @@
       }
     }
     function doSignOut() {
+      _detachTrip();
       auth.signOut().then(function() {
         currentTripId = null; currentTripMeta = null; DAYS = []; WISHLIST = [];
         showLoginScreen();
@@ -2014,16 +2093,19 @@
           .where('accessEmails', 'array-contains', email).get();
         snap.forEach(function(doc) {
           var d = doc.data();
-          if (!d.access || d.access[user.uid]) return;
-          // Find any pending key matching this email (case-insensitive)
+          if (!d.access) return;
+          // Find any pending key matching this email (case-insensitive). Also runs when the
+          // uid is already present, to clean up a stale pending entry left by the old bug.
           var matchedKey = Object.keys(d.access).find(function(k) {
             return k.startsWith('pending_') && k.replace('pending_','').toLowerCase() === email;
           });
           if (matchedKey) {
-            var updates = {};
-            updates['access.' + user.uid] = d.access[matchedKey];
-            updates['access.' + matchedKey] = firebase.firestore.FieldValue.delete();
-            db.collection('trips').doc(doc.id).update(updates)
+            // Write the whole map: emails contain '.', so a dot-path like
+            // 'access.pending_a@b.com' would target a nested field and never delete the key.
+            var newAccess = Object.assign({}, d.access);
+            if (!newAccess[user.uid]) newAccess[user.uid] = typeof d.access[matchedKey] === 'string' ? d.access[matchedKey] : 'write';
+            delete newAccess[matchedKey];
+            db.collection('trips').doc(doc.id).update({ access: newAccess })
               .then(function() { console.log('[invite] resolved pending invite for', doc.id); })
               .catch(function() {});
           }
@@ -2123,10 +2205,17 @@
       }
       // Auto-resolve any stale pending entries
       var pendingKeys = Object.keys(access).filter(function(k){return k.startsWith('pending_');});
-      for(var pi=0;pi<pendingKeys.length;pi++){
-        var pe=pendingKeys[pi].replace('pending_','').toLowerCase();
+      for(var pi=0;pi<pendingKeys.length && isOwner();pi++){
+        var pk=pendingKeys[pi],pe=pk.replace('pending_','').toLowerCase();
         try{var ps=await db.collection('users').where('email','==',pe).limit(1).get();
-        if(!ps.empty){var pu=ps.docs[0].id;if(!access[pu]){var newAcc=Object.assign({},access);newAcc[pu]=access[pendingKeys[pi]];delete newAcc[pendingKeys[pi]];await db.collection('trips').doc(currentTripId).update({access:newAcc});access[pu]=access[pendingKeys[pi]];delete access[pendingKeys[pi]];currentTripMeta.access=access;}}}catch(e){}
+        if(!ps.empty){
+          var pu=ps.docs[0].id,newAcc=Object.assign({},access);
+          // Keep an existing role for the uid (never downgrade owner); drop the stale pending key.
+          if(!newAcc[pu])newAcc[pu]=typeof access[pk]==='string'?access[pk]:'write';
+          delete newAcc[pk];
+          await db.collection('trips').doc(currentTripId).update({access:newAcc});
+          access=newAcc;currentTripMeta.access=newAcc;
+        }}catch(e){}
       }
       var keys = Object.keys(access);
       // Look up display names for UIDs
@@ -2144,6 +2233,8 @@
           });
         } catch(e) {}
       }
+      var registeredEmails = Object.keys(userInfoMap).map(function(u){ return (userInfoMap[u].email||'').toLowerCase(); });
+      keys = keys.filter(function(k){ return !(k.startsWith('pending_') && registeredEmails.indexOf(k.replace('pending_','').toLowerCase()) >= 0); });
       var h = '<ul class="share-list">';
       keys.forEach(function(key) {
         var role = access[key];
@@ -2228,8 +2319,26 @@
           var doc = await db.collection('users').doc(key).get();
           if (doc.exists) email = doc.data().email;
         }
-        var updates = {};
-        updates['access.' + key] = firebase.firestore.FieldValue.delete();
+        var newAccess = Object.assign({}, currentTripMeta.access || {});
+        delete newAccess[key];
+        // A leftover pending_<email> for the same person would re-grant access on next sign-in.
+        if (!isPending && email) {
+          Object.keys(newAccess).forEach(function(k){ if (k.startsWith('pending_') && k.replace('pending_','').toLowerCase() === email.toLowerCase()) delete newAccess[k]; });
+        }
+        var updates = { access: newAccess };
+        // Keep the email in accessEmails if another remaining entry is the same person
+        // (e.g. removing a stale "pending_x" duplicate of a registered user) — accessEmails
+        // gates read access, so removing it would lock them out.
+        if (email) {
+          email = email.toLowerCase();
+          var stillUsed = Object.keys(newAccess).some(function(k){ return k.startsWith('pending_') && k.replace('pending_','').toLowerCase() === email; });
+          if (!stillUsed) {
+            var uidKeys = Object.keys(newAccess).filter(function(k){ return !k.startsWith('pending_'); });
+            var uDocs = await Promise.all(uidKeys.map(function(u){ return db.collection('users').doc(u).get(); }));
+            stillUsed = uDocs.some(function(ud){ return ud.exists && normalizeEmail(ud.data().email || '') === email; });
+          }
+          if (stillUsed) email = null;
+        }
         if (email) {
           updates.accessEmails = firebase.firestore.FieldValue.arrayRemove(email);
         }
@@ -2273,7 +2382,9 @@
         _authResolved = true;
         if (user) {
           document.querySelector('.viz-menu').style.display='';
-          await writeUserProfile(user);
+          // Not awaited: a Firestore write only resolves on server ack, which can hang
+          // on flaky networks and would block routing behind the loading screen.
+          writeUserProfile(user).catch(function(e){ console.warn('writeUserProfile failed:', e); });
           // Send welcome email (once per user)
           (async function() {
             try {
@@ -2290,7 +2401,7 @@
           })();
           await migrateOwnership();
           resolvePendingInvites(user);
-          await migrateIfNeeded();
+          migrateIfNeeded();
           initRouter();
         } else {
           // Check if URL is a public trip before showing login
@@ -2315,7 +2426,9 @@
           writeUserProfile(user);
           await migrateOwnership();
           resolvePendingInvites(user);
-          document.getElementById('loadingScreen').innerHTML = '<div class="spinner"></div><p>'+t('loading')+'</p>';
+          var ls = document.getElementById('loadingScreen');
+          ls.innerHTML = '<div class="spinner"></div><p>'+t('loading')+'</p>';
+          ls.style.display = 'flex';
           initRouter();
         }
       }
@@ -2385,7 +2498,9 @@
         if(!currentTripMeta)return;
         // Geocode fallback if cityLat/Lng missing but city name exists
         if((!currentTripMeta.cityLat||!currentTripMeta.cityLng)&&currentTripMeta.city){
-          try{var gr=await fetch('https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(currentTripMeta.city)+'&format=json&limit=1',{headers:{'User-Agent':'PaloTravelApp/1.0'}});var gd=await gr.json();if(gd&&gd[0]){currentTripMeta.cityLat=parseFloat(gd[0].lat);currentTripMeta.cityLng=parseFloat(gd[0].lon);db.collection('trips').doc(currentTripId).update({cityLat:currentTripMeta.cityLat,cityLng:currentTripMeta.cityLng}).catch(function(){});}}catch(e){}
+          var wxTrip=currentTripId,wxMeta=currentTripMeta;
+          try{var gr=await fetch('https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(wxMeta.city)+'&format=json&limit=1',{headers:{'User-Agent':'PaloTravelApp/1.0'}});var gd=await gr.json();if(gd&&gd[0]&&currentTripId===wxTrip&&currentTripMeta===wxMeta){wxMeta.cityLat=parseFloat(gd[0].lat);wxMeta.cityLng=parseFloat(gd[0].lon);db.collection('trips').doc(wxTrip).update({cityLat:wxMeta.cityLat,cityLng:wxMeta.cityLng}).catch(function(){});}}catch(e){}
+          if(currentTripId!==wxTrip)return;
         }
         if(!currentTripMeta.cityLat||!currentTripMeta.cityLng)return;
         var start=currentTripMeta.startDate,end=currentTripMeta.endDate;
@@ -2565,7 +2680,7 @@
     var HOUR_PX=64,START_HR=8,END_HR=24,TOTAL_HRS=16;
     var DAYS=[],WISHLIST=[];
     var currentTripId=null,currentTripMeta=null,_isPublicView=false;
-    var currentView='calendar',editingDayId=null,editingEvId=null,addingDayId=null;
+    var currentView='calendar',editingDayId=null,editingEvId=null,addingDayId=null,_prevTripView=null;
     var mapFilter='all',leafletMap=null,mapMarkers=[],tileLayer=null,mapRoutes=[],_routeBuildId=0;
     var mapMobDay=0; // mobile map: index of currently selected day
     var calPage=0; // calendar page index (mobile: single day, desktop: group of days)
@@ -2595,55 +2710,86 @@
       try { localStorage.setItem('travel-trip-list', JSON.stringify(trips)); } catch(e) {}
     }
 
-    async function loadTripData(tripId) {
+    // Trip data is "confirmed" once the server has answered for this trip. Until then
+    // doSave() defers writes, so a timed-out load can never overwrite real server data
+    // with empty or cached state. _tripLoadBaseline is the JSON of the cached data we
+    // rendered from, so the first server snapshot can tell whether local edits made on
+    // top of the cache are safe to keep.
+    var _tripDataConfirmed = false;
+    var _tripLoadBaseline = null;
+    var _tripLoading = false;
+    var _tripMetaFresh = false; // currentTripMeta came from the server (not the cached trip list)
+    function _tripDataJson(days, wishlist) { return JSON.stringify({ days: days || [], wishlist: wishlist || [] }); }
+
+    async function loadTripData(tripId, gen) {
+      var stale = function(){ return currentTripId !== tripId || (gen !== undefined && gen !== _openTripGen); };
       currentTripId = tripId;
       // Tear down previous real-time listener
       if (_dataUnsub) { _dataUnsub(); _dataUnsub = null; }
-      DATA_REF = db.collection('trips').doc(tripId).collection('data').doc('main');
+      var ref = db.collection('trips').doc(tripId).collection('data').doc('main');
+      DATA_REF = ref;
+      _tripDataConfirmed = false; _tripLoadBaseline = null;
+      // Cache-first: render immediately from localStorage, let the snapshot listener
+      // replace it with server data once it arrives.
+      var cached = lsLoadTripData(tripId);
+      if (cached && ((cached.days && cached.days.length > 0) || (cached.wishlist && cached.wishlist.length > 0))) {
+        DAYS = cached.days || []; WISHLIST = cached.wishlist || [];
+        _tripLoadBaseline = _tripDataJson(DAYS, WISHLIST);
+        listenForRemoteChanges(tripId);
+        _geocodeMissingWishCoords();
+        return;
+      }
+      var mainAnsweredEmpty = false;
       try {
         const timeout = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Firestore timeout')), 5000)
+          setTimeout(() => reject(new Error('Firestore timeout')), 10000)
         );
-        const snap = await Promise.race([DATA_REF.get(), timeout]);
+        const snap = await Promise.race([ref.get(), timeout]);
+        if (stale()) return;
         const d = snap.exists ? snap.data() : null;
         if (d && ((d.days && d.days.length > 0) || (d.wishlist && d.wishlist.length > 0))) {
           DAYS = d.days || []; WISHLIST = d.wishlist || [];
+          _tripDataConfirmed = true;
           lsSaveTripData(tripId);
           listenForRemoteChanges(tripId);
           _geocodeMissingWishCoords();
           return;
         }
-      } catch(e) { console.warn('Firestore unavailable:', e.message); }
+        // Server answered: the trip genuinely has no data yet (new trip)
+        mainAnsweredEmpty = true;
+        if (tripId !== 'mexico_legacy') _tripDataConfirmed = true;
+      } catch(e) {
+        console.warn('Firestore unavailable:', e.message);
+        if (stale()) return;
+        showSaveToast(t('slowLoading'), '!');
+      }
       // Legacy Firestore fallback for mexico_legacy (pre-migration)
       if (tripId === 'mexico_legacy') {
+        var legacyAnsweredEmpty = false;
         try {
           const legacyRef = db.collection('travel').doc('mexico');
           const t2 = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000));
           const snap2 = await Promise.race([legacyRef.get(), t2]);
+          if (stale()) return;
           const d2 = snap2.exists ? snap2.data() : null;
           if (d2 && d2.days && d2.days.length > 0) {
             DAYS = d2.days; WISHLIST = d2.wishlist || [];
+            _tripDataConfirmed = mainAnsweredEmpty; // only safe to write if main is known-empty
             lsSaveTripData(tripId);
             listenForRemoteChanges(tripId);
             _geocodeMissingWishCoords();
             return;
           }
-        } catch(e) { console.warn('Legacy Firestore fallback failed:', e.message); }
-      }
-      // Try localStorage
-      var cached = lsLoadTripData(tripId);
-      if (cached && ((cached.days && cached.days.length > 0) || (cached.wishlist && cached.wishlist.length > 0))) {
-        DAYS = cached.days || []; WISHLIST = cached.wishlist || [];
-        listenForRemoteChanges(tripId);
-        _geocodeMissingWishCoords();
-        return;
-      }
-      // Seed fallback (mexico_legacy only)
-      if (tripId === 'mexico_legacy') {
-        DAYS = JSON.parse(JSON.stringify(SEED_DAYS));
-        WISHLIST = JSON.parse(JSON.stringify(SEED_WISHLIST));
-        lsSaveTripData(tripId);
-        try { DATA_REF.set({ days: DAYS, wishlist: WISHLIST }); } catch(e) {}
+          legacyAnsweredEmpty = true;
+        } catch(e) { console.warn('Legacy Firestore fallback failed:', e.message); if (stale()) return; }
+        // Seed only when the server positively confirmed both docs are empty — never after a timeout.
+        if (mainAnsweredEmpty && legacyAnsweredEmpty) {
+          DAYS = JSON.parse(JSON.stringify(SEED_DAYS));
+          WISHLIST = JSON.parse(JSON.stringify(SEED_WISHLIST));
+          lsSaveTripData(tripId);
+          try { ref.set({ days: DAYS, wishlist: WISHLIST }); } catch(e) {}
+          _tripDataConfirmed = true;
+        }
       }
       listenForRemoteChanges(tripId);
       _geocodeMissingWishCoords();
@@ -2653,10 +2799,16 @@
       if (_dataUnsub) { _dataUnsub(); _dataUnsub = null; }
       var ref = db.collection('trips').doc(tripId).collection('data').doc('main');
       _dataUnsub = ref.onSnapshot(function(snap) {
-        // Skip if we have a pending local save or just saved (within 3s)
-        if (saveTimer || Date.now() - _lastSaveTs < 3000) return;
         // Skip if we navigated away from this trip
         if (currentTripId !== tripId) { if (_dataUnsub) { _dataUnsub(); _dataUnsub = null; } return; }
+        if (!_tripDataConfirmed) {
+          // First authoritative answer for data we loaded from cache (or failed to load).
+          if (snap.metadata && snap.metadata.fromCache) return;
+          _applyFirstServerSnapshot(tripId, snap.exists ? snap.data() : null);
+          return;
+        }
+        // Skip if we have a pending local save or just saved (within 3s)
+        if (saveTimer || Date.now() - _lastSaveTs < 3000) return;
         var d = snap.exists ? snap.data() : null;
         if (!d) return;
         var newDays = d.days || [];
@@ -2667,10 +2819,45 @@
         WISHLIST = newWishlist;
         refreshDayLabels();
         lsSaveTripData(tripId);
-        rerender();
+        rerender(true);
       }, function(err) {
         console.warn('Real-time listener error:', err);
+        if (currentTripId !== tripId) return;
+        if (!_tripDataConfirmed) showSaveToast(t('loadFailed'), '!');
+        // The SDK drops the listener after an error; without it the trip never confirms
+        // and every edit stays deferred. Retry a few times with backoff.
+        var n = (_listenRetries[tripId] = (_listenRetries[tripId] || 0) + 1);
+        if (n <= 4) setTimeout(function(){ if (currentTripId === tripId && DATA_REF) listenForRemoteChanges(tripId); }, 2000 * n);
       });
+    }
+    var _listenRetries = {};
+    window.addEventListener('beforeunload', function(e) {
+      if (saveTimer || _saveDeferred) { e.preventDefault(); e.returnValue = ''; }
+    });
+    function _applyFirstServerSnapshot(tripId, d) {
+      var srvDays = (d && d.days) || [], srvWish = (d && d.wishlist) || [];
+      var srvJson = _tripDataJson(srvDays, srvWish);
+      _tripDataConfirmed = true;
+      var hadPendingSave = !!saveTimer || _saveDeferred;
+      _saveDeferred = false;
+      if (_tripLoadBaseline !== null && srvJson === _tripLoadBaseline) {
+        // Cache was current: keep local state (incl. any reconcile/edits) and flush them.
+        _tripLoadBaseline = null;
+        if (hadPendingSave) { clearTimeout(saveTimer); saveTimer = null; doSave(); }
+        return;
+      }
+      // Server differs from what we rendered: server wins.
+      _tripLoadBaseline = null;
+      if (saveTimer) { clearTimeout(saveTimer); saveTimer = null; }
+      var localJson = _tripDataJson(DAYS, WISHLIST);
+      DAYS = srvDays; WISHLIST = srvWish;
+      var changed = _tripMetaFresh && reconcileDays(currentTripMeta);
+      refreshDayLabels();
+      lsSaveTripData(tripId);
+      _clampCalPage();
+      rerender(true);
+      if (changed) scheduleSave();
+      if (hadPendingSave && localJson !== srvJson) showSaveToast(t('syncedFromServer'), '!');
     }
     function backfillEventCoords(){
       var dirty=false;
@@ -2685,11 +2872,11 @@
           fetch('https://palo-travel-expand-url.jihoon8846.workers.dev/api/expand-url?url='+encodeURIComponent(url))
             .then(function(r){return r.json();})
             .then(function(d){
-              if(d.lat!=null&&d.lng!=null){ev.lat=d.lat;ev.lng=d.lng;dirty=true;scheduleSave();if(currentView==='map')rebuildMarkers();}
+              if(d.lat!=null&&d.lng!=null){ev.lat=d.lat;ev.lng=d.lng;dirty=true;scheduleSave();if(currentView==='map'&&leafletMap)rebuildMarkers();}
             }).catch(function(){});
         } else {
           var cm=url.match(/@(-?\d+\.?\d*),(-?\d+\.?\d*)/)||url.match(/[?&]q=(-?\d+\.?\d*),(-?\d+\.?\d*)/);
-          if(cm){ev.lat=parseFloat(cm[1]);ev.lng=parseFloat(cm[2]);dirty=true;scheduleSave();if(currentView==='map')rebuildMarkers();}
+          if(cm){ev.lat=parseFloat(cm[1]);ev.lng=parseFloat(cm[2]);dirty=true;scheduleSave();if(currentView==='map'&&leafletMap)rebuildMarkers();}
         }
       });
     }
@@ -2722,11 +2909,12 @@
 
     // ==================== HASH ROUTER (Phase 3) ====================
     var _routerInited = false;
+    var _lastResizeW = window.innerWidth; // mobile URL-bar/keyboard resizes only change height
     function initRouter() {
       if (!_routerInited) {
         _routerInited = true;
         window.addEventListener('hashchange', handleRoute);
-        window.addEventListener('resize', function(){updateFab();applyLeftPanelState();if(currentView==='calendar'){calPage=0;renderCal();}});
+        window.addEventListener('resize', function(){updateFab();applyLeftPanelState();_resizeMap();if(currentView==='calendar'&&window.innerWidth!==_lastResizeW)_onCalResize();_lastResizeW=window.innerWidth;});
       }
       handleRoute();
     }
@@ -2737,33 +2925,87 @@
       else { showDashboard(); }
     }
     function navigateTo(hash) { location.hash = hash; }
+    var _openTripGen = 0;
     async function openTrip(tripId) {
+      var gen = ++_openTripGen;
+      // Flush any pending save for the trip we're leaving before swapping DAYS/WISHLIST.
+      if (saveTimer) { clearTimeout(saveTimer); doSave(); }
+      _saveDeferred = false;
+      if (_dataUnsub) { _dataUnsub(); _dataUnsub = null; }
       destroyMap();
-      document.getElementById('loadingScreen').style.display = 'flex';
+      // Never let the previous trip's data leak into this one (e.g. via reconcileDays + save).
+      DAYS = []; WISHLIST = []; DATA_REF = null; _tripDataConfirmed = false;
+      currentTripId = tripId;
+      var cachedMeta = (lsLoadTripList() || []).find(function(tr){ return tr && tr.id === tripId; }) || null;
+      var entered = false;
+      if (cachedMeta) {
+        // Progressive: show trip chrome + skeleton right away from cached metadata.
+        currentTripMeta = cachedMeta;
+        _tripLoading = true;
+        _enterTripChrome(tripId);
+        entered = true;
+      } else {
+        document.getElementById('loadingScreen').style.display = 'flex';
+      }
+      var metaFresh = false; _tripMetaFresh = false;
       try {
-        var snapP = db.collection('trips').doc(tripId).get();
-        var snap = await snapP;
+        var metaTimeout = new Promise(function(_, reject){ setTimeout(function(){ reject(new Error('meta timeout')); }, 8000); });
+        var snap = await Promise.race([db.collection('trips').doc(tripId).get(), metaTimeout]);
+        if (gen !== _openTripGen) return;
         if (snap.exists) {
-          currentTripMeta = snap.data();
+          currentTripMeta = snap.data(); metaFresh = true;
         } else if (tripId === 'mexico_legacy') {
           currentTripMeta = { id:'mexico_legacy', name:'멕시코시티', emoji:'🇲🇽', city:'Mexico City', startDate:'2026-03-17', endDate:'2026-03-21', coverColor:'#f97316', cityLat:19.4326, cityLng:-99.1332, timezone:'America/Mexico_City' };
+          metaFresh = true;
         } else {
+          _tripLoading = false;
           document.getElementById('loadingScreen').style.display = 'none';
           navigateTo('#dashboard'); return;
         }
-        await loadTripData(tripId);
       } catch(e) {
-        console.error('Failed to open trip:', e);
-        if (!DAYS.length) { document.getElementById('loadingScreen').style.display = 'none'; navigateTo('#dashboard'); return; }
+        if (gen !== _openTripGen) return;
+        console.error('Failed to load trip metadata:', e);
+        if (!cachedMeta) {
+          _tripLoading = false;
+          document.getElementById('loadingScreen').style.display = 'none';
+          showSaveToast(t('loadFailed'), '!');
+          navigateTo('#dashboard'); return;
+        }
+        showSaveToast(t('slowLoading'), '!');
+        // Keep trying in the background; reconcile only once fresh dates arrive.
+        db.collection('trips').doc(tripId).get().then(function(s2) {
+          if (gen !== _openTripGen || !s2.exists) return;
+          currentTripMeta = s2.data(); _tripMetaFresh = true;
+          updateHeader(currentTripMeta);
+          if (_tripDataConfirmed && reconcileDays(currentTripMeta)) { refreshDayLabels(); _clampCalPage(); rerender(); }
+        }).catch(function(){});
       }
-      // Reconcile DAYS to match trip dates (handles post-edit date changes)
-      if (reconcileDays(currentTripMeta)) {
+      _tripMetaFresh = metaFresh;
+      if (!entered) { _tripLoading = true; _enterTripChrome(tripId); }
+      else updateHeader(currentTripMeta);
+      try {
+        await loadTripData(tripId, gen);
+      } catch(e) { console.error('Failed to load trip data:', e); }
+      if (gen !== _openTripGen) return;
+      _tripLoading = false;
+      // Reconcile DAYS to match trip dates (handles post-edit date changes).
+      // Only against server metadata — stale cached dates could restitch events wrongly.
+      if (metaFresh && reconcileDays(currentTripMeta)) {
         scheduleSave();
       }
       // Refresh day labels AFTER reconcile so all days (including reused ones) match currentLang
       refreshDayLabels();
-      document.getElementById('loadingScreen').style.display = 'none';
       backfillEventCoords();
+      updateHeader(currentTripMeta);
+      updateShareBtnVisibility();
+      document.querySelector('.fab').style.display = canEdit() ? '' : 'none';
+      _restoreCalPage();
+      rerender(true);
+      if (currentView === 'map') { if (!leafletMap) initMap(); else _fitMapToMarkers(); }
+      fetchWeather();
+    }
+    function _enterTripChrome(tripId) {
+      document.getElementById('loadingScreen').style.display = 'none';
       updateHeader(currentTripMeta);
       updateShareBtnVisibility();
       var dashEl = document.getElementById('view-dashboard');
@@ -2778,15 +3020,24 @@
       var mainEl = document.getElementById('main-content');
       if (mainEl) { mainEl.classList.remove('view-enter-right'); requestAnimationFrame(function(){ mainEl.classList.add('view-enter-right'); }); }
       switchView('calendar');
-      fetchWeather();
+    }
+    // Flush pending edits, then cut every link to the trip we're leaving so late async
+    // callbacks (quick-add, Places details, lodging) can't save into it with emptied state.
+    function _detachTrip() {
+      if (saveTimer) { clearTimeout(saveTimer); doSave(); }
+      if (_dataUnsub) { _dataUnsub(); _dataUnsub = null; }
+      DATA_REF = null; _tripDataConfirmed = false; _saveDeferred = false; _tripMetaFresh = false;
+      _openTripGen++; _tripLoading = false;
     }
     function goToDashboard() {
-      currentTripId = null; currentTripMeta = null;
+      _detachTrip();
+      currentTripId = null; currentTripMeta = null; _prevTripView = null;
       DAYS = []; WISHLIST = [];
       destroyMap();
       navigateTo('#dashboard');
     }
     function destroyMap() {
+      clearTimeout(_mapInitTimer); _mapInitTimer = null; _routeBuildId++;
       if (leafletMap) { leafletMap.remove(); leafletMap = null; }
       mapMarkers = []; tileLayer = null; mapRoutes = [];
     }
@@ -3191,9 +3442,10 @@
 
     // ==================== DASHBOARD (Phase 5) ====================
     function showDashboard() {
+      _detachTrip();
       document.getElementById('loadingScreen').style.display = 'none';
       ['view-calendar','view-wishlist','view-map'].forEach(function(id){
-        var el=document.getElementById(id); if(el){el.style.display='none';el.classList.remove('active','view-enter','view-enter-right');}
+        var el=document.getElementById(id); if(el){el.style.display='none';el.classList.remove('active','view-enter','view-enter-right','view-enter-left');}
       });
       document.querySelector('.fab').style.display = 'none';
       var dashEl = document.getElementById('view-dashboard');
@@ -3212,9 +3464,16 @@
       // Stop listening for trip data changes when on dashboard
       if (_dataUnsub) { _dataUnsub(); _dataUnsub = null; }
       // Show skeleton immediately
-      var el = document.getElementById('dashGrid');
+      var el = document.getElementById('dashTrips');
+      // Cached list renders instantly; skeleton only when there's nothing to show yet.
+      var cachedTrips = lsLoadTripList();
+      if (cachedTrips && currentUser) {
+        var myEmail = normalizeEmail(currentUser.email);
+        cachedTrips = cachedTrips.filter(function(tr){ return tr && !tr.archived && (tr.accessEmails || []).indexOf(myEmail) >= 0; });
+      }
+      if (cachedTrips && cachedTrips.length) { renderDashboard(cachedTrips); el = null; }
       if (el) {
-        el.innerHTML = [0,1,2].map(function(){
+        el.innerHTML = '<div class="dash-section"><div class="dash-section-title"><span class="skel-line" style="display:inline-block;height:12px;width:110px"></span></div><div class="dash-grid">' + [0,1,2].map(function(){
           return '<div class="skel-card">'+
             '<div style="display:flex;gap:12px;margin-bottom:14px">'+
               '<div class="skel-line" style="width:48px;height:48px;border-radius:12px;flex-shrink:0"></div>'+
@@ -3227,7 +3486,7 @@
               '<div class="skel-line" style="height:20px;width:36px;border-radius:10px"></div>'+
             '</div>'+
           '</div>';
-        }).join('');
+        }).join('') + '</div></div>';
       }
       try {
         var q = db.collection('trips').where('archived','==',false);
@@ -3276,14 +3535,12 @@
                 var snap2 = await ref.get();
                 if (!snap2.exists) continue;
                 var data = snap2.data();
-                var tmpDays = DAYS, tmpWl = WISHLIST;
-                DAYS = data.days || [];
-                if (reconcileDays(trip)) {
-                  console.log('[days-fix] reconciled', trip.name, ':', DAYS.length, 'days');
-                  await ref.set({ days: DAYS, wishlist: data.wishlist || [] });
-                  try { localStorage.setItem(lsKeyForTrip(trip.id), JSON.stringify({ days: DAYS, wishlist: data.wishlist || [] })); } catch(e2) {}
+                var fixed = _reconcileOtherDays(trip, data.days || []);
+                if (fixed) {
+                  console.log('[days-fix] reconciled', trip.name, ':', fixed.length, 'days');
+                  await ref.set({ days: fixed, wishlist: data.wishlist || [] });
+                  try { localStorage.setItem(lsKeyForTrip(trip.id), JSON.stringify({ days: fixed, wishlist: data.wishlist || [] })); } catch(e2) {}
                 }
-                DAYS = tmpDays; WISHLIST = tmpWl;
               } catch(e) { console.error('[days-fix] failed for', trip.name, e); }
             }
             localStorage.setItem(_daysFixKey, '1');
@@ -3580,18 +3837,18 @@
           if (tripEditId === currentTripId && currentTripMeta) {
             Object.assign(currentTripMeta, updatedMeta);
             if (reconcileDays(currentTripMeta)) {
-              await DATA_REF.set({ days: DAYS, wishlist: WISHLIST });
-              lsSaveTripData(currentTripId);
+              if (_tripDataConfirmed) {
+                await DATA_REF.set({ days: DAYS, wishlist: WISHLIST });
+                lsSaveTripData(currentTripId);
+              } else scheduleSave(); // deferred; first server snapshot re-reconciles
             }
           } else {
-            var tmpDays = DAYS, tmpWl = WISHLIST;
-            DAYS = existingDays;
             var editMeta = Object.assign({}, updatedMeta, { id: tripEditId });
-            if (reconcileDays(editMeta)) {
-              await editRef.set({ days: DAYS, wishlist: existingWishlist });
-              try { localStorage.setItem(lsKeyForTrip(tripEditId), JSON.stringify({ days: DAYS, wishlist: existingWishlist })); } catch(e2) {}
+            var fixedDays = _reconcileOtherDays(editMeta, existingDays);
+            if (fixedDays) {
+              await editRef.set({ days: fixedDays, wishlist: existingWishlist });
+              try { localStorage.setItem(lsKeyForTrip(tripEditId), JSON.stringify({ days: fixedDays, wishlist: existingWishlist })); } catch(e2) {}
             }
-            DAYS = tmpDays; WISHLIST = tmpWl;
           }
           closeTripCreate();
           loadDashboard();
@@ -3734,6 +3991,13 @@
       return true;
     }
 
+    // Run reconcileDays on some other trip's days. Synchronous swap — no await in between —
+    // so a debounced save of the current trip can never observe the borrowed array.
+    function _reconcileOtherDays(meta, days) {
+      var keep = DAYS;
+      DAYS = days;
+      try { return reconcileDays(meta) ? DAYS : null; } finally { DAYS = keep; }
+    }
     async function deleteTripFromModal() {
       if (!tripEditId) return;
       closeTripCreate();
@@ -3789,6 +4053,7 @@
     var saveTimer = null;
     var _dataUnsub = null;
     var _lastSaveTs = 0;
+    var _saveDeferred = false; // a save was requested before the server confirmed this trip's data
     function scheduleSave() {
       if (!canEdit()) return;
       clearTimeout(saveTimer);
@@ -3809,7 +4074,21 @@
       }, 1600);
     }
     async function doSave() {
+      saveTimer = null;
       if (!DATA_REF || !canEdit()) return;
+      // DATA_REF must belong to the trip whose DAYS/WISHLIST are in memory.
+      if (!currentTripId || DATA_REF.parent.parent.id !== currentTripId) {
+        console.warn('[doSave] refusing: DATA_REF does not match current trip');
+        return;
+      }
+      // Never write before the server has answered for this trip — see _tripDataConfirmed.
+      // Keep the edit in the local cache meanwhile so a reload doesn't silently drop it.
+      if (!_tripDataConfirmed) { _saveDeferred = true; lsSaveTripData(currentTripId); return; }
+      // A dated trip always has days; zero days means state was cleared mid-flight.
+      if ((!DAYS || DAYS.length === 0) && currentTripMeta && currentTripMeta.startDate && currentTripMeta.type !== 'hometown') {
+        console.warn('[doSave] refusing to save a dated trip with no days');
+        return;
+      }
       // SAFETY: refuse to overwrite with fully-empty state. Real trips always have >=1 day.
       // This prevents accidental wipes from race conditions (e.g. navigating mid-load).
       var hasAnyEvents = DAYS.some(function(d){ return d.events && d.events.length > 0; });
@@ -3865,16 +4144,20 @@
       document.body.classList.remove('on-dashboard');
       document.body.classList.add('in-trip');
       applyLeftPanelState();
-      document.querySelectorAll('.view').forEach(function(el){el.classList.remove('active','view-enter');el.style.display='';});
+      document.querySelectorAll('.view').forEach(function(el){el.classList.remove('active','view-enter','view-enter-right','view-enter-left');el.style.display='';});
       document.querySelectorAll('.view-tab').forEach(function(t){t.classList.remove('active');t.setAttribute('aria-selected','false');});
       var el=document.getElementById('view-'+v);
       el.classList.add('active');
-      requestAnimationFrame(function(){ el.classList.add('view-enter'); });
+      var order=['calendar','map','wishlist'],prevIdx=order.indexOf(_prevTripView||''),newIdx=order.indexOf(v);
+      var enterCls=(prevIdx<0||prevIdx===newIdx)?'view-enter':(newIdx>prevIdx?'view-enter-right':'view-enter-left');
+      _prevTripView=v;
+      requestAnimationFrame(function(){ el.classList.add(enterCls); });
       var tabs=document.querySelectorAll('.view-tab'),idx=['calendar','map','wishlist'].indexOf(v);
       if(idx>=0){tabs[idx].classList.add('active');tabs[idx].setAttribute('aria-selected','true');}
       if(v==='calendar')renderCal();
       if(v==='wishlist')renderWishlist();
-      if(v==='map'){renderMapUI();setTimeout(initMap,200);}
+      clearTimeout(_mapInitTimer);_mapInitTimer=null;
+      if(v==='map'){renderMapUI();_mapInitTimer=setTimeout(initMap,200);}
       updateFab(v);
       if(currentTripId&&currentUser&&(v==='calendar'||v==='wishlist')){setLV(v);}
       updateTabBadges();
@@ -3919,11 +4202,11 @@
       return currentUser&&item.addedByUid&&item.addedByUid!==currentUser.uid&&item.addedAt&&item.addedAt>(Date.now()-86400000);
     }
 
-    function rerender(){
+    function rerender(noSave){
       if(currentView==='calendar')renderCal();
       else if(currentView==='wishlist')renderWishlist();
       else if(currentView==='map'){renderMapUI();if(leafletMap)rebuildMarkers();}
-      scheduleSave();
+      if(!noSave)scheduleSave();
       updateTabBadges();
     }
 
@@ -3946,7 +4229,111 @@
       var start=calPage*pp;
       return DAYS.slice(start,start+pp);
     }
-    function renderCal(){renderCalPageNav();renderCalDayNav();renderCalHeader();renderCalBody();}
+    // calPage means a day index on mobile and a page index on desktop, so a resize
+    // recomputes it from the anchor day instead of resetting to day 1.
+    // _calAnchor is the exact day the user last chose; calPage is derived from it per layout.
+    var _calScrollKey=null,_calAnchor=0;
+    function _calAnchorIdx(){return _calAnchor;}
+    function _calPageForAnchor(){
+      if(window.innerWidth<=768)return _calAnchor;
+      var pp=calDaysPerPage();return pp>=DAYS.length?0:Math.floor(_calAnchor/pp);
+    }
+    function _setCalAnchor(idx){
+      _calAnchor=Math.max(0,Math.min(DAYS.length-1,idx|0));
+      calPage=_calPageForAnchor();
+    }
+    function _clampCalPage(){
+      if(!DAYS.length){calPage=0;return;}
+      var isMob=window.innerWidth<=768;
+      calPage=Math.max(0,Math.min(isMob?DAYS.length-1:calTotalPages()-1,calPage));
+      _calAnchor=Math.max(0,Math.min(DAYS.length-1,_calAnchor));
+    }
+    function _saveCalAnchor(){
+      if(!currentTripId)return;
+      var d=DAYS[Math.min(DAYS.length-1,_calAnchorIdx())];
+      try{if(d&&d.isoDate)localStorage.setItem('palo-calday-'+currentTripId,d.isoDate);}catch(e){}
+    }
+    function _restoreCalPage(){
+      if(!DAYS.length){calPage=0;return;}
+      var iso=null;try{iso=localStorage.getItem('palo-calday-'+currentTripId);}catch(e){}
+      var idx=iso?DAYS.findIndex(function(d){return d.isoDate===iso;}):-1;
+      if(idx<0){
+        var n=new Date(),today=n.getFullYear()+'-'+('0'+(n.getMonth()+1)).slice(-2)+'-'+('0'+n.getDate()).slice(-2);
+        idx=DAYS.findIndex(function(d){return d.isoDate===today;});
+      }
+      _setCalAnchor(idx<0?0:idx);
+    }
+    function _onCalResize(){
+      calPage=_calPageForAnchor();
+      _clampCalPage();
+      renderCal();
+    }
+    function renderCalSkeleton(){
+      var pn=document.getElementById('calPageNav');if(pn){pn.className='cal-page-nav';pn.innerHTML='';}
+      var dn=document.getElementById('calDayNav');if(dn)dn.innerHTML='<div class="skel-line" style="height:28px;width:100%;margin:6px 0"></div>';
+      var n=window.innerWidth<=768?1:Math.max(1,Math.min(5,calDaysPerPage()));
+      var hd=document.getElementById('calHeaderRow'),bd=document.getElementById('calBodyRow');
+      hd.style.setProperty('--day-count',n);bd.style.setProperty('--day-count',n);
+      var h='<div class="cal-header-time"></div>',b='<div class="cal-time-col">';
+      for(var hr=START_HR;hr<END_HR;hr++){var lbl=hr===12?'12PM':hr>12?(hr-12)+'PM':hr+'AM';b+='<div class="cal-time-slot">'+lbl+'</div>';}
+      b+='</div>';
+      for(var i=0;i<n;i++){
+        h+='<div class="cal-day-header"><div class="skel-line" style="height:14px;width:60%;margin-bottom:6px"></div><div class="skel-line" style="height:10px;width:40%"></div></div>';
+        b+='<div class="cal-day-col" style="pointer-events:none">';
+        for(var j=0;j<TOTAL_HRS;j++)b+='<div class="hour-line" style="top:'+(j*HOUR_PX)+'px"></div>';
+        [[1+i%2,1.5],[4,1],[7-(i%3),2]].forEach(function(e){b+='<div class="skel-line" style="position:absolute;left:6px;right:6px;top:'+(e[0]*HOUR_PX)+'px;height:'+(e[1]*HOUR_PX-4)+'px;border-radius:8px;opacity:0.7"></div>';});
+        b+='</div>';
+      }
+      hd.innerHTML=h;bd.innerHTML=b;
+    }
+    // Mobile day swipe. Direction-locks after 8px so vertical scrolling stays native
+    // (touch-action:pan-y); follows the finger 1:1, rubber-bands at the first/last day,
+    // and commits on distance OR a quick flick (velocity), not distance alone.
+    function _initCalSwipe(){
+      var el=document.getElementById('calBodyRow');if(!el||el._swipeInit)return;el._swipeInit=true;
+      var pid=null,sx=0,sy=0,st=0,dx=0,lock=null,suppressClick=false;
+      el.addEventListener('pointerdown',function(e){
+        if(window.innerWidth>768||e.pointerType==='mouse'||pid!==null)return; // ignore extra fingers
+        pid=e.pointerId;sx=e.clientX;sy=e.clientY;st=performance.now();dx=0;lock=null;suppressClick=false;
+      });
+      el.addEventListener('pointermove',function(e){
+        if(e.pointerId!==pid)return;
+        var mx=e.clientX-sx,my=e.clientY-sy;
+        if(lock===null){
+          if(Math.abs(mx)<8&&Math.abs(my)<8)return;
+          lock=Math.abs(mx)>Math.abs(my)*1.3?'x':'y';
+          if(lock==='x'){try{el.setPointerCapture(pid);}catch(_){}el.style.transition='none';suppressClick=true;}
+        }
+        if(lock!=='x')return;
+        var edge=(mx>0&&calPage<=0)||(mx<0&&calPage>=DAYS.length-1);
+        dx=edge?mx*0.25:mx;
+        el.style.transform='translateX('+dx+'px)';
+      });
+      function end(e){
+        if(e.pointerId!==pid)return;pid=null;
+        if(lock!=='x')return;
+        var v=Math.abs(dx)/Math.max(1,performance.now()-st),dir=dx<0?1:-1,target=calPage+dir;
+        var commit=target>=0&&target<DAYS.length&&(Math.abs(dx)>70||v>0.11)&&e.type!=='pointercancel';
+        if(commit){
+          el.style.transition='none';el.style.transform='';
+          setCalPage(target);
+          el.classList.remove('cal-swipe-enter-next','cal-swipe-enter-prev');void el.offsetWidth;
+          el.classList.add(dir>0?'cal-swipe-enter-next':'cal-swipe-enter-prev');
+        } else {
+          el.style.transition='transform 200ms var(--ease-out)';el.style.transform='';
+        }
+      }
+      el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end);
+      el.addEventListener('animationend',function(){el.classList.remove('cal-swipe-enter-next','cal-swipe-enter-prev');});
+      // A swipe must never open the event or the add-block modal under the finger.
+      el.addEventListener('click',function(e){if(suppressClick){suppressClick=false;e.stopPropagation();e.preventDefault();}},true);
+    }
+    function renderCal(){
+      _initCalSwipe();
+      if(_tripLoading){renderCalSkeleton();return;}
+      _clampCalPage();
+      renderCalPageNav();renderCalDayNav();renderCalHeader();renderCalBody();
+    }
     function renderCalPageNav(){
       var el=document.getElementById('calPageNav');if(!el)return;
       var isMob=window.innerWidth<=768;
@@ -4000,12 +4387,16 @@
       var isMob=window.innerWidth<=768;
       if(isMob){
         calPage=Math.max(0,Math.min(DAYS.length-1,idx));
+        _calAnchor=calPage;
         renderCalDayNav();renderCalBody();
       } else {
-        var tp=calTotalPages();
+        var tp=calTotalPages(),pp=calDaysPerPage();
         calPage=Math.max(0,Math.min(tp-1,idx));
+        // Keep the exact anchor day if it's on the new page; otherwise use the page's first day.
+        if(Math.floor(_calAnchor/pp)!==calPage)_calAnchor=Math.min(DAYS.length-1,calPage*pp);
         renderCalPageNav();renderCalHeader();renderCalBody();
       }
+      _saveCalAnchor();
     }
     function renderCalHeader(){
       var el=document.getElementById('calHeaderRow');
@@ -4030,11 +4421,12 @@
         h+='<div class="cal-ghost-slot"><span></span></div>';
         for(var i=0;i<TOTAL_HRS;i++)h+='<div class="hour-line" style="top:'+(i*HOUR_PX)+'px"></div>';
         sorted.forEach(function(ev){
-          var top=evTop(ev.time),height=Math.max(evH(ev.time,ev.endTime),46);
+          var rawH=evH(ev.time,ev.endTime),compact=rawH<46;
+          var top=evTop(ev.time),height=Math.max(rawH,compact?26:46);
           var isPlace=ev.id.indexOf('wl_ev_')===0;
           var evBg=isPlace?'rgba(99,102,241,0.18)':'rgba(148,163,184,0.16)';
           var evFg=isPlace?'#6366f1':'var(--text-secondary)';
-          var cls='cal-event'+(ev.optional?' optional':'');
+          var cls='cal-event'+(ev.optional?' optional':'')+(compact?' compact':'');
           var lyt=layout[ev.id]||{col:0,total:1};
           var ps=lyt.total===1?'left:6px;right:6px;':'left:calc('+(lyt.col*100/lyt.total)+'% + 2px);width:calc('+(100/lyt.total)+'% - 4px);right:auto;';
           h+='<div class="'+cls+'" style="top:'+top+'px;height:'+height+'px;background:'+evBg+';'+ps+'z-index:'+(lyt.col+2)+'" onclick="event.stopPropagation();openEdit(\''+day.id+'\',\''+ev.id+'\')" title="'+ev.title+'">';
@@ -4049,7 +4441,9 @@
         h+='</div>';
       });
       el.innerHTML=h;
-      setTimeout(function(){ scrollCalToFirstEvent(); renderCalNowLine(); }, 0);
+      var sk=currentTripId+':'+days.map(function(d){return d.id;}).join(',');
+      var doScroll=sk!==_calScrollKey;_calScrollKey=sk;
+      setTimeout(function(){ if(doScroll)scrollCalToFirstEvent(); renderCalNowLine(); }, 0);
     }
     function scrollCalToFirstEvent(){
       var days=calPageDays();
@@ -4059,6 +4453,14 @@
       var earliest=Math.min.apply(null,mins);
       var scrollTop=Math.max(0,((earliest-START_HR*60)/60)*HOUR_PX-56);
       var outer=document.getElementById('calScrollOuter');
+      if(window.innerWidth<=768){
+        // Mobile uses normal body scroll; offset by the sticky header + day nav.
+        var body=document.getElementById('calBodyRow');if(!body)return;
+        var nav=document.getElementById('calDayNav'),hdr=document.querySelector('.app-header');
+        var stick=(hdr?hdr.offsetHeight:56)+(nav?nav.offsetHeight:0);
+        window.scrollTo({top:Math.max(0,body.getBoundingClientRect().top+window.scrollY+scrollTop-stick),behavior:'auto'});
+        return;
+      }
       if(outer)outer.scrollTop=scrollTop;
     }
     function renderCalNowLine(){
@@ -4134,7 +4536,8 @@
       var idx=DAYS.findIndex(function(d){return d.id===dayId;});
       if(idx>=0){
         var isMob=window.innerWidth<=768;
-        calPage=isMob?idx:Math.floor(idx/calDaysPerPage());
+        _setCalAnchor(idx);
+        _saveCalAnchor();
       }
       switchView('calendar');
     }
@@ -4190,8 +4593,60 @@
       if(leafletMap)rebuildMarkers();
     }
 
+    // ---- Bottom sheet drag: 1:1 tracking, rubber-band at bounds, momentum-projected snap ----
+    var _mapSheetCollapsed=false;
+    function _mapSheetCollapsedY(el){
+      var cards=el.querySelector('.map-mob-cards');
+      if(!cards)return 0;
+      return Math.max(0, el.offsetHeight - cards.offsetTop - 10);
+    }
+    function _applyMapSheetState(animate){
+      var el=document.getElementById('mapMobSheet');if(!el)return;
+      var y=_mapSheetCollapsed?_mapSheetCollapsedY(el):0;
+      el.style.transition=animate?'transform 340ms var(--ease-out)':'none';
+      el.style.transform='translateY('+y+'px)';
+    }
+    function _initMapSheetDrag(){
+      var el=document.getElementById('mapMobSheet');if(!el||el._dragInit)return;el._dragInit=true;
+      var startPY=0,startY=0,dragging=false,moved=false,hist=[];
+      function liveY(){
+        var tr=getComputedStyle(el).transform;
+        if(!tr||tr==='none')return 0;
+        try{return new DOMMatrixReadOnly(tr).m42;}catch(err){return 0;}
+      }
+      function rubber(over,dim){var c=0.55;return (over*dim*c)/(dim+c*Math.abs(over));}
+      el.addEventListener('pointerdown',function(e){
+        if(e.target.closest('button')||e.target.closest('.map-mob-card'))return;
+        dragging=true;moved=false;hist=[{y:e.clientY,t:e.timeStamp}];
+        startPY=e.clientY;startY=liveY();
+        el.style.transition='none';el.style.transform='translateY('+startY+'px)';
+        el.setPointerCapture(e.pointerId);
+      });
+      el.addEventListener('pointermove',function(e){
+        if(!dragging)return;
+        var dy=e.clientY-startPY;if(Math.abs(dy)>4)moved=true;
+        var y=startY+dy,max=_mapSheetCollapsedY(el);
+        if(y<0)y=rubber(y,el.offsetHeight);
+        else if(y>max)y=max+rubber(y-max,el.offsetHeight);
+        hist.push({y:e.clientY,t:e.timeStamp});if(hist.length>6)hist.shift();
+        el.style.transform='translateY('+y+'px)';
+      });
+      function release(){
+        if(!dragging)return;dragging=false;
+        if(!moved){_mapSheetCollapsed=!_mapSheetCollapsed;_applyMapSheetState(true);return;}
+        var max=_mapSheetCollapsedY(el),y=liveY(),b=hist[hist.length-1],a=hist[0],v=0;
+        for(var i=hist.length-2;i>=0;i--){if(b.t-hist[i].t>50){a=hist[i];break;}}
+        if(b.t>a.t)v=(b.y-a.y)/(b.t-a.t)*1000;
+        var proj=y+(v/1000)*0.998/(1-0.998);
+        _mapSheetCollapsed=proj>max/2;
+        _applyMapSheetState(true);
+      }
+      el.addEventListener('pointerup',release);
+      el.addEventListener('pointercancel',release);
+    }
     function renderMapMobSheet(){
       var el=document.getElementById('mapMobSheet');if(!el)return;
+      _initMapSheetDrag();
       if(mapFilter==='wishlist'){
         var unassigned=WISHLIST.filter(function(w){return !w.calDayId;});
         var cards=unassigned.map(function(w){
@@ -4208,6 +4663,7 @@
         el.innerHTML='<div class="map-mob-handle"></div>'+
           '<div class="map-mob-title-row"><div class="map-mob-title" style="color:#8b5cf6;display:flex;align-items:center;gap:5px">'+icon('star',15)+' '+t('unassignedPlaces')+'</div></div>'+
           '<div class="map-mob-cards">'+(cards||'<div style="padding:16px;font-size:0.82rem;color:var(--text-secondary)">'+t('noUnassigned')+'</div>')+'</div>';
+        _applyMapSheetState(false);
         return;
       }
       var day=DAYS[mapMobDay];if(!day){el.innerHTML='';return;}
@@ -4225,13 +4681,14 @@
         '<div class="map-mob-label">'+STRINGS.dayN[currentLang](mapMobDay+1)+'</div>'+
         (weatherData[dayIsoDate(day)]?'<div class="mob-weather-row">'+weatherData[dayIsoDate(day)].icon+' <span>'+weatherData[dayIsoDate(day)].tempMax+'° / '+weatherData[dayIsoDate(day)].tempMin+'°</span></div>':'')+
         '<div class="map-mob-title-row">'+
-          '<div class="map-mob-title">'+day.date+' — '+day.theme+'</div>'+
+          '<div class="map-mob-title">'+day.date+(day.theme?' — '+day.theme:'')+'</div>'+
           '<div class="map-mob-btns">'+
             '<button class="map-mob-btn map-mob-btn-add" onclick="openCalAdd(\''+day.id+'\',null)" title="'+t('addPlace')+'" style="background:var(--accent);color:var(--accent-fg);border-color:transparent;font-size:1.2rem;font-weight:300">+</button>'+
             '<button class="map-mob-btn" onclick="goToCalDay(\''+day.id+'\')" title="'+t('viewInCalendar')+'">'+icon('calendar',16)+'</button>'+
           '</div>'+
         '</div>'+
         '<div class="map-mob-cards">'+cards+'</div>';
+      _applyMapSheetState(false);
     }
 
     function setMapMobDay(idx){
@@ -4290,54 +4747,88 @@
       renderMapList();
       if(leafletMap)rebuildMarkers();
     }
+    var _mapInitTimer=null;
+    function _fitMapToMarkers(){
+      if(!leafletMap||!mapMarkers.length)return;
+      leafletMap.fitBounds(L.featureGroup(mapMarkers).getBounds(),{padding:[50,50],maxZoom:15});
+    }
     function initMap(){
+      _mapInitTimer=null;
       if(typeof L==='undefined')return;
-      if(leafletMap){setTimeout(function(){leafletMap.invalidateSize(true);rebuildMarkers();},150);return;}
+      // Leaflet sizes itself from the container; building it while the Map tab is hidden
+      // (user already switched away) yields a 0×0 map with missing tiles.
+      if(currentView!=='map'||!document.getElementById('view-map').classList.contains('active'))return;
+      if(leafletMap){setTimeout(function(){if(!leafletMap)return;leafletMap.invalidateSize(true);rebuildMarkers();},150);return;}
       var hh=(document.querySelector('.app-header')||{offsetHeight:57}).offsetHeight;
       document.getElementById('leaflet-map').style.height=(window.innerHeight-hh)+'px';
       var defaultCenter = (currentTripMeta && currentTripMeta.cityLat && currentTripMeta.cityLng) ? [currentTripMeta.cityLat, currentTripMeta.cityLng] : [19.434, -99.162];
       var isMob=window.innerWidth<=768;
-      leafletMap=L.map('leaflet-map',{zoomControl:false}).setView(defaultCenter,13);
+      leafletMap=L.map('leaflet-map',{zoomControl:false,attributionControl:false}).setView(defaultCenter,13);
+      L.control.attribution({position:isMob?'topright':'bottomright',prefix:false}).addTo(leafletMap);
       if(!isMob) L.control.zoom({position:'topleft'}).addTo(leafletMap);
       setTiles(currentTheme==='dark');
       if(window.innerWidth<=768&&DAYS.length){mapFilter=DAYS[mapMobDay].id;}
       rebuildMarkers();
       setTimeout(function(){
+        if(!leafletMap)return;
         leafletMap.invalidateSize(true);
         if(window.innerWidth<=768&&DAYS.length)fitMapToDay(mapMobDay);
+        else _fitMapToMarkers();
       },300);
     }
+    // CARTO basemaps now require an API key (they serve "API KEY REQUIRED" watermark
+    // tiles), so we use Esri's keyless gray canvas. Native detail stops at z16; Leaflet
+    // upscales beyond. If Esri tiles keep failing, fall back to standard OSM tiles.
+    var _tileErrCount=0,_tileFallback=false;
     function setTiles(dark){
+      if(!leafletMap)return;
       if(tileLayer)leafletMap.removeLayer(tileLayer);
-      tileLayer=L.tileLayer(dark?'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png':'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'© OpenStreetMap, © CARTO',subdomains:'abcd',maxZoom:19}).addTo(leafletMap);
+      _tileErrCount=0;
+      if(_tileFallback){
+        tileLayer=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors',maxZoom:19}).addTo(leafletMap);
+        return;
+      }
+      tileLayer=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/'+(dark?'World_Dark_Gray_Base':'World_Light_Gray_Base')+'/MapServer/tile/{z}/{y}/{x}',{attribution:'Tiles © Esri — Esri, HERE, Garmin, © OpenStreetMap contributors',maxNativeZoom:16,maxZoom:19}).addTo(leafletMap);
+      tileLayer.on('tileerror',function(){ if(++_tileErrCount>=6&&!_tileFallback){_tileFallback=true;setTiles(dark);} });
     }
     function clearRoutes(){
-      mapRoutes.forEach(function(r){leafletMap.removeLayer(r);});mapRoutes=[];
+      if(leafletMap)mapRoutes.forEach(function(r){leafletMap.removeLayer(r);});mapRoutes=[];
+    }
+    // OSRM's public demo server rate-limits hard, and every rerender/tab switch rebuilds
+    // routes — cache per coordinate string so we only ever ask once per day layout.
+    var _routeCache={};
+    async function _fetchRoute(coords){
+      if(_routeCache[coords])return _routeCache[coords];
+      var ctl=typeof AbortController!=='undefined'?new AbortController():null;
+      var to=setTimeout(function(){if(ctl)ctl.abort();},8000);
+      try{
+        var r=await fetch('https://router.project-osrm.org/route/v1/walking/'+coords+'?overview=full&geometries=geojson',ctl?{signal:ctl.signal}:{});
+        if(!r.ok)throw new Error('OSRM '+r.status);
+        var data=await r.json();
+        if(data.code!=='Ok'||!data.routes||!data.routes[0])throw new Error('OSRM '+(data.code||'no route'));
+        var latlngs=data.routes[0].geometry.coordinates.map(function(c){return[c[1],c[0]];});
+        _routeCache[coords]=latlngs;
+        return latlngs;
+      }finally{clearTimeout(to);}
     }
     async function buildRoutes(){
       var bid=++_routeBuildId;
       var days=DAYS.filter(function(d){return mapFilter==='all'||mapFilter===d.id;});
-      for(var i=0;i<days.length;i++){
-        var day=days[i];
+      // Sequential on purpose: the demo server allows ~1 req/s. Cached days are instant.
+      for(var i=0;i<days.length;i++){ await (async function(day){
         var pts=sortEvs(day.events).filter(function(e){return e.lat&&e.lng;});
-        if(pts.length<2)continue;
+        if(pts.length<2)return;
         var coords=pts.map(function(e){return e.lng+','+e.lat;}).join(';');
+        var poly;
         try{
-          var r=await fetch('https://router.project-osrm.org/route/v1/walking/'+coords+'?overview=full&geometries=geojson');
-          var data=await r.json();
-          if(bid!==_routeBuildId)return;
-          if(data.routes&&data.routes[0]){
-            var latlngs=data.routes[0].geometry.coordinates.map(function(c){return[c[1],c[0]];});
-            var poly=L.polyline(latlngs,{color:day.color,weight:3,opacity:0.55,lineJoin:'round'});
-            poly.addTo(leafletMap);mapRoutes.push(poly);
-          }
+          var latlngs=await _fetchRoute(coords);
+          poly=L.polyline(latlngs,{color:day.color,weight:3,opacity:0.55,lineJoin:'round'});
         }catch(e){
-          if(bid!==_routeBuildId)return;
-          var latlngs=pts.map(function(e){return[e.lat,e.lng];});
-          var poly=L.polyline(latlngs,{color:day.color,weight:2,opacity:0.35,dashArray:'6 5'});
-          poly.addTo(leafletMap);mapRoutes.push(poly);
+          poly=L.polyline(pts.map(function(e){return[e.lat,e.lng];}),{color:day.color,weight:2,opacity:0.35,dashArray:'6 5'});
         }
-      }
+        if(bid!==_routeBuildId||!leafletMap)return;
+        poly.addTo(leafletMap);mapRoutes.push(poly);
+      })(days[i]); if(bid!==_routeBuildId)return; }
     }
     function rebuildMarkers(){
       clearRoutes();
@@ -4590,6 +5081,12 @@
     // ==================== WISHLIST ====================
     function renderWishlist(){
       var c=document.getElementById('wishlistContent');
+      if(_tripLoading){
+        c.innerHTML='<div class="dash-grid" style="margin-top:16px">'+[0,1,2,3,4,5].map(function(){
+          return '<div class="skel-card" style="padding:0;overflow:hidden"><div class="skel-line" style="height:120px;border-radius:0"></div><div style="padding:14px;display:flex;flex-direction:column;gap:8px"><div class="skel-line" style="height:14px;width:70%"></div><div class="skel-line" style="height:11px;width:45%"></div><div class="skel-line" style="height:26px;width:100%;margin-top:6px;border-radius:8px"></div></div></div>';
+        }).join('')+'</div>';
+        return;
+      }
       var isHtF=currentTripMeta&&currentTripMeta.type==='hometown';
       var filtered=WISHLIST.filter(function(w){
         return(wishCatFilter==='all'||w.category===wishCatFilter)&&(isHtF||wishStatusFilter==='all'||(wishStatusFilter==='scheduled'&&w.visited)||(wishStatusFilter==='unscheduled'&&!w.visited));
@@ -4859,11 +5356,13 @@
 
       var token = getPlacesSessionToken();
       resetPlacesSessionToken();
+      var spTrip = currentTripId;
 
       // Fetch place details
       try {
         var res = await fetch(WORKER_BASE + '/api/places/details?placeId=' + encodeURIComponent(place.placeId) + '&sessionToken=' + encodeURIComponent(token));
         var d = await res.json();
+        if (currentTripId !== spTrip) return;
 
         // Clear the input that triggered the search
         if (dropdownId !== 'wishPlaceDropdown') {
@@ -5126,14 +5625,16 @@
       url=extractMapsUrl(url);
       if(!url)return;
       input.value='';input.placeholder=t('loadingPlace');
+      var qaTrip=currentTripId;
       if(/maps\.app\.goo\.gl|goo\.gl\/maps/.test(url)){
         fetch('https://palo-travel-expand-url.jihoon8846.workers.dev/api/expand-url?url='+encodeURIComponent(url))
           .then(function(r){return r.json();})
           .then(function(d){
+            if(currentTripId!==qaTrip)return;
             _addQuickPlace(d.url||url,d.name||'',d.address||'',d.lat,d.lng,d.category||'');
             input.placeholder=t('quickAddPlaceholder');
           })
-          .catch(function(){_addQuickPlace(url,'','',null,null,'');input.placeholder=t('quickAddPlaceholder');});
+          .catch(function(){if(currentTripId!==qaTrip)return;_addQuickPlace(url,'','',null,null,'');input.placeholder=t('quickAddPlaceholder');});
       } else {
         _addQuickPlace(url,'','',null,null,'');
         input.placeholder=t('quickAddPlaceholder');
@@ -5472,7 +5973,9 @@
       closeCalAdd();rerender();
     }
     async function deleteWishItem(){
-      if(!editingWishId)return;if(!confirm(t('confirmDeletePlace')))return;
+      if(!editingWishId)return;
+      if(!_tripDataConfirmed){showSaveToast(t('slowLoading'),'!');return;}
+      if(!confirm(t('confirmDeletePlace')))return;
       var w=WISHLIST.find(function(x){return x.id===editingWishId;});
       if(w&&w.calDayId&&w.calEventId){var day=DAYS.find(function(d){return d.id===w.calDayId;});if(day)day.events=day.events.filter(function(e){return e.id!==w.calEventId;});}
       WISHLIST=WISHLIST.filter(function(x){return x.id!==editingWishId;});
@@ -5512,7 +6015,7 @@
       }
       renderSchedModal();document.getElementById('schedModal').classList.add('open');
     }
-    function closeSchedModal(){document.getElementById('schedModal').classList.remove('open');document.removeEventListener('mousemove',onSchedDrag);document.removeEventListener('mouseup',onSchedDragEnd);schedDragType=null;}
+    function closeSchedModal(){document.getElementById('schedModal').classList.remove('open');document.removeEventListener('pointermove',onSchedDrag);document.removeEventListener('pointerup',onSchedDragEnd);document.removeEventListener('pointercancel',onSchedDragEnd);schedDragType=null;}
     function renderSchedModal(){
       var w=WISHLIST.find(function(x){return x.id===schedWishId;});if(!w)return;
       var isEdit=!!(w.calDayId&&w.calEventId),hv=Math.floor(schedStartMin/60),mv=schedStartMin%60;
@@ -5539,7 +6042,7 @@
         h+='<div class="sched-ev-block" style="top:'+((sm/60-S)*PX)+'px;height:'+Math.max(18,(em-sm)/60*PX)+'px;background:'+day.color+'25;border-left:3px solid '+day.color+'"><div style="font-size:0.68rem;font-weight:700;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">'+ev.title+'</div><div style="font-size:0.6rem;opacity:0.7">'+fmtTime(ev.time)+(ev.endTime?' – '+fmtTime(ev.endTime):'')+'</div></div>';
       });
       var nt=(schedStartMin/60-S)*PX,nh=Math.max(20,schedDurMin/60*PX);
-      h+='<div class="sched-new-block" id="schedNewBlock" style="top:'+nt+'px;height:'+nh+'px" onmousedown="startSchedDrag(event)"><div style="font-size:0.7rem;font-weight:700;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">'+(w?w.name:'')+'</div><div style="font-size:0.62rem;opacity:0.9">'+minToStr(schedStartMin)+' – '+minToStr(schedStartMin+schedDurMin)+'</div><div class="sched-resize-handle" onmousedown="startSchedResize(event)">⠿</div></div></div>';
+      h+='<div class="sched-new-block" id="schedNewBlock" style="top:'+nt+'px;height:'+nh+'px" onpointerdown="startSchedDrag(event)"><div style="font-size:0.7rem;font-weight:700;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">'+(w?w.name:'')+'</div><div style="font-size:0.62rem;opacity:0.9">'+minToStr(schedStartMin)+' – '+minToStr(schedStartMin+schedDurMin)+'</div><div class="sched-resize-handle" onpointerdown="startSchedResize(event)">⠿</div></div></div>';
       return h;
     }
     function attachSchedCalEvents(){
@@ -5551,10 +6054,10 @@
         syncSchedInputs();refreshSchedCal();
       });
     }
-    function startSchedDrag(e){e.preventDefault();schedDragType='move';schedDragStartY=e.clientY;schedDragStartMin=schedStartMin;document.addEventListener('mousemove',onSchedDrag);document.addEventListener('mouseup',onSchedDragEnd);}
-    function startSchedResize(e){e.preventDefault();e.stopPropagation();schedDragType='resize';schedDragStartY=e.clientY;schedDragStartDur=schedDurMin;document.addEventListener('mousemove',onSchedDrag);document.addEventListener('mouseup',onSchedDragEnd);}
+    function startSchedDrag(e){e.preventDefault();schedDragType='move';schedDragStartY=e.clientY;schedDragStartMin=schedStartMin;document.addEventListener('pointermove',onSchedDrag);document.addEventListener('pointerup',onSchedDragEnd);document.addEventListener('pointercancel',onSchedDragEnd);}
+    function startSchedResize(e){e.preventDefault();e.stopPropagation();schedDragType='resize';schedDragStartY=e.clientY;schedDragStartDur=schedDurMin;document.addEventListener('pointermove',onSchedDrag);document.addEventListener('pointerup',onSchedDragEnd);document.addEventListener('pointercancel',onSchedDragEnd);}
     function onSchedDrag(e){var dm=Math.round((e.clientY-schedDragStartY)/44*60/15)*15;if(schedDragType==='move')schedStartMin=Math.max(8*60,Math.min(22*60,schedDragStartMin+dm));else schedDurMin=Math.max(15,schedDragStartDur+dm);syncSchedInputs();refreshSchedCal();}
-    function onSchedDragEnd(){schedDragType=null;document.removeEventListener('mousemove',onSchedDrag);document.removeEventListener('mouseup',onSchedDragEnd);}
+    function onSchedDragEnd(){schedDragType=null;document.removeEventListener('pointermove',onSchedDrag);document.removeEventListener('pointerup',onSchedDragEnd);document.removeEventListener('pointercancel',onSchedDragEnd);}
     function syncSchedInputs(){var hi=document.getElementById('schedHour'),ms=document.getElementById('schedMin'),ds=document.getElementById('schedDur');if(hi)hi.value=Math.floor(schedStartMin/60);if(ms)ms.value=schedStartMin%60;if(ds){var durs=[30,60,90,120,180,240];schedDurMin=durs.reduce(function(p,c){return Math.abs(c-schedDurMin)<Math.abs(p-schedDurMin)?c:p;});ds.value=schedDurMin;}}
     function refreshSchedCal(){var cal=document.getElementById('schedCal');if(cal){cal.innerHTML=renderSchedCalInner();setTimeout(attachSchedCalEvents,0);}}
     function onSchedTimeChange(){var h=Math.max(8,Math.min(22,parseInt(document.getElementById('schedHour').value)||10)),m=parseInt(document.getElementById('schedMin').value)||0;schedStartMin=h*60+m;refreshSchedCal();}
