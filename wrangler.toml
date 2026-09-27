@@ -1,3 +1,7 @@
 name = "palo-travel-expand-url"
 main = "worker.js"
 compatibility_date = "2024-01-01"
+account_id = "824c95afa2c11ff319fb7ff2701f3f14"
+
+[triggers]
+crons = ["0 9 * * *"]
