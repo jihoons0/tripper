@@ -251,7 +251,20 @@ const GTYPE_TO_CAT = {
   lodging: 'hotel', hotel: 'hotel', resort_hotel: 'hotel',
   airport: 'transport', train_station: 'transport', bus_station: 'transport', transit_station: 'transport',
   subway_station: 'transport',
+  // Shopping = retail destinations from Google's "Shopping" table. Grocery/errand types (supermarket, grocery_store,
+  // convenience_store, food_store, liquor_store, market, farmers_market, hardware_store, auto_parts_store, pet_store, ...)
+  // stay unmapped -> 'other'.
+  shopping_mall: 'shopping', department_store: 'shopping', clothing_store: 'shopping', womens_clothing_store: 'shopping',
+  shoe_store: 'shopping', jewelry_store: 'shopping', cosmetics_store: 'shopping', gift_shop: 'shopping',
+  book_store: 'shopping', tea_store: 'shopping', electronics_store: 'shopping', cell_phone_store: 'shopping',
+  sporting_goods_store: 'shopping', sportswear_store: 'shopping', toy_store: 'shopping', thrift_store: 'shopping',
+  flea_market: 'shopping', discount_store: 'shopping', general_store: 'shopping', furniture_store: 'shopping',
+  home_goods_store: 'shopping', bicycle_store: 'shopping',
+  store: 'shopping', // generic: honored only as primaryType (GTYPE_PRIMARY_ONLY)
 };
+
+// Generic types Google also attaches to pharmacies, gas stations, delis, dessert shops, etc.
+const GTYPE_PRIMARY_ONLY = new Set(['store']);
 
 const DISCOVER_CATEGORIES = {
   restaurants: { query: 'best restaurants in', type: 'restaurant', cat: 'food' },
@@ -260,6 +273,7 @@ const DISCOVER_CATEGORIES = {
   museums:     { query: 'top museums and attractions in', type: null, cat: 'culture' },
   bakeries:    { query: 'best bakeries and desserts in', type: 'bakery', cat: 'food' },
   parks:       { query: 'best parks and outdoor spots in', type: 'park', cat: 'culture' },
+  shopping:    { query: 'best shopping malls, department stores and boutiques in', type: null, cat: 'shopping' },
 };
 
 async function handlePlacesDiscover(request, env) {
@@ -323,11 +337,7 @@ async function handlePlacesDiscover(request, env) {
           photoUrl = buildPlacesPhotoProxyURL(origin, d.photos[0].name, 400);
         }
         const primaryType = d.primaryType || '';
-        let mappedCat = GTYPE_TO_CAT[primaryType] || '';
-        if (!mappedCat && d.types) {
-          for (const t of d.types) { if (GTYPE_TO_CAT[t]) { mappedCat = GTYPE_TO_CAT[t]; break; } }
-        }
-        if (!mappedCat) mappedCat = cat.cat;
+        const mappedCat = mapGoogleTypesToCategory(primaryType, d.types) || cat.cat;
 
         return {
           name: d.displayName?.text || '',
@@ -394,12 +404,7 @@ async function handlePlacesDetails(url, env) {
 
     // Map Google type to our category
     const primaryType = d.primaryType || '';
-    let category = GTYPE_TO_CAT[primaryType] || '';
-    if (!category && d.types) {
-      for (const t of d.types) {
-        if (GTYPE_TO_CAT[t]) { category = GTYPE_TO_CAT[t]; break; }
-      }
-    }
+    const category = mapGoogleTypesToCategory(primaryType, d.types);
 
     // Format opening hours into compact weekday strings
     let openingHours = null;
@@ -583,11 +588,11 @@ async function searchGooglePlace(query, apiKey) {
 }
 
 function mapGoogleTypesToCategory(primaryType, types) {
-  const allTypes = [primaryType, ...(types || [])].filter(Boolean);
-  for (const type of allTypes) {
-    const mapped = GTYPE_TO_CAT[type];
-    if (mapped) return mapped;
-  }
+  if (primaryType && GTYPE_TO_CAT[primaryType]) return GTYPE_TO_CAT[primaryType];
+  const rest = (types || []).filter(t => !GTYPE_PRIMARY_ONLY.has(t));
+  // A pre-shopping category wins over a retail tag (museum/temple/food court carrying gift_shop/shopping_mall keeps its category).
+  for (const t of rest) { const c = GTYPE_TO_CAT[t]; if (c && c !== 'shopping') return c; }
+  for (const t of rest) { const c = GTYPE_TO_CAT[t]; if (c) return c; }
   return '';
 }
 
@@ -603,6 +608,7 @@ function osmToCategory(cls, typ) {
   if (/^(aerodrome|airport|bus_station|railway|subway|ferry|taxi)$/.test(typ)) return 'transport';
   if (cls === 'amenity' && /^(bar|pub|restaurant|cafe|fast_food|food_court)$/.test(typ)) return 'food';
   if (cls === 'tourism') return 'culture';
+  if (cls === 'shop' && /^(mall|department_store|clothes|shoes|boutique|fashion|fashion_accessories|bag|leather|jewelry|watches|cosmetics|perfumery|gift|books|stationery|art|antiques|second_hand|charity|variety_store|general|electronics|mobile_phone|computer|camera|video_games|toys|games|sports|outdoor|bicycle|tea|furniture|interior_decoration|houseware|kitchen|craft|music|musical_instrument|anime)$/.test(typ)) return 'shopping';
   if (cls === 'shop') return 'other';
   return '';
 }

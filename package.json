@@ -5,7 +5,8 @@
     "start": "node server.js",
     "dev": "node --watch server.js",
     "feedback": "node fetch-feedback.js",
-    "feedback:resolve": "node fetch-feedback.js resolve"
+    "feedback:resolve": "node fetch-feedback.js resolve",
+    "test:sync": "node tests/sync.test.js"
   },
   "dependencies": {
     "express": "^4.18.2",
