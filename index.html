@@ -59,7 +59,6 @@
       --tab-active-bg:#000000; --tab-active-fg:#ffffff;
       --ev-place-bg:rgba(99,102,241,.20); --ev-place-fg:#c7d2fe; --ev-place-border:rgba(129,140,248,.36);
       --ev-block-bg:rgba(148,163,184,.12); --ev-block-border:rgba(148,163,184,.24);
-      --field-bg:#202020; --field-bg-focus:#262626; --field-border:rgba(255,255,255,.14); --field-ph:#8f8f8f;
       --now:#ef4444;
     }
     html.theme-light {
@@ -72,7 +71,6 @@
       --tab-active-bg:#F3F3F3; --tab-active-fg:#0f172a;
       --ev-place-bg:rgba(99,102,241,.10); --ev-place-fg:#4338ca; --ev-place-border:rgba(99,102,241,.30);
       --ev-block-bg:rgba(100,116,139,.08); --ev-block-border:rgba(100,116,139,.26);
-      --field-bg:#F4F4F5; --field-bg-focus:#FFFFFF; --field-border:rgba(0,0,0,.30); --field-ph:#5f6875;
       --now:#dc2626;
     }
     body { font-family:'Inter','Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif; background:var(--bg); color:var(--text); line-height:1.6; -webkit-font-smoothing:antialiased; transition:background 0.3s,color 0.3s; min-height:100vh; }
@@ -266,40 +264,24 @@
     .profile-popover-email { font-size:11px; color:var(--text-secondary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .profile-popover-btn { width:100%; margin-top:4px; padding:9px 12px; border:none; border-radius:7px; background:transparent; color:var(--text); font-size:13px; font-family:inherit; cursor:pointer; text-align:left; display:flex; align-items:center; gap:9px; transition:background 0.15s; }
     @media (hover:hover) and (pointer:fine) { .profile-popover-btn:hover { background:var(--surface-hover); } }
-    .nav-add-btn { width:36px; height:36px; padding:0; border-radius:50%; border:1px solid var(--border); background:var(--canvas-bg); color:var(--text); display:inline-flex; align-items:center; justify-content:center; cursor:pointer; transition:opacity var(--dur-small), transform var(--dur-micro) var(--ease-out), background var(--dur-small), border-color var(--dur-small); }
-    .nav-add-btn:hover { opacity:0.85; }
+    /* Add place, desktop (window wider than 1024px and a fine pointer): the primary action of the trip bar. Solid
+       --accent with --accent-fg, like .dash-cta-primary (white in dark, near-black in light), 40px like the tab pill
+       it sits beside. Tablets and phones get the floating .fab instead: the media query near .fab is the same test as
+       _useFab(). While the trip loads it keeps its place (the centred tab pill must not jump) and only looks off. */
+    .nav-add-btn { flex:none; height:40px; padding:0 16px 0 13px; gap:6px; border:0; border-radius:16px; background:var(--accent); color:var(--accent-fg); display:inline-flex; align-items:center; justify-content:center; font-family:inherit; font-size:0.82rem; font-weight:600; white-space:nowrap; cursor:pointer; transition:opacity var(--dur-small), transform var(--dur-micro) var(--ease-out); }
+    .nav-add-btn svg { flex:none; stroke-width:2; }
+    @media (hover:hover) and (pointer:fine) { .nav-add-btn:not([aria-disabled="true"]):hover { opacity:0.88; } }
     .nav-add-btn:active { transform:scale(0.96); }
-    .nav-add-btn[aria-disabled="true"], .nav-add-btn[aria-disabled="true"]:hover { opacity:0.4; cursor:default; }
+    .nav-add-btn:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+    .nav-add-btn[aria-disabled="true"] { opacity:0.4; cursor:default; }
     .nav-add-btn[aria-disabled="true"]:active { transform:none; }
-    .view-search-bar { margin-bottom:12px; }
-    /* Search field (Places tab + map sidebar): one rounded bar with a leading magnifier. The bar carries the fill,
-       border and focus ring, the input inside is bare; --fp-bd lets the open suggestions share the border colour.
-       The clear button shows while the field has text, in CSS alone (:placeholder-shown), so the panel HTML that
-       holds it is never re-rendered to update it. */
-    .fp-search { --fp-bd:var(--field-border); position:relative; display:block; height:46px; border:1px solid var(--fp-bd); border-radius:12px; background:var(--field-bg); transition:border-color var(--dur-small), background var(--dur-small), box-shadow var(--dur-small); }
-    @media (hover:hover) and (pointer:fine) { .fp-search:hover:not(:focus-within) { --fp-bd:color-mix(in srgb, var(--text) 30%, transparent); } }
-    .fp-search:focus-within { --fp-bd:var(--accent); background:var(--field-bg-focus); box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent); outline:2px solid transparent; }
-    .fp-search-ic { position:absolute; left:14px; top:0; bottom:0; display:flex; align-items:center; color:var(--text-secondary); pointer-events:none; transition:color var(--dur-small); }
-    .fp-search:focus-within .fp-search-ic { color:var(--text); }
-    .fp-search-input { display:block; width:100%; height:100%; border:0; outline:0; border-radius:inherit; background:transparent; color:var(--text); font-family:inherit; font-size:0.95rem; padding:0 14px 0 42px; text-overflow:ellipsis; }
-    .fp-search-input::placeholder { color:var(--field-ph); opacity:1; }
-    .fp-search-clear { position:absolute; top:9px; right:9px; width:26px; height:26px; padding:0; border:0; border-radius:50%; background:color-mix(in srgb, var(--text) 12%, transparent); color:var(--text-secondary); display:none; align-items:center; justify-content:center; cursor:pointer; transition:background var(--dur-small), color var(--dur-small); }
-    .fp-search:has(.fp-search-input:not(:placeholder-shown)) .fp-search-clear { display:flex; }
-    .fp-search:has(.fp-search-input:not(:placeholder-shown)) .fp-search-input { padding-right:44px; }
-    .fp-search-clear:focus-visible { outline:2px solid var(--accent); outline-offset:1px; }
-    @media (hover:hover) and (pointer:fine) { .fp-search-clear:hover { background:color-mix(in srgb, var(--text) 22%, transparent); color:var(--text); } }
-    .fp-search-clear:active { background:color-mix(in srgb, var(--text) 26%, transparent); color:var(--text); }
-    @media (pointer:coarse) { .fp-search-clear::after { content:''; position:absolute; inset:-9px; } }
-    /* Suggestions attach flush under the bar: same width and radius, one shared border */
-    .fp-search .place-search-dropdown { top:100%; left:-1px; right:-1px; border:1px solid var(--fp-bd); border-top-color:var(--border-strong); border-radius:0 0 12px 12px; background:var(--field-bg-focus); box-shadow:0 14px 28px rgba(0,0,0,0.2); animation:viewFade var(--dur-small) ease both; }
-    .fp-search .place-search-option { margin:4px; padding:9px 12px; border-radius:8px; }
-    .fp-search:has(> .place-search-dropdown:not([style*="none"])) { border-bottom-color:transparent; border-bottom-left-radius:0; border-bottom-right-radius:0; box-shadow:none; }
 
-    /* Places add area: the search field, then Discover. No card around them, the field is the container. */
-    .wl-add-panel { margin-bottom:20px; display:flex; flex-direction:column; gap:12px; }
+    /* Places tab, top row: the Discover pills, a plain row with no card around it (editors of a trip with a city) */
+    .wl-add-panel { margin-bottom:20px; }
     .wl-add-panel .wl-discover { margin-bottom:0; display:flex; align-items:center; gap:10px; flex-wrap:nowrap; }
     .wl-add-panel .wl-discover-label { margin-bottom:0; flex-shrink:0; white-space:nowrap; }
-    .wl-add-panel .wl-discover-btns { flex:1; min-width:0; padding-bottom:0; }
+    /* A row wider than its space scrolls sideways: fade the pills out at the right edge instead of cutting one in half */
+    .wl-add-panel .wl-discover-btns { flex:1; min-width:0; padding-bottom:0; -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent 100%); mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent 100%); }
     .wl-discover { margin-bottom:14px; }
     .wl-discover-label { font-size:0.75rem; font-weight:600; color:var(--text-secondary); margin-bottom:6px; display:flex; align-items:center; gap:4px; }
     .wl-discover-btns { display:flex; gap:7px; overflow-x:auto; padding-bottom:4px; -webkit-overflow-scrolling:touch; }
@@ -363,7 +345,6 @@
       body.in-trip .view-tabs { width:auto; height:auto; padding:3px; gap:3px; border-radius:10px; background:var(--surface); border:1px solid var(--border); }
       body.in-trip .view-tab { height:26px; border-radius:7px; flex:0 0 auto; font-size:0.78rem; }
       body.in-trip .app-logo-flag { display:none !important; }
-      body.in-trip .nav-add-btn { display:none !important; }
     }
     /* Loading overlay */
     /* Centred by auto margins on the first and last child, not justify-content: content taller than the screen (the
@@ -545,9 +526,10 @@
     @media (hover:hover) and (pointer:fine) { .wl-time-remove:hover { background:rgba(245,158,11,0.1)!important; border-color:var(--warning)!important; } }
     .wl-del-btn { color:#ef4444!important; border-color:#ef444460!important; }
     @media (hover:hover) and (pointer:fine) { .wl-del-btn:hover { background:#ef444415!important; border-color:#ef4444!important; } }
-    .wl-empty { text-align:center; padding:60px 20px; color:var(--text-secondary); grid-column:1/-1; }
+    .wl-empty { text-align:center; padding:60px 20px; color:var(--text-secondary); grid-column:1/-1; word-break:keep-all; overflow-wrap:break-word; }
     .wl-empty-icon { font-size:3rem; margin-bottom:12px; }
-    .wl-empty-btn { margin-top:14px; min-height:40px; border-radius:10px; }
+    .wl-empty-btn { display:inline-flex; align-items:center; gap:6px; margin-top:14px; min-height:40px; border-radius:10px; }
+    @media (pointer:coarse) { .wl-empty-btn { min-height:44px; } }
     /* A just-added place rises in with a fading ring */
     @keyframes wlArrive { from { opacity:0; transform:translateY(12px) scale(0.98); } to { opacity:1; transform:none; } }
     @keyframes wlRing { 0%,35% { box-shadow:0 0 0 2px var(--accent),0 0 0 6px color-mix(in srgb,var(--accent) 22%,transparent); } 100% { box-shadow:0 0 0 2px transparent,0 0 0 14px transparent; } }
@@ -735,12 +717,29 @@
     .map-event-time { font-size:0.68rem; color:var(--text-secondary); white-space:nowrap; }
     .map-event-name { font-size:0.8rem; font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .map-group { margin-bottom:18px; }
-    /* FAB */
-    .fab { position:fixed; bottom:28px; right:28px; z-index:500; width:56px; height:56px; border-radius:50%; background:var(--accent); color:var(--accent-fg); border:none; font-size:26px; cursor:pointer; box-shadow:0 4px 16px rgba(0,0,0,0.25); display:flex; align-items:center; justify-content:center; transition:transform var(--dur-small) var(--ease-out), box-shadow var(--dur-small); }
-    .fab.fab-text { width:auto; height:48px; border-radius:24px; padding:0 20px; gap:8px; font-size:0.9rem; font-weight:700; letter-spacing:0.01em; }
-    @media (hover:hover) and (pointer:fine) { .fab:hover { transform:scale(1.06); box-shadow:0 8px 28px rgba(0,0,0,0.3); } }
+    /* FAB: Add place on tablets and phones. The media query below is the same test as _useFab() in JS (keep the two
+       in sync): a viewport of 1024px or less, or a coarse primary pointer (an iPad in landscape). Wider windows with
+       a fine pointer get .nav-add-btn in the trip bar instead. JS only says whether adding is allowed (inline
+       display:none otherwise); which of the two shows is decided here. Solid --accent like the navbar button. */
+    .fab { display:none; position:fixed; z-index:500; height:48px; padding:0 20px 0 16px; gap:8px; border:0; border-radius:24px; background:var(--accent); color:var(--accent-fg); font-family:inherit; font-size:0.9rem; font-weight:600; white-space:nowrap; cursor:pointer; align-items:center; justify-content:center;
+      box-shadow:0 1px 3px rgba(0,0,0,0.2), 0 8px 22px -6px rgba(0,0,0,0.35); transition:transform var(--dur-small) var(--ease-out), opacity var(--dur-small), bottom var(--dur-medium) var(--ease-out);
+      /* Tablet (the desktop chrome): inside the canvas card, whose margins are 20px at the sides and bottom, 16px in from its corner */
+      right:calc(max(20px, env(safe-area-inset-right)) + 16px); bottom:calc(36px + env(safe-area-inset-bottom,0px)); }
+    .fab svg { flex:none; stroke-width:2; }
+    /* On the tablet map, above the Leaflet credit along the map's bottom edge (it wraps to two lines on a narrow map and must stay readable) */
+    .fab.on-map { bottom:calc(68px + env(safe-area-inset-bottom,0px)); }
+    /* On the phone map it rides the bottom sheet: a child of the sheet, so it follows every drag and the collapse / expand for free */
+    .fab.on-sheet { position:absolute; right:16px; bottom:calc(100% + 12px); transition:transform var(--dur-small) var(--ease-out), opacity var(--dur-small); }
+    @media (hover:hover) and (pointer:fine) { .fab:hover { opacity:0.92; } }
     .fab:active { transform:scale(0.96); transition-duration:var(--dur-micro); }
-    .fab-label { display:none; }
+    .fab:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
+    @media (max-width:1024px), (pointer:coarse) {
+      .fab { display:inline-flex; }
+      .nav-add-btn { display:none !important; }
+      /* The last card, and the last hour of the calendar, scroll clear of the button */
+      body.in-trip .wishlist-view { padding-bottom:104px; }
+      .cal-body-row { padding-bottom:76px; }
+    }
     .weather-chip { font-size:0.72rem; color:var(--text-secondary); display:inline-flex; align-items:center; gap:3px; margin-top:3px; white-space:nowrap; }
     .wx-ic { display:inline-flex; flex:none; line-height:0; }
     .wx-ic svg { display:block; }
@@ -796,7 +795,7 @@
       html:has(.modal-overlay.open) .save-toast { top:calc(env(safe-area-inset-top,0px) + 10px); }
     }
     .save-toast.out { animation: toastOut 0.15s var(--ease-out) both; }
-    @media print { body{background:white!important;color:black!important} .viz-menu,.app-header,.modal-overlay,.loading-screen{display:none!important} .view{display:block!important} #view-map{display:none!important} .cal-scroll-outer{overflow:visible} }
+    @media print { body{background:white!important;color:black!important} .viz-menu,.app-header,.fab,.modal-overlay,.loading-screen{display:none!important} .view{display:block!important} #view-map{display:none!important} .cal-scroll-outer{overflow:visible} }
 
 
     /* ===== MOBILE POLISH ===== */
@@ -847,7 +846,7 @@
       transition-duration: var(--dur-small);
       transition-timing-function: var(--ease-out);
     }
-    .cal-nav-btn:not(:disabled):active, .map-mob-tab:active, .map-mob-btn:active, .wl-filter:active, .wl-discover-btn:not(:disabled):active, .wl-visited-toggle:active, .wl-view-toggle button:active, .viz-menu-toggle:active, .modal-close:active, .btn:active, .dash-cta-btn:active, .fab:active,
+    .cal-nav-btn:not(:disabled):active, .map-mob-tab:active, .map-mob-btn:active, .wl-filter:active, .wl-discover-btn:not(:disabled):active, .wl-visited-toggle:active, .wl-view-toggle button:active, .viz-menu-toggle:active, .modal-close:active, .btn:active, .dash-cta-btn:active,
     .edit-pill:active, .sched-day-btn:active, .disc-item-add:not(.added):active, .wl-vote-btn:not(:disabled):active, .day-chip:active, .map-mob-card:active, .cal-day-add:active { transform:scale(0.96); transition-duration:var(--dur-micro); }
     /* No UA tap flash (html sets it transparent), so rows that had no press state get a tint */
     .app-logo-text:not(:disabled):active, .lp-share-row:not(:disabled):active, .lp-button:active, .lp-toggle:active, .trip-dropdown-item:active, .viz-menu-dropdown button:active, .profile-popover-btn:active, .city-option:active, .place-search-option:active, .cal-pick-item:active, .cal-add-wish-item:active { background:color-mix(in srgb,var(--accent) 8%,var(--surface-hover)); transition-duration:var(--dur-micro); }
@@ -899,7 +898,7 @@
       .modal-close { position:relative; width:32px; height:32px; border-radius:50%; }
       .modal-close::after { content:''; position:absolute; inset:-6px; }
       .map-mob-sheet { padding-bottom:calc(28px + env(safe-area-inset-bottom)); }
-      .fab { bottom:calc(24px + env(safe-area-inset-bottom)); right:20px; }
+      .fab { right:max(16px, env(safe-area-inset-right)); bottom:calc(20px + env(safe-area-inset-bottom)); }
       /* Day swipe: body follows the finger horizontally, vertical scroll untouched */
       #calBodyRow { touch-action:pan-y pinch-zoom; }
       #calBodyRow.cal-swipe-enter-next { animation:calSwipeInNext 220ms var(--ease-out) both; }
@@ -986,6 +985,17 @@
       .map-mob-empty > span { flex:1; min-width:0; }
       .map-mob-empty-add { flex-shrink:0; min-height:38px; padding:0 14px; border-radius:10px; border:1px solid var(--border); background:var(--surface-hover); color:var(--text); font-family:inherit; font-size:0.8rem; font-weight:700; cursor:pointer; }
       .map-mob-empty-add:active { transform:scale(0.96); transition:transform var(--dur-micro); }
+      /* The sheet's own "+" adds to this day's schedule; the primary Add place action is the floating button above the
+         sheet (.fab.on-sheet), so the "+" stays a plain secondary button like the calendar one beside it. */
+      .map-mob-btn-place { display:none; }
+      /* A short landscape phone (about 420px or less): the expanded sheet fills most of the map, and the button riding
+         above it would land on the day pills and the map credit. Add place moves into the sheet's title row instead. */
+      @media (max-height:420px) {
+        .fab.on-sheet { display:none !important; }
+        .map-mob-btn-place { display:inline-flex; width:auto; padding:0 14px 0 12px; gap:6px; background:var(--accent); color:var(--accent-fg); border-color:transparent; font-family:inherit; font-size:0.82rem; font-weight:700; white-space:nowrap; }
+        .map-mob-btn-place svg { flex:none; stroke-width:2; }
+        @media (hover:hover) and (pointer:fine) { .map-mob-btn.map-mob-btn-place:hover { color:var(--accent-fg); border-color:transparent; opacity:0.88; } }
+      }
     }
     @media (max-width:768px) { .app-header{padding:9px 12px;padding-right:58px;gap:10px} .view-tab{padding:4px 9px;font-size:0.78rem} .map-sidebar{width:240px} .tab-label{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0} .app-header .nav-tabs-group{position:static;transform:none;margin-left:auto} .viz-menu-toggle{width:34px;height:34px;border-radius:8px} .share-status-btn{display:none !important} }
     /* DASHBOARD */
@@ -1092,6 +1102,8 @@
     .app-logo-name, .app-logo-name-text, .app-logo-compact, .app-logo-depart { min-width:0; overflow:hidden; text-overflow:ellipsis; }
     .app-header .nav-tabs-group { flex-shrink:0; }
     @media (min-width:769px) { body.in-trip:not(.left-panel-open) .app-header .app-logo-text { max-width:calc(50vw - 290px); } }
+    /* Desktop: the centred group is the tab pill plus the Add place button (about 250px either side of the middle), so the city gets less room */
+    @media (min-width:1025px) and (pointer:fine) { body.in-trip:not(.left-panel-open) .app-header .app-logo-text { max-width:calc(50vw - 322px); } }
     .trip-switcher-chevron { display:none; margin-left:2px; color:var(--text-secondary); transition:transform var(--dur-small) var(--ease-out); flex-shrink:0; }
     .app-logo-text[aria-expanded="true"] .trip-switcher-chevron { transform:rotate(180deg); }
     .trip-switcher.has-trip .trip-switcher-chevron { display:flex; align-items:center; }
@@ -1383,7 +1395,7 @@
         <button class="view-tab" id="tabMap" onclick="onTabTap('map')" role="tab" aria-selected="false" aria-controls="view-map" tabindex="-1"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75002V15M15 9.00002V17.25M15.5031 20.7485L20.3781 18.311C20.7592 18.1204 21 17.7309 21 17.3047V4.82031C21 3.98401 20.1199 3.44007 19.3719 3.81408L15.5031 5.74847C15.1864 5.90683 14.8136 5.90683 14.4969 5.74847L9.50312 3.25158C9.1864 3.09322 8.8136 3.09322 8.49688 3.25158L3.62188 5.68908C3.24075 5.87965 3 6.26919 3 6.69531V19.1797C3 20.016 3.8801 20.56 4.62811 20.186L8.49688 18.2516C8.8136 18.0932 9.1864 18.0932 9.50312 18.2516L14.4969 20.7485C14.8136 20.9068 15.1864 20.9068 15.5031 20.7485Z"/></svg> <span class="tab-label">Map</span></button>
         <button class="view-tab" id="tabPlaces" onclick="onTabTap('wishlist')" role="tab" aria-selected="false" aria-controls="view-wishlist" tabindex="-1"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M11.4806 3.4987C11.6728 3.03673 12.3272 3.03673 12.5193 3.4987L14.6453 8.61016C14.7263 8.80492 14.9095 8.93799 15.1197 8.95485L20.638 9.39724C21.1367 9.43722 21.339 10.0596 20.959 10.3851L16.7546 13.9866C16.5945 14.1238 16.5245 14.3391 16.5734 14.5443L17.8579 19.9292C17.974 20.4159 17.4446 20.8005 17.0176 20.5397L12.2932 17.6541C12.1132 17.5441 11.8868 17.5441 11.7068 17.6541L6.98238 20.5397C6.55539 20.8005 6.02594 20.4159 6.14203 19.9292L7.42652 14.5443C7.47546 14.3391 7.4055 14.1238 7.24531 13.9866L3.04099 10.3851C2.661 10.0596 2.86323 9.43722 3.36197 9.39724L8.88022 8.95485C9.09048 8.93799 9.27363 8.80492 9.35464 8.61016L11.4806 3.4987Z"/></svg> <span class="tab-label">Places</span></button>
       </div>
-      <button class="nav-add-btn" id="navAddBtn" onclick="openWishAdd()" aria-label="Add Place" style="display:none"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg></button>
+      <button type="button" class="nav-add-btn" id="navAddBtn" onclick="openWishAdd()" style="display:none"><span>Add Place</span></button>
     </div>
   </header>
   <main id="main-content">
@@ -1403,14 +1415,13 @@
     </section>
     <section id="view-map" class="view map-view" role="tabpanel" aria-labelledby="tabMap">
       <div class="map-sidebar" id="mapSidebar">
-        <div class="view-search-bar" id="mapSearchBar" style="display:none"></div>
         <div class="map-filter-row" id="mapFilterRow"></div>
         <div id="mapEventList"></div>
       </div>
       <div class="map-main">
         <div id="leaflet-map"></div>
         <div class="map-mob-tabs" id="mapMobTabs"></div>
-        <div class="map-mob-sheet" id="mapMobSheet"></div>
+        <div class="map-mob-sheet" id="mapMobSheet"><div id="mapMobSheetBody"></div></div>
       </div>
     </section>
     <section id="view-dashboard" style="display:block">
@@ -1428,11 +1439,7 @@
       </div>
     </section>
   </main>
-  <button class="fab fab-text" onclick="openWishAdd()" aria-label="Add Place" style="display:none">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-    <span>Add Place</span>
-  </button>
-  <span class="fab-label">Add Place</span>
+  <button type="button" class="fab" id="fabAdd" onclick="openWishAdd()" style="display:none"><span>Add Place</span></button>
 
   <!-- TRIP CREATE / EDIT MODAL -->
   <div class="modal-overlay" id="tripCreateModal" role="dialog" aria-modal="true" aria-labelledby="tripCreateTitle" onclick="if(event.target===this)closeTripCreate()">
@@ -1918,7 +1925,7 @@
       howToUse: { ko:'사용법', en:'How to use' },
       howToUseTitle: { ko:'Faropin 사용법', en:'How to use Faropin' },
       howToSec1Title: { ko:'장소 추가하기', en:'Add places' },
-      howToSec1Body: { ko:'위시리스트 탭에서 빠른 추가 또는 Discover 버튼을 사용하세요. 구글맵 링크도 붙여넣기 가능합니다.', en:'Use the quick-add bar in Places or the Discover pills (restaurants, cafes, museums, etc.). You can also paste a Google Maps link.' },
+      howToSec1Body: { ko:'상단 바(태블릿과 휴대폰에서는 떠 있는 버튼)의 "장소 추가"를 누르거나, 장소 탭의 Discover 버튼(맛집, 카페, 박물관 등)을 사용하세요. 구글맵 링크도 붙여넣기 가능합니다.', en:'Press Add Place (in the top bar on desktop, the floating button on tablets and phones), or use the Discover pills in Places (restaurants, cafes, museums, etc.). You can also paste a Google Maps link.' },
       howToSec2Title: { ko:'일정 잡기', en:'Schedule them' },
       howToSec2Body: { ko:'장소 카드에서 "+ 일정 추가"를 누르거나 캘린더에서 빈 공간을 클릭해 시간 블록을 만드세요.', en:'On a place card, click "+ Schedule" and pick a day + time. Or click an empty spot in the calendar to create a time block.' },
       howToSec3Title: { ko:'함께 계획하기', en:'Share with friends' },
@@ -1972,7 +1979,6 @@
       addLink: { ko:'+ 링크', en:'+ Link' },
       addCategory: { ko:'+ 카테고리', en:'+ Category' },
       addOptional: { ko:'+ 선택 이벤트', en:'+ Optional' },
-      discoverNearby: { ko:'근처 추천 장소', en:'Explore nearby:' },
       discoverNearCity: { ko:function(c){return c+' 근처 추천:';}, en:function(c){return 'Explore near '+c+':';} },
       tripNamePlaceholder: { ko:'예: 도쿄 여행', en:'e.g. Tokyo Trip' },
       tripDates: { ko:'여행 기간', en:'Trip Dates' },
@@ -2064,7 +2070,7 @@
       unscheduled: { ko:'미추가', en:'Unscheduled' },
       scheduled: { ko:'일정추가됨', en:'Scheduled' },
       noWlItems: { ko:'아직 장소가 없어요', en:'No places yet' },
-      noWlItemsHint: { ko:'위 검색창에서 장소를 찾거나 구글 지도 링크를 붙여넣어 보세요', en:'Search above or paste a Google Maps link to add your first place' },
+      noWlItemsHint: { ko:'장소를 검색하거나 구글 지도 링크를 붙여넣거나 추천을 받아 보세요', en:'Search for a place, paste a Google Maps link, or get recommendations' },
       noFilterMatches: { ko:'조건에 맞는 장소가 없어요', en:'No places match these filters' },
       clearFilters: { ko:'필터 초기화', en:'Clear filters' },
       googleMaps: { ko:'Google Maps ↗', en:'Google Maps ↗' },
@@ -2195,12 +2201,7 @@
       dayNofM: { ko:function(k,m){return m+'일 중 '+k+'일차';}, en:function(k,m){return 'Day '+k+' of '+m;} },
       // Language
       langLabel: { ko:'English', en:'한국어' },
-      // Quick add
-      // Short enough for one line in a 320px search bar; the long form is the field's accessible name
-      quickAddPlaceholder: { ko:'장소 검색 또는 링크 붙여넣기', en:'Search or paste a Maps link' },
-      quickAddLabel: { ko:'장소 검색 또는 구글맵 링크 붙여넣기', en:'Search a place or paste a Google Maps link' },
-      clearSearch: { ko:'검색어 지우기', en:'Clear search' },
-      navAdd: { ko:'+ 추가', en:'+ Add' },
+      // Place search (the Add place dialog and the lodging picker)
       searching: { ko:'검색 중...', en:'Searching...' },
       noSearchResults: { ko:'검색 결과 없음', en:'No results found' },
       wishMapsPlaceholder: { ko:'장소 검색 또는 구글맵 링크 붙여넣기...', en:'Search a place or paste Google Maps link...' },
@@ -2259,7 +2260,6 @@
       function _p(id,key){ var el=document.getElementById(id); if(el) el.placeholder=t(key); }
       function _a(sel,attr,key){ var el=document.querySelector(sel); if(el) el.setAttribute(attr,t(key)); }
       document.querySelectorAll('.modal-close').forEach(function(b){ b.setAttribute('aria-label', t('close')); });
-      _a('#navAddBtn','aria-label','addPlace');
       _a('#tcCityClear','aria-label','changeCityA11y');
       _a('#dpPrevBtn','aria-label','prevMonthA11y');
       _a('#dpNextBtn','aria-label','nextMonthA11y');
@@ -2272,12 +2272,8 @@
       // Loading screen
       var ls = document.getElementById('loadingScreen');
       if (ls && ls.querySelector('p')) ls.querySelector('p').textContent = t('loading');
-      // FAB
-      var fabSpan = document.querySelector('.fab > span:last-child');
-      if (fabSpan) fabSpan.textContent = t('addPlaceAction');
-      var fabLabel = document.querySelector('.fab-label');
-      if (fabLabel) fabLabel.textContent = t('addPlace');
-      document.querySelector('.fab')&&document.querySelector('.fab').setAttribute('aria-label',t('addPlace'));
+      // Add place: the navbar button on desktop and the floating button on tablets and phones (icon + label, the text names it)
+      ['navAddBtn','fabAdd'].forEach(function(id){ var b=document.getElementById(id); if(b) b.innerHTML=icon('plus',16)+'<span>'+escH(t('addPlace'))+'</span>'; });
       // Hamburger menu
       _a('.viz-menu-toggle','aria-label','menu');
       var shareMenuBtn = document.getElementById('shareMenuBtn');
@@ -2303,10 +2299,7 @@
       // Tab labels
       var tabs = document.querySelectorAll('.tab-label');
       if (tabs.length >= 3) { tabs[0].textContent = t('schedule'); tabs[1].textContent = t('mapLabel'); tabs[2].textContent = t('places'); }
-      // Nav add button (icon only, no text update needed)
-      // Quick add placeholder
-      var wlQuickUrl = document.getElementById('wlQuickUrl');
-      if (wlQuickUrl) { wlQuickUrl.placeholder = t('quickAddPlaceholder'); wlQuickUrl.setAttribute('aria-label', t('quickAddLabel')); }
+      // The Add place modal's own search field
       var wishMapsUrl = document.getElementById('wishMapsUrl');
       if (wishMapsUrl && !wishMapsUrl.value) wishMapsUrl.placeholder = t('wishMapsPlaceholder');
       // Category selects
@@ -3680,6 +3673,8 @@
         _routerInited = true;
         window.addEventListener('hashchange', handleRoute);
         window.addEventListener('resize', function(){updateFab();applyLeftPanelState();_resizeMap();if(currentView==='calendar'&&window.innerWidth!==_lastResizeW)_onCalResize();_lastResizeW=window.innerWidth;});
+        // A pointer change (a keyboard docked to a tablet, touch emulation) can flip which Add place button shows without any resize
+        if (window.matchMedia) { var _addMq = window.matchMedia(_ADD_FAB_MQ); if (_addMq.addEventListener) _addMq.addEventListener('change', function(){ updateFab(); }); }
       }
       handleRoute();
     }
@@ -3851,9 +3846,8 @@
       destroyCobe();
       updateFab(currentView);
       calPage = 0; mapMobDay = 0; mapFilter = 'all'; _lastFitDay = -1; _mapTabsCentered = null; _calStripKey = null;
-      // The Places add panel and the map search field survive re-renders; a newly opened trip starts them empty.
+      // The Places Discover row survives re-renders; a newly opened trip starts it empty.
       document.getElementById('wishlistContent').innerHTML = '';
-      document.getElementById('mapSearchBar').innerHTML = '';
       var calTab = document.querySelectorAll('.view-tab')[0];
       if (calTab) calTab.style.display = '';
       // First time in this trip: everything is new to us, so badge nothing (not '9+' for the whole trip)
@@ -3865,7 +3859,7 @@
       _tabScroll = {}; // after switchView, which files the previous trip's tab under it
     }
     // Flush pending edits, then cut every link to the trip we're leaving so late async
-    // callbacks (quick-add, Places details, lodging) can't save into it with emptied state.
+    // callbacks (Places details, lodging) can't save into it with emptied state.
     // Returns the flush (it settles once that save has landed or failed).
     function _detachTrip() {
       var flushed = Promise.resolve();
@@ -5161,8 +5155,6 @@
       bug: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 12.75c1.148 0 2.278.08 3.383.237 1.037.146 1.866.966 1.866 2.013 0 3.728-2.35 6.75-5.25 6.75S6.75 18.728 6.75 15c0-1.046.83-1.867 1.866-2.013A24.204 24.204 0 0 1 12 12.75Zm0 0c2.883 0 5.647.508 8.207 1.44a23.91 23.91 0 0 1-1.152 6.06M12 12.75c-2.883 0-5.647.508-8.208 1.44.125 2.104.52 4.136 1.153 6.06M12 12.75a2.25 2.25 0 0 0 2.248-2.354M12 12.75a2.25 2.25 0 0 1-2.248-2.354M12 8.25c.995 0 1.971-.08 2.922-.236.403-.066.74-.358.795-.762a3.778 3.778 0 0 0-.399-2.25M12 8.25c-.995 0-1.97-.08-2.922-.236-.402-.066-.74-.358-.795-.762a3.734 3.734 0 0 1 .4-2.253M12 8.25a2.25 2.25 0 0 0-2.248 2.146M12 8.25a2.25 2.25 0 0 1 2.248 2.146M8.683 5a6.032 6.032 0 0 1-1.155-1.002c.07-.63.27-1.222.574-1.747m.581 2.749A3.75 3.75 0 0 1 15.318 5m0 0c.427-.283.815-.62 1.155-.999a4.471 4.471 0 0 0-.575-1.752M4.921 6a24.048 24.048 0 0 0-.392 3.314c1.668.546 3.416.914 5.223 1.082M19.08 6c.205 1.08.337 2.187.392 3.314a23.882 23.882 0 0 1-5.223 1.082"/></svg>',
       bulb: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.517 0c.85.493 1.509 1.333 1.509 2.316V18"/></svg>',
       code: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5"/></svg>',
-      search: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>',
-      x: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>',
       // Weather (wmoKey maps Open-Meteo WMO codes to these). sun / cloud / bolt are Heroicons;
       // the rest are drawn on the same 24px grid and 1.5 stroke, with the cloud shrunk to 75%
       // (bottom at y=15) so rain, snow, fog or a bolt fit underneath.
@@ -5816,16 +5808,37 @@
       if(currentTripId&&currentUser&&(v==='calendar'||v==='wishlist')){setLV(v);}
       updateTabBadges();
     }
+    // Add place has one entry point per size. Same test as the CSS media query beside .fab (keep the two in sync):
+    // tablets and phones (a viewport of 1024px or less, or a coarse primary pointer, such as an iPad in landscape)
+    // get the floating button; a wider window with a fine pointer gets the labelled navbar button.
+    var _ADD_FAB_MQ='(max-width:1024px), (pointer:coarse)';
+    function _useFab(){return !!(window.matchMedia&&window.matchMedia(_ADD_FAB_MQ).matches);}
+    // Both buttons are only ever shown to editors of a trip that has loaded (the navbar one stays put while it loads).
+    // Every visibility change goes through here: switchView, entering/leaving a trip, meta changes, resize.
     function updateFab(v){
       v=v||currentView;
-      var fab=document.querySelector('.fab');
+      var fab=document.getElementById('fabAdd');
       var navBtn=document.getElementById('navAddBtn');
-      var isDesktop=window.innerWidth>768;
-      var canAdd=currentTripId&&canEdit(),ready=!_tripLoading&&!!DATA_REF;
-      if(fab){fab.style.display=(!canAdd||!ready||(v==='map'&&!isDesktop)||isDesktop)?'none':'';}
+      var useFab=_useFab();
+      var canAdd=!!(currentTripId&&canEdit()),ready=!_tripLoading&&!!DATA_REF;
+      if(fab){
+        fab.style.display=(canAdd&&ready&&useFab)?'':'none';
+        _placeFab(fab,v,useFab);
+      }
       // The navbar button keeps its place while the trip loads (the centred tab pill would jump when it appeared);
       // it only looks unavailable, and _addBlocked explains a click.
-      if(navBtn){navBtn.style.display=(canAdd&&isDesktop)?'':'none';if(canAdd&&!ready)navBtn.setAttribute('aria-disabled','true');else navBtn.removeAttribute('aria-disabled');}
+      if(navBtn){navBtn.style.display=(canAdd&&!useFab)?'':'none';if(canAdd&&!ready)navBtn.setAttribute('aria-disabled','true');else navBtn.removeAttribute('aria-disabled');}
+    }
+    // Where the floating button sits. Fixed to the window, except on the phone Map tab, where it rides just above the
+    // bottom sheet as its child, so it follows every drag and the collapse / expand with no measuring. On the
+    // tablet Map tab it lifts above the Leaflet credit along the map's bottom-right edge.
+    function _placeFab(fab,v,useFab){
+      var phone=window.innerWidth<=768,sheet=document.getElementById('mapMobSheet');
+      var onSheet=!!(useFab&&phone&&v==='map'&&sheet);
+      if(onSheet){if(fab.parentNode!==sheet)sheet.appendChild(fab);}
+      else if(fab.parentNode!==document.body){var main=document.getElementById('main-content');if(main)main.insertAdjacentElement('afterend',fab);else document.body.appendChild(fab);}
+      fab.classList.toggle('on-sheet',onSheet);
+      fab.classList.toggle('on-map',!!(useFab&&!phone&&v==='map'));
     }
     // Adding waits until the trip has loaded: loadTripData replaces DAYS/WISHLIST when its data arrives (and until
     // then there's no DATA_REF to save to), so a place or event added before that would silently vanish.
@@ -6315,46 +6328,7 @@
       switchView('map');
       if(leafletMap)setTimeout(function(){rebuildMarkers();fitMapToDay(mapMobDay);},250);
     }
-    // The search field of the Places tab and the map sidebar (one component). Its typed text, focus and clear
-    // button live in the DOM (the clear button shows via CSS while the field isn't empty), never in a re-render.
-    function _searchFieldH(inputId, dropdownId, pasteJs) {
-      return '<div class="fp-search"><span class="fp-search-ic" aria-hidden="true">' + icon('search', 18) + '</span>' +
-        '<input type="text" class="fp-search-input"' + (inputId ? ' id="' + inputId + '"' : '') + ' aria-label="' + escA(t('quickAddLabel')) + '" placeholder="' + escA(t('quickAddPlaceholder')) + '" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" oninput="onQuickSearchInput(this)" onpaste="' + pasteJs + '" onkeydown="onPlaceSearchKeydown(event,\'' + dropdownId + '\')">' +
-        '<button type="button" class="fp-search-clear" aria-label="' + escA(t('clearSearch')) + '" onmousedown="event.preventDefault()" onclick="clearQuickSearch(this)">' + icon('x', 14) + '</button>' +
-        '<div class="place-search-dropdown" id="' + dropdownId + '" style="display:none"></div></div>';
-    }
-    function clearQuickSearch(btn) {
-      var box = btn && btn.closest('.fp-search'), input = box && box.querySelector('input');
-      if (!input) return;
-      input.value = '';
-      clearTimeout(_placesSearchTimer);
-      if (_placesSearchAbort) _placesSearchAbort.abort();
-      _placesResults = []; _placesDropdownIdx = -1;
-      _hideCombo(box.querySelector('.place-search-dropdown'));
-      input.focus();
-    }
-    function renderViewSearchBar(containerId, dropdownId) {
-      var el = document.getElementById(containerId);
-      if (!el) return;
-      if (canEdit()) {
-        el.style.display = '';
-        // Re-rendered on every remote change: an input that's already there keeps what's being typed, its caret
-        // and its open suggestions (only the wording follows the language).
-        var live = el.querySelector('input');
-        if (live && document.getElementById(dropdownId)) {
-          if (live.placeholder !== t('loadingPlace')) live.placeholder = t('quickAddPlaceholder');
-          live.setAttribute('aria-label', t('quickAddLabel'));
-          var lc = el.querySelector('.fp-search-clear');
-          if (lc) lc.setAttribute('aria-label', t('clearSearch'));
-          return;
-        }
-        el.innerHTML = _searchFieldH('', dropdownId, "setTimeout(function(){var el=document.getElementById('" + containerId + "').querySelector('input');if(el&&isGmapsUrl(el.value))quickAddPlace('" + containerId + "');},100)");
-      } else {
-        el.style.display = 'none';
-      }
-    }
     function renderMapUI(){
-      renderViewSearchBar('mapSearchBar','mapPlaceDropdown');
       var fr=document.getElementById('mapFilterRow');
       var isHt=currentTripMeta&&currentTripMeta.type==='hometown';
       if(isHt){
@@ -6451,8 +6425,14 @@
       el.addEventListener('pointerup',release);
       el.addEventListener('pointercancel',release);
     }
+    // The Add place button that lives in the sheet's title row. Hidden except on a short landscape phone, where the
+    // sheet leaves no room above it for the floating button (CSS: the .map-mob-btn-place block, same test as .fab.on-sheet).
+    function _sheetPlaceBtn(){
+      return canEdit()?'<button type="button" class="map-mob-btn map-mob-btn-place" onclick="openWishAdd()">'+icon('plus',16)+'<span>'+escH(t('addPlace'))+'</span></button>':'';
+    }
     function renderMapMobSheet(){
-      var el=document.getElementById('mapMobSheet');if(!el)return;
+      // Content goes into the body: the Add place button rides the sheet as its other child and must survive re-renders
+      var el=document.getElementById('mapMobSheetBody');if(!el)return;
       _initMapSheetDrag();
       if(mapFilter==='wishlist'){
         var unassigned=WISHLIST.filter(function(w){return !w.calDayId;});
@@ -6468,7 +6448,7 @@
             '</div></'+(hasCoords?'button':'div')+'>';
         }).join('');
         el.innerHTML='<div class="map-mob-handle"></div>'+
-          '<div class="map-mob-title-row"><div class="map-mob-title" style="color:#8b5cf6;display:flex;align-items:center;gap:5px">'+icon('star',15)+' '+t('unassignedPlaces')+'</div></div>'+
+          '<div class="map-mob-title-row"><div class="map-mob-title" style="color:#8b5cf6;display:flex;align-items:center;gap:5px">'+icon('star',15)+' '+t('unassignedPlaces')+'</div>'+(canEdit()?'<div class="map-mob-btns">'+_sheetPlaceBtn()+'</div>':'')+'</div>'+
           '<div class="map-mob-cards">'+(cards||'<div style="padding:16px;font-size:0.82rem;color:var(--text-secondary)">'+t('noUnassigned')+'</div>')+'</div>';
         _applyMapSheetState(false);
         return;
@@ -6490,12 +6470,13 @@
         '<div class="map-mob-title-row">'+
           '<div class="map-mob-title">'+escH(day.date)+(day.theme?' — '+escH(day.theme):'')+'</div>'+
           '<div class="map-mob-btns">'+
-            '<button class="map-mob-btn map-mob-btn-add" onclick="openCalAdd(\''+_sid(day.id)+'\',null)" title="'+t('addPlace')+'" aria-label="'+t('addPlace')+'" style="background:var(--accent);color:var(--accent-fg);border-color:transparent">'+icon('plus',18)+'</button>'+
+            _sheetPlaceBtn()+
+            '<button class="map-mob-btn map-mob-btn-add" onclick="openCalAdd(\''+_sid(day.id)+'\',null)" title="'+escA(t('addToSchedule'))+'" aria-label="'+escA(t('addToSchedule'))+'">'+icon('plus',18)+'</button>'+
             '<button class="map-mob-btn" onclick="goToCalDay(\''+_sid(day.id)+'\')" title="'+t('viewInCalendar')+'" aria-label="'+t('viewInCalendar')+'">'+icon('calendar',16)+'</button>'+
           '</div>'+
         '</div>'+
         '<div class="map-mob-cards">'+(cards||'<div class="map-mob-empty">'+icon('pin',16)+'<span>'+t('mapDayEmpty')+'</span>'+
-          (canEdit()?'<button type="button" class="map-mob-empty-add" onclick="openCalAdd(\''+_sid(day.id)+'\',null)">'+t('addPlace')+'</button>':'')+'</div>')+'</div>';
+          (canEdit()?'<button type="button" class="map-mob-empty-add" onclick="openCalAdd(\''+_sid(day.id)+'\',null)">'+t('addToSchedule')+'</button>':'')+'</div>')+'</div>';
       _applyMapSheetState(false);
     }
 
@@ -6509,12 +6490,22 @@
 
     var _lastFitDay=-1; // the day the phone map was last framed on (reopening the tab on it keeps the user's pan/zoom)
     // On phones the day pills cover the top of the map and the bottom sheet its bottom, so what the user can
-    // actually see is the band between them. Desktop has nothing over the map: a plain 16px margin.
+    // actually see is the band between them. Desktop has nothing over the map: a plain 16px margin, except on a
+    // tablet, where the floating Add place button stands in the map's bottom-right corner and the band ends above it.
     // The sheet is measured by its resting state (collapsed or not), not its live transform, so a frame taken
     // mid-animation lands where the sheet ends up.
     function _mapInsets(){
       var ins={top:16,bottom:16,side:16,mob:false};
-      if(!leafletMap||window.innerWidth>768)return ins;
+      if(!leafletMap)return ins;
+      if(window.innerWidth>768){
+        var tab=document.getElementById('fabAdd'),tc=leafletMap.getContainer().getBoundingClientRect();
+        if(tab&&tab.classList.contains('on-map')&&tab.getClientRects().length&&tc.height){
+          var tb=tab.getBoundingClientRect();
+          if(tb.top>tc.top)ins.bottom=Math.max(16,Math.round(tc.bottom-tb.top+12));
+          if(tc.height-ins.top-ins.bottom<120)ins.bottom=Math.max(16,Math.round(tc.height-ins.top-120));
+        }
+        return ins;
+      }
       var c=leafletMap.getContainer().getBoundingClientRect();
       if(!c.height)return ins;
       ins.mob=true;
@@ -6525,6 +6516,9 @@
         var restTop=host.getBoundingClientRect().top+sheet.offsetTop+(_mapSheetCollapsed?_mapSheetCollapsedY(sheet):0);
         ins.bottom=Math.max(16,Math.round(c.bottom-restTop+12));
       }
+      // The Add place button rides above the sheet's top edge: pins, fits and popups (their Directions / Edit row) stay clear of it
+      var fab=document.getElementById('fabAdd');
+      if(fab&&fab.classList.contains('on-sheet')&&fab.offsetParent)ins.bottom+=fab.offsetHeight+12;
       // A short landscape phone: keep at least 120px of band, taken out of the sheet side
       if(c.height-ins.top-ins.bottom<120)ins.bottom=Math.max(16,Math.round(c.height-ins.top-120));
       return ins;
@@ -7078,9 +7072,9 @@
     }
 
     // ==================== WISHLIST ====================
-    // The add panel (search field, its suggestions, Discover) sits outside the part every render rebuilds: a remote
-    // change (a vote, a collaborator's place) re-renders the list, and must not wipe what's being typed there.
-    // The panel itself is only rebuilt when what it shows changes (edit rights, city, language).
+    // The Discover row (pills) sits outside the part every render rebuilds: a remote change (a vote, a collaborator's
+    // place) re-renders the list, and must not snap the pills' sideways scroll back on phones.
+    // The row itself is only rebuilt when what it shows changes (edit rights, city, language).
     function _wlHosts(){
       var c=document.getElementById('wishlistContent'),ph=document.getElementById('wlPanelHost'),body=document.getElementById('wlBody');
       if(!ph||!body){c.innerHTML='<div id="wlPanelHost"></div><div id="wlBody"></div>';ph=document.getElementById('wlPanelHost');body=document.getElementById('wlBody');}
@@ -7104,37 +7098,29 @@
       var total=WISHLIST.length,done=WISHLIST.filter(function(w){return w.visited;}).length;
       var isHt=currentTripMeta&&currentTripMeta.type==='hometown';
       var h='';
-      var showAddPanel = canEdit();
-      var showDiscover = canEdit()&&currentTripMeta&&currentTripMeta.city;
-      if(showAddPanel||showDiscover){
-        h+='<div class="wl-add-panel">';
-        if(showAddPanel){h+=_searchFieldH('wlQuickUrl','quickPlaceDropdown',"setTimeout(function(){var el=document.getElementById('wlQuickUrl');if(el&&isGmapsUrl(el.value))quickAddPlace();},100)");}
-        if(showDiscover){
-          var discoverLabel = currentTripMeta&&currentTripMeta.city ? escH(STRINGS.discoverNearCity[currentLang](currentTripMeta.city)) : t('discoverNearby');
-          h+='<div class="wl-discover"><div class="wl-discover-label">'+icon('globe',12)+' '+discoverLabel+'</div><div class="wl-discover-btns">';
-          h+=_discPills('discoverPlaces');
-          h+='</div></div>';
-        }
-        h+='</div>';
+      if(canEdit()&&currentTripMeta&&currentTripMeta.city){
+        h+='<div class="wl-add-panel"><div class="wl-discover"><div class="wl-discover-label">'+icon('globe',12)+' '+escH(STRINGS.discoverNearCity[currentLang](currentTripMeta.city))+'</div><div class="wl-discover-btns">'+_discPills('discoverPlaces')+'</div></div></div>';
       }
       _setWlPanel(hosts.panel,h);h='';
       var viewToggleH='<div class="wl-view-toggle" role="group" aria-label="View mode">'+
         '<button type="button" class="wl-view-btn'+(wishViewMode==='grid'?' active':'')+'" onclick="setWishViewMode(\'grid\')" title="Grid" aria-label="Grid view"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></button>'+
         '<button type="button" class="wl-view-btn'+(wishViewMode==='list'?' active':'')+'" onclick="setWishViewMode(\'list\')" title="List" aria-label="List view"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg></button>'+
       '</div>';
-      h+='<div class="wl-toolbar"><div class="wl-toolbar-top"><span class="wl-title" style="display:inline-flex;align-items:center;gap:5px">'+icon('star',16)+' '+t('places')+(isHt?'<span class="wl-count" style="margin-left:6px">'+total+'</span>':'<span class="wl-count" style="margin-left:6px">'+STRINGS.scheduledCount[currentLang](done,total)+'</span>')+'</span>'+viewToggleH+'</div><div class="wl-filter-rows"><div class="wl-filter-group">';
-      h+=wlCatBtn('all',t('all'),wishCatFilter)+wlCatBtn('food',icon('food',13)+' '+t('catFood'),wishCatFilter)+wlCatBtn('bar',icon('bar',13)+' '+t('catBar'),wishCatFilter)+wlCatBtn('culture',icon('culture',13)+' '+t('catCulture'),wishCatFilter)+wlCatBtn('shopping',catIcon('shopping',13)+' '+t('catShopping'),wishCatFilter)+wlCatBtn('hotel',icon('hotel',13)+' '+t('catHotel'),wishCatFilter)+wlCatBtn('transport',icon('transport',13)+' '+t('catTransport'),wishCatFilter);
-      if(!isHt){
+      h+='<div class="wl-toolbar"><div class="wl-toolbar-top"><span class="wl-title" style="display:inline-flex;align-items:center;gap:5px">'+icon('star',16)+' '+t('places')+(isHt?'<span class="wl-count" style="margin-left:6px">'+total+'</span>':'<span class="wl-count" style="margin-left:6px">'+STRINGS.scheduledCount[currentLang](done,total)+'</span>')+'</span>'+viewToggleH+'</div>';
+      // A trip with no places has nothing to filter: the rows would only be dead controls above the empty state
+      if(total)h+='<div class="wl-filter-rows"><div class="wl-filter-group">';
+      if(total)h+=wlCatBtn('all',t('all'),wishCatFilter)+wlCatBtn('food',icon('food',13)+' '+t('catFood'),wishCatFilter)+wlCatBtn('bar',icon('bar',13)+' '+t('catBar'),wishCatFilter)+wlCatBtn('culture',icon('culture',13)+' '+t('catCulture'),wishCatFilter)+wlCatBtn('shopping',catIcon('shopping',13)+' '+t('catShopping'),wishCatFilter)+wlCatBtn('hotel',icon('hotel',13)+' '+t('catHotel'),wishCatFilter)+wlCatBtn('transport',icon('transport',13)+' '+t('catTransport'),wishCatFilter);
+      if(total&&!isHt){
         h+='</div><div class="wl-filter-group">';
         h+=wlSBtn('all',t('all'),wishStatusFilter)+wlSBtn('unscheduled',t('unscheduled'),wishStatusFilter)+wlSBtn('scheduled',t('scheduled'),wishStatusFilter);
         h+='<button class="wl-filter status-btn'+(wishSortByVotes?' active':'')+'" data-f="sort" onclick="toggleWishSortByVotes()" title="'+t('mostLoved')+'">'+
           '<svg width="12" height="12" viewBox="0 0 24 24" fill="'+(wishSortByVotes?'currentColor':'none')+'" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.633 10.5c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 012.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 00.322-1.672V3a.75.75 0 01.75-.75A2.25 2.25 0 0116.5 4.5c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 01-2.649 7.521c-.388.482-.987.729-1.605.729H13.48c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 00-1.423-.23H5.904M14.25 9h2.25M5.904 18.75c.083.205.173.405.27.602.197.4-.078.898-.523.898h-.908c-.889 0-1.713-.518-1.972-1.368a12 12 0 01-.521-3.507c0-1.553.295-3.036.831-4.398C3.387 10.203 4.167 9.75 5 9.75h1.053c.472 0 .745.556.5.96a8.958 8.958 0 00-1.302 4.665c0 1.194.232 2.333.654 3.375z"/></svg> '+t('mostLoved')+'</button>';
       }
-      h+='</div></div></div>';
+      h+=total?'</div></div></div>':'</div>';
       h+='<div class="wl-grid '+wishViewMode+'">';
       // Empty: say whether the trip has no places or the filters hide them all (then offer the way out)
       if(filtered.length===0&&WISHLIST.length)h+='<div class="wl-empty"><div class="wl-empty-icon" style="display:flex;justify-content:center">'+icon('star',32)+'</div><div>'+t('noFilterMatches')+'</div><button type="button" class="btn btn-secondary wl-empty-btn" onclick="clearWlFilters()">'+t('clearFilters')+'</button></div>';
-      else if(filtered.length===0)h+='<div class="wl-empty"><div class="wl-empty-icon" style="display:flex;justify-content:center">'+icon('star',32)+'</div><div>'+t('noWlItems')+(canEdit()?'<br><span style="font-size:0.85rem">'+t('noWlItemsHint')+'</span>':'')+'</div></div>';
+      else if(filtered.length===0)h+='<div class="wl-empty"><div class="wl-empty-icon" style="display:flex;justify-content:center">'+icon('star',32)+'</div><div class="dash-empty-title">'+t('noWlItems')+'</div>'+(canEdit()?'<div class="dash-empty-hint">'+t('noWlItemsHint')+'</div><button type="button" class="btn btn-secondary wl-empty-btn" onclick="openWishAdd()">'+icon('plus',16)+' '+t('addPlace')+'</button>':'')+'</div>';
       filtered.forEach(function(w){
         var cat=CAT[w.category]||CAT.other,cic=catIcon(w.category,16),wid=_sid(w.id);
         var st='';var dayLabel='';
@@ -7304,19 +7290,6 @@
       return /maps\.app\.goo\.gl|goo\.gl\/maps|google\.com\/maps|maps\.google/.test(str);
     }
 
-    // Autocomplete search for quick-add bar
-    function onQuickSearchInput(el) {
-      var val = (el.value || '').trim();
-      var dd = el.parentElement.querySelector('.place-search-dropdown');
-      if (!dd) return;
-      var ddId = dd.id;
-      if (!val || val.length < 2) { clearTimeout(_placesSearchTimer); if (_placesSearchAbort) _placesSearchAbort.abort(); _hideCombo(dd); _placesResults = []; return; }
-      // If it looks like a URL, don't search — let paste/enter handle it
-      if (isGmapsUrl(val) || /^https?:\/\//.test(val)) { _hideCombo(dd); return; }
-      clearTimeout(_placesSearchTimer);
-      _placesSearchTimer = setTimeout(function() { searchPlaces(val, ddId); }, 300);
-    }
-
     // Autocomplete search for wish modal
     function onWishSearchInput(el) {
       var val = (el.value || '').trim();
@@ -7412,42 +7385,22 @@
         var d = await res.json();
         if (currentTripId !== spTrip || _addBlocked()) return;
 
-        // Clear the input that triggered the search
-        if (dropdownId !== 'wishPlaceDropdown') {
+        // Lodging chip flow: clear its field, create a wishlist item with the forced category and select it
+        if (dropdownId === 'lodgingPlaceDropdown') {
           var container = dd ? dd.parentElement : null;
           var input = container ? container.querySelector('input') : null;
           if (input) { input.value = ''; }
-        }
-        // Lodging chip flow: create wishlist item with forced category and select it
-        if (dropdownId === 'lodgingPlaceDropdown') {
           var newId = _addPlaceForChip(d, 'hotel');
           _lodgingSelectedWishId = newId;
           renderLodgingPickList();
           updateLodgingSaveBtn();
           return;
         }
-        // Always open the add-place modal with fields pre-filled
-        if (dropdownId !== 'wishPlaceDropdown') openWishAdd();
+        // The Add place dialog's own search: fill its fields
         _populateWishModalFromSearch(d);
       } catch (e) {
         console.error('[selectPlace] details fetch failed:', e);
       }
-    }
-
-    function _addPlaceFromSearch(d) {
-      var addedBy = currentUser ? (currentUser.displayName || currentUser.email.split('@')[0]) : '';
-      var addedByPhoto = currentUser && currentUser.photoURL ? currentUser.photoURL : '';
-      var newW = {
-        id: 'wl_' + genId(), name: d.name || '', notes: d.address || '', category: d.category || 'other',
-        wishType: 'place', mapsUrl: d.mapsUrl || '', lat: d.lat || null, lng: d.lng || null,
-        visited: false, fromItinerary: false, dayLabel: '', calDayId: null, calEventId: null,
-        addedBy: addedBy, addedByPhoto: addedByPhoto, addedByUid: currentUser ? currentUser.uid : null, addedAt: Date.now(),
-        googlePlaceId: d.placeId || '', photoUrl: d.photoUrl || '', websiteUrl: d.websiteUrl || '', primaryType: d.primaryType || '',
-        openingHours: d.openingHours || null, editorialSummary: d.editorialSummary || '', priceLevel: d.priceLevel, phoneNumber: d.phoneNumber || '', rating: d.rating || null, userRatingCount: d.userRatingCount || null
-      };
-      WISHLIST.push(newW);
-      _wlLanded(newW);
-      rerender();
     }
 
     // Create a wishlist item from Places details for lodging/transport chip flow (forced category)
@@ -7685,47 +7638,6 @@
     function autoDetectCategory(name){
       var cat=detectCategory(name);
       if(cat){var sel=document.getElementById('wishCategory');if(sel)sel.value=cat;}
-    }
-    function quickAddPlace(containerId){
-      var input;
-      if(containerId){var c=document.getElementById(containerId);if(c)input=c.querySelector('input');}
-      if(!input)input=document.getElementById('wlQuickUrl');
-      if(!input)return;
-      var url=(input.value||'').trim();if(!url)return;
-      url=extractMapsUrl(url);
-      if(!url||_addBlocked())return; // blocked: the link is left in the field
-      input.value='';input.placeholder=t('loadingPlace');
-      var qaTrip=currentTripId;
-      if(/maps\.app\.goo\.gl|goo\.gl\/maps/.test(url)){
-        fetch('https://palo-travel-expand-url.jihoon8846.workers.dev/api/expand-url?url='+encodeURIComponent(url))
-          .then(function(r){return r.json();})
-          .then(function(d){
-            if(currentTripId!==qaTrip)return;
-            _addQuickPlace(d.url||url,d.name||'',d.address||'',d.lat,d.lng,d.category||'');
-            input.placeholder=t('quickAddPlaceholder');
-          })
-          .catch(function(){if(currentTripId!==qaTrip)return;_addQuickPlace(url,'','',null,null,'');input.placeholder=t('quickAddPlaceholder');});
-      } else {
-        _addQuickPlace(url,'','',null,null,'');
-        input.placeholder=t('quickAddPlaceholder');
-      }
-    }
-    function _addQuickPlace(url,name,address,lat,lng,category){
-      if(_addBlocked())return; // the trip was reopened while the link was being expanded
-      name=(name||'').replace(/\+/g,' ');
-      if(!name){var nm=url.match(/maps\/(?:place|search)\/([^/@?,&]+)/);if(nm)name=decodeURIComponent(nm[1]).replace(/\+/g,' ').replace(/_/g,' ').trim();}
-      if(!name){var qm=url.match(/[?&](?:q|query)=([^&@,]+)/);if(qm)name=decodeURIComponent(qm[1]).replace(/\+/g,' ').trim();}
-      var displayName=name||address||url;
-      var cat=category||detectCategory(displayName)||'other';
-      if(!lat){var cm=url.match(/@(-?\d+\.?\d*),(-?\d+\.?\d*)/)||url.match(/!3d(-?\d+\.?\d+)!4d(-?\d+\.?\d+)/);if(cm){lat=parseFloat(cm[1]);lng=parseFloat(cm[2]);}}
-      var addedBy=currentUser?(currentUser.displayName||currentUser.email.split('@')[0]):'';
-      var addedByPhoto=currentUser&&currentUser.photoURL?currentUser.photoURL:'';
-      var newW={id:'wl_'+genId(),name:displayName,notes:address||'',category:cat,wishType:'place',mapsUrl:url,lat:lat||null,lng:lng||null,visited:false,fromItinerary:false,dayLabel:'',calDayId:null,calEventId:null,addedBy:addedBy,addedByPhoto:addedByPhoto,addedByUid:currentUser?currentUser.uid:null,addedAt:Date.now()};
-      WISHLIST.push(newW);
-      if(!lat&&url)_resolveWishCoords(newW);
-      else if(!lat&&displayName)geocodeWishItem(newW);
-      _wlLanded(newW);
-      rerender();
     }
     function updateWishSaveBtn(){
       var hasName=!!(document.getElementById('wishName').value.trim());
